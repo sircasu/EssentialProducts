@@ -6,25 +6,7 @@
 //
 
 import XCTest
-
-final class RemoteProductsLoader {
-    
-    private var client: HTTPClient
-    private var url: URL
-    
-    init(client: HTTPClient, url: URL) {
-        self.client = client
-        self.url = url
-    }
-    
-    func load() {
-        client.get(from: url)
-    }
-}
-
-protocol HTTPClient {
-    func get(from: URL)
-}
+import EssentialProducts
 
 final class RemoteProductsLoaderTests: XCTestCase {
     
@@ -35,8 +17,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         XCTAssertNil(client.requestedURL)
     }
     
-    
-    func test_load_requestDataFromURL() {
+    func test_load_requestsDataFromURL() {
         
         let exampleURL = URL(string: "https://an-example.com/products")!
         let (sut, client) = makeSUT(url: exampleURL)

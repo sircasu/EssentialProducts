@@ -39,9 +39,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
     
     func test_init_doesNotRequestDataFromURL() {
     
-        let client = HTTPClientSpy()
-
-        _ = RemoteProductsLoader(client: client)
+        let (_, client) = makeSUT()
         
         XCTAssertNil(client.requestedURL)
     }
@@ -50,11 +48,20 @@ final class RemoteProductsLoaderTests: XCTestCase {
     func test_load_requestDataFromURL() {
         
         let exampleURL = URL(string: "https://an-example.com/products")!
-        let client = HTTPClientSpy()
-        let sut = RemoteProductsLoader(client: client, url: exampleURL)
+        let (sut, client) = makeSUT(url: exampleURL)
         
         sut.load()
         
         XCTAssertEqual(client.requestedURL, exampleURL)
+    }
+    
+    // MARK: - Helpers
+    
+    private func makeSUT(url: URL = URL(string: "https://example.com/products")!) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {
+        
+        let client = HTTPClientSpy()
+        let sut = RemoteProductsLoader(client: client, url: url)
+        
+        return (sut, client)
     }
 }

@@ -12,7 +12,7 @@ final class RemoteProductsLoader {
     private var client: HTTPClient
     private var url: URL
     
-    init(client: HTTPClient, url: URL = URL(string: "https://example.com/products")!) {
+    init(client: HTTPClient, url: URL) {
         self.client = client
         self.url = url
     }

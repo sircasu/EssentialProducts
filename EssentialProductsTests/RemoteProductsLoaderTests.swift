@@ -74,27 +74,27 @@ final class RemoteProductsLoaderTests: XCTestCase {
     
     final class HTTPClientSpy: HTTPClient {
         
-        private var messages: [(url: URL, completion: (HTTPURLResponse?, Error?) -> Void)] = []
+        private var messages: [(url: URL, completion: (HTTPClient.Result) -> Void)] = []
         var requestedURLs: [URL] {
             messages.map { $0.url }
         }
         
-        func get(from url: URL, completion: @escaping (HTTPURLResponse?, Error?) -> Void) {
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
             messages.append((url, completion))
         }
         
         func complete(with error: NSError, at index: Int = 0) {
-            messages[index].completion(nil, error)
+            messages[index].completion(.failure(error))
         }
         
         func complete(with code: Int, at index: Int = 0) {
-            let urlResponse = HTTPURLResponse(
+            let response = HTTPURLResponse(
                 url: messages[index].url,
                 statusCode: code,
                 httpVersion: nil,
                 headerFields: nil)!
             
-            messages[index].completion(urlResponse, nil)
+            messages[index].completion(.success(response))
         }
     }
 }

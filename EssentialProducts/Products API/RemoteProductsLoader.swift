@@ -8,7 +8,8 @@
 import Foundation
 
 public protocol HTTPClient {
-    func get(from: URL, completion: @escaping (HTTPURLResponse?, Error?) -> Void)
+    typealias Result = Swift.Result<HTTPURLResponse, Error>
+    func get(from: URL, completion: @escaping (Result) -> Void)
 }
 
 final public class RemoteProductsLoader {
@@ -27,11 +28,13 @@ final public class RemoteProductsLoader {
     }
     
     public func load(completion: @escaping (Error) -> Void) {
-        client.get(from: url) { response, error in
-            if error != nil {
-                completion(.connectivity)
-            } else {
+        client.get(from: url) { result in
+            
+            switch result {
+            case .success:
                 completion(.invalidData)
+            case .failure:
+                completion(.connectivity)
             }
         }
     }

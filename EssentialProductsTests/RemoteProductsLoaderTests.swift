@@ -22,7 +22,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let exampleURL = URL(string: "https://an-example.com/products")!
         let (sut, client) = makeSUT(url: exampleURL)
         
-        sut.load()
+        sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs, [exampleURL])
     }
@@ -32,8 +32,8 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let exampleURL = URL(string: "https://an-example.com/products")!
         let (sut, client) = makeSUT(url: exampleURL)
         
-        sut.load()
-        sut.load()
+        sut.load { _ in }
+        sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs, [exampleURL, exampleURL])
     }

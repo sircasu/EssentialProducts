@@ -54,12 +54,15 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        var clientErrors: [RemoteProductsLoader.Error] = []
-        sut.load { clientErrors.append($0) }
-        
-        client.complete(with: 400)
-        
-        XCTAssertEqual(clientErrors, [.invalidData])
+        let errorCodeSample = [199, 201, 300, 400, 500]
+        errorCodeSample.enumerated().forEach { index, code in
+            var clientErrors: [RemoteProductsLoader.Error] = []
+            sut.load { clientErrors.append($0) }
+            
+            client.complete(with: code, at: index)
+            
+            XCTAssertEqual(clientErrors, [.invalidData])
+        }
     }
     
     // MARK: - Helpers

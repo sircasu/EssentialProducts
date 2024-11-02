@@ -38,6 +38,18 @@ final class RemoteProductsLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs, [exampleURL, exampleURL])
     }
     
+    func test_load_deliversErrorOnClientError() {
+        
+        let (sut, client) = makeSUT()
+        
+        var clientErrors: [RemoteProductsLoader.Error] = []
+        sut.load { clientErrors.append($0) }
+        
+        client.complete(with: NSError(domain: "test", code: 0))
+        
+        XCTAssertEqual(clientErrors, [.connectivity])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "https://example.com/products")!) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {
@@ -51,9 +63,15 @@ final class RemoteProductsLoaderTests: XCTestCase {
     final class HTTPClientSpy: HTTPClient {
         
         var requestedURLs: [URL] = [URL]()
+        var completions: [(Error) -> Void] = []
         
-        func get(from url: URL) {
+        func get(from url: URL, completion: @escaping (Error?) -> Void) {
+            completions.append(completion)
             self.requestedURLs.append(url)
+        }
+        
+        func complete(with error: NSError, at index: Int = 0) {
+            completions[index](error)
         }
     }
 }

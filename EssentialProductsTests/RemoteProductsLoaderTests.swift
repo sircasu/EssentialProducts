@@ -50,6 +50,18 @@ final class RemoteProductsLoaderTests: XCTestCase {
         XCTAssertEqual(clientErrors, [.connectivity])
     }
     
+    func test_load_deliversErrorOnInvalidData() {
+        
+        let (sut, client) = makeSUT()
+        
+        var clientErrors: [RemoteProductsLoader.Error] = []
+        sut.load { clientErrors.append($0) }
+        
+        client.complete(with: 400)
+        
+        XCTAssertEqual(clientErrors, [.invalidData])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "https://example.com/products")!) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {
@@ -62,17 +74,27 @@ final class RemoteProductsLoaderTests: XCTestCase {
     
     final class HTTPClientSpy: HTTPClient {
         
-        private var messages: [(url: URL, completions: (Error) -> Void)] = []
+        private var messages: [(url: URL, completion: (HTTPURLResponse?, Error?) -> Void)] = []
         var requestedURLs: [URL] {
             messages.map { $0.url }
         }
         
-        func get(from url: URL, completion: @escaping (Error?) -> Void) {
+        func get(from url: URL, completion: @escaping (HTTPURLResponse?, Error?) -> Void) {
             messages.append((url, completion))
         }
         
         func complete(with error: NSError, at index: Int = 0) {
-            messages[index].completions(error)
+            messages[index].completion(nil, error)
+        }
+        
+        func complete(with code: Int, at index: Int = 0) {
+            let urlResponse = HTTPURLResponse(
+                url: messages[index].url,
+                statusCode: code,
+                httpVersion: nil,
+                headerFields: nil)!
+            
+            messages[index].completion(urlResponse, nil)
         }
     }
 }

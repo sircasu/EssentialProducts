@@ -42,12 +42,9 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        var clientErrors: [RemoteProductsLoader.Error] = []
-        sut.load { clientErrors.append($0) }
-        
-        client.complete(with: NSError(domain: "test", code: 0))
-        
-        XCTAssertEqual(clientErrors, [.connectivity])
+        expect(sut, withError: [.connectivity], when: {
+            client.complete(with: NSError(domain: "test", code: 0))
+        })
     }
     
     func test_load_deliversErrorOnInvalidData() {
@@ -56,12 +53,9 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let errorCodeSample = [199, 201, 300, 400, 500]
         errorCodeSample.enumerated().forEach { index, code in
-            var clientErrors: [RemoteProductsLoader.Error] = []
-            sut.load { clientErrors.append($0) }
-            
-            client.complete(with: code, at: index)
-            
-            XCTAssertEqual(clientErrors, [.invalidData])
+            expect(sut, withError: [.invalidData], when: {
+                client.complete(with: code, at: index)
+            })
         }
     }
     
@@ -69,13 +63,10 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        var clientErrors: [RemoteProductsLoader.Error] = []
-        sut.load { clientErrors.append($0) }
-        
-        let invalidJsonData = Data("invalid json".utf8)
-        client.complete(with: 200, data: invalidJsonData)
-        
-        XCTAssertEqual(clientErrors, [.invalidData])
+        expect(sut, withError: [.invalidData], when: {
+            let invalidJsonData = Data("invalid json".utf8)
+            client.complete(with: 200, data: invalidJsonData)
+        })
     }
     
     // MARK: - Helpers
@@ -86,6 +77,16 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let sut = RemoteProductsLoader(client: client, url: url)
         
         return (sut, client)
+    }
+    
+    func expect(_ sut: RemoteProductsLoader, withError errors: [RemoteProductsLoader.Error], when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
+        
+        var clientErrors: [RemoteProductsLoader.Error] = []
+        sut.load { clientErrors.append($0) }
+        
+        action()
+        
+        XCTAssertEqual(clientErrors, errors, file: file, line: line)
     }
     
     final class HTTPClientSpy: HTTPClient {

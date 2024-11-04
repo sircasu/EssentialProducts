@@ -33,8 +33,9 @@ final public class RemoteProductsLoader {
         client.get(from: url) { result in
             
             switch result {
-            case let .success((data, _)):
+            case let .success((data, response)):
                 do {
+                    guard response.statusCode == 200 else { throw RemoteProductsLoader.Error.invalidData }
                     let items = try JSONDecoder().decode([ProductItem].self, from: data)
                     completion(.success(items))
                 } catch {

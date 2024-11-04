@@ -54,7 +54,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let errorCodeSample = [199, 201, 300, 400, 500]
         errorCodeSample.enumerated().forEach { index, code in
             expect(sut, with: [.failure(.invalidData)], when: {
-                client.complete(with: code, at: index)
+                client.complete(with: code, data: Data("[]".utf8), at: index)
             })
         }
     }
@@ -148,7 +148,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
             messages[index].completion(.failure(error))
         }
         
-        func complete(with code: Int, data: Data = Data(), at index: Int = 0) {
+        func complete(with code: Int, data: Data, at index: Int = 0) {
             let response = HTTPURLResponse(
                 url: messages[index].url,
                 statusCode: code,

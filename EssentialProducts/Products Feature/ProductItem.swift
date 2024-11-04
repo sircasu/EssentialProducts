@@ -8,13 +8,13 @@
 import Foundation
 
 public struct ProductItem: Equatable, Decodable {
-    let id: Int
-    let title: String
-    let price: Double
-    let description: String
-    let category: String
-    let image: URL
-    let rating: ProductRatingItem
+    public let id: Int
+    public let title: String
+    public let price: Double
+    public  let description: String
+    public let category: String
+    public let image: URL
+    public  let rating: ProductRatingItem
     
     public init(id: Int, title: String, price: Double, description: String, category: String, image: URL, rating: ProductRatingItem) {
         self.id = id
@@ -28,8 +28,8 @@ public struct ProductItem: Equatable, Decodable {
 }
 
 public struct ProductRatingItem: Equatable, Decodable {
-    let rate: Double
-    let count: Int
+    public let rate: Double
+    public let count: Int
     
     public init(rate: Double, count: Int) {
         self.rate = rate

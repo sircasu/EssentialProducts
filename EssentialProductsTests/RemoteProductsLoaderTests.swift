@@ -85,32 +85,14 @@ final class RemoteProductsLoaderTests: XCTestCase {
         var clientResults: [RemoteProductsLoader.Result] = []
         sut.load { clientResults.append($0) }
         
-        let product1 = ProductItem(id: 1, title: "a title", price: 20, description: "a description", category: "a category", image: URL(string: "https://example.com/products/1.jpg")!, rating: ProductRatingItem(rate: 3, count: 5))
-        let product1JSON = [
-            "id": 1,
-            "title": "a title",
-            "price": 20,
-            "description": "a description",
-            "category": "a category",
-            "image": "https://example.com/products/1.jpg",
-            "rating": ["rate": 3, "count": 5]
-        ] as [String : Any]
-        
-        let product2 = ProductItem(id: 2, title: "another title", price: 15, description: "another description", category: "another category", image: URL(string: "https://example.com/products/2.jpg")!, rating: ProductRatingItem(rate: 4, count: 12))
-        let product2JSON = [
-            "id": 2,
-            "title": "another title",
-            "price": 15,
-            "description": "another description",
-            "category": "another category",
-            "image": "https://example.com/products/2.jpg",
-            "rating": ["rate": 4, "count": 12]
-        ] as [String : Any]
-        
-        let json = try! JSONSerialization.data(withJSONObject: [product1JSON, product2JSON])
+        let product1 = makeItem(id: 1, title: "a title", price: 20, description: "a description", category: "a category", image: URL(string: "https://example.com/products/1.jpg")!, rating: ProductRatingItem(rate: 3, count: 5))
+   
+        let product2 = makeItem(id: 2, title: "another title", price: 15, description: "another description", category: "another category", image: URL(string: "https://example.com/products/2.jpg")!, rating: ProductRatingItem(rate: 4, count: 12))
+ 
+        let json = makeItemsJSON([product1.json, product2.json])
         client.complete(with: 200, data: json)
         
-        XCTAssertEqual(clientResults, [.success([product1, product2])])
+        XCTAssertEqual(clientResults, [.success([product1.model, product2.model])])
     }
     
     // MARK: - Helpers
@@ -121,6 +103,27 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let sut = RemoteProductsLoader(client: client, url: url)
         
         return (sut, client)
+    }
+    
+    private func makeItem(id: Int, title: String, price: Double, description: String, category: String, image: URL, rating: ProductRatingItem) -> (model: ProductItem, json: [String: Any]) {
+        
+        let model = ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: rating)
+        let json = [
+            "id": model.id,
+            "title": model.title,
+            "price": model.price,
+            "description": model.description,
+            "category": model.category,
+            "image": model.image.absoluteString,
+            "rating": ["rate": rating.rate, "count": rating.count]
+        ] as [String : Any]
+        
+        return (model, json)
+    }
+    
+    func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+        let json = items
+        return try! JSONSerialization.data(withJSONObject: json)
     }
     
     func expect(_ sut: RemoteProductsLoader, with results: [RemoteProductsLoader.Result], when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {

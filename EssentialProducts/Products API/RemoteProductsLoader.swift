@@ -34,11 +34,13 @@ final public class RemoteProductsLoader {
             
             switch result {
             case let .success((data, _)):
-                if let _ = try? JSONSerialization.jsonObject(with: data) {
-                    completion(.success([]))
+                
+                if let items = try? JSONDecoder().decode([ProductItem].self, from: data) {
+                    completion(.success(items))
                 } else {
                     completion(.failure(.invalidData))
                 }
+                
             case .failure:
                 completion(.failure(.connectivity))
             }

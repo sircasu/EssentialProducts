@@ -79,6 +79,40 @@ final class RemoteProductsLoaderTests: XCTestCase {
         })
     }
     
+    func test_load_deliversItemsOn200HTTPResponseWithJSONListItems() {
+        let (sut, client) = makeSUT()
+        
+        var clientResults: [RemoteProductsLoader.Result] = []
+        sut.load { clientResults.append($0) }
+        
+        let product1 = ProductItem(id: 1, title: "a title", price: 20, description: "a description", category: "a category", image: URL(string: "https://example.com/products/1.jpg")!, rating: ProductRatingItem(rate: 3, count: 5))
+        let product1JSON = [
+            "id": 1,
+            "title": "a title",
+            "price": 20,
+            "description": "a description",
+            "category": "a category",
+            "image": "https://example.com/products/1.jpg",
+            "rating": ["rate": 3, "count": 5]
+        ] as [String : Any]
+        
+        let product2 = ProductItem(id: 2, title: "another title", price: 15, description: "another description", category: "another category", image: URL(string: "https://example.com/products/2.jpg")!, rating: ProductRatingItem(rate: 4, count: 12))
+        let product2JSON = [
+            "id": 2,
+            "title": "another title",
+            "price": 15,
+            "description": "another description",
+            "category": "another category",
+            "image": "https://example.com/products/2.jpg",
+            "rating": ["rate": 4, "count": 12]
+        ] as [String : Any]
+        
+        let json = try! JSONSerialization.data(withJSONObject: [product1JSON, product2JSON])
+        client.complete(with: 200, data: json)
+        
+        XCTAssertEqual(clientResults, [.success([product1, product2])])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "https://example.com/products")!) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {

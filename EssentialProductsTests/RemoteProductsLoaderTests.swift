@@ -65,6 +65,19 @@ final class RemoteProductsLoaderTests: XCTestCase {
         }
     }
     
+    func test_load_deliversErrorOn200WithInvalidJson() {
+        
+        let (sut, client) = makeSUT()
+        
+        var clientErrors: [RemoteProductsLoader.Error] = []
+        sut.load { clientErrors.append($0) }
+        
+        let invalidJsonData = Data("invalid json".utf8)
+        client.complete(with: 200, data: invalidJsonData)
+        
+        XCTAssertEqual(clientErrors, [.invalidData])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "https://example.com/products")!) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {
@@ -90,14 +103,14 @@ final class RemoteProductsLoaderTests: XCTestCase {
             messages[index].completion(.failure(error))
         }
         
-        func complete(with code: Int, at index: Int = 0) {
+        func complete(with code: Int, data: Data = Data(), at index: Int = 0) {
             let response = HTTPURLResponse(
                 url: messages[index].url,
                 statusCode: code,
                 httpVersion: nil,
                 headerFields: nil)!
             
-            messages[index].completion(.success(response))
+            messages[index].completion(.success((data, response)))
         }
     }
 }

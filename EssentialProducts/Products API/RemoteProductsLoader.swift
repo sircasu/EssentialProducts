@@ -36,8 +36,8 @@ final public class RemoteProductsLoader {
             case let .success((data, response)):
                 do {
                     guard response.statusCode == 200 else { throw RemoteProductsLoader.Error.invalidData }
-                    let items = try JSONDecoder().decode([ProductItem].self, from: data)
-                    completion(.success(items))
+                    let items = try JSONDecoder().decode([RemoteProductItem].self, from: data)
+                    completion(.success(items.map { $0.toItems } ))
                 } catch {
                     completion(.failure(.invalidData))
                 }
@@ -46,5 +46,29 @@ final public class RemoteProductsLoader {
                 completion(.failure(.connectivity))
             }
         }
+    }
+}
+
+private struct RemoteProductItem: Decodable {
+    let id: Int
+    let title: String
+    let price: Double
+    let description: String
+    let category: String
+    let image: URL
+    let rating: RemoteProductRatingItem
+
+    var toItems: ProductItem {
+        ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: ProductRatingItem(rate: rating.rate, count: rating.count))
+    }
+}
+
+private struct RemoteProductRatingItem: Decodable {
+    let rate: Double
+    let count: Int
+    
+    init(rate: Double, count: Int) {
+        self.rate = rate
+        self.count = count
     }
 }

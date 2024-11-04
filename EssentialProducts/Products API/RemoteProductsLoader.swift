@@ -33,8 +33,12 @@ final public class RemoteProductsLoader {
         client.get(from: url) { result in
             
             switch result {
-            case .success:
-                completion(.failure(.invalidData))
+            case let .success((data, _)):
+                if let _ = try? JSONSerialization.jsonObject(with: data) {
+                    completion(.success([]))
+                } else {
+                    completion(.failure(.invalidData))
+                }
             case .failure:
                 completion(.failure(.connectivity))
             }

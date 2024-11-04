@@ -59,7 +59,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         }
     }
     
-    func test_load_deliversErrorOn200WithInvalidJSON() {
+    func test_load_deliversErrorOn200HTTPResponseithInvalidJSON() {
         
         let (sut, client) = makeSUT()
         
@@ -67,6 +67,19 @@ final class RemoteProductsLoaderTests: XCTestCase {
             let invalidJsonData = Data("invalid json".utf8)
             client.complete(with: 200, data: invalidJsonData)
         })
+    }
+    
+    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList() {
+        
+        let (sut, client) = makeSUT()
+        
+        var capturedResult: [RemoteProductsLoader.Result] = []
+        sut.load { capturedResult.append($0) }
+        
+        let emptyJSON = Data("[]".utf8)
+        client.complete(with: 200, data: emptyJSON)
+
+        XCTAssertEqual(capturedResult, [.success([])])
     }
     
     // MARK: - Helpers

@@ -35,9 +35,8 @@ final public class RemoteProductsLoader {
             switch result {
             case let .success((data, response)):
                 do {
-                    guard response.statusCode == 200 else { throw RemoteProductsLoader.Error.invalidData }
-                    let items = try JSONDecoder().decode([RemoteProductItem].self, from: data)
-                    completion(.success(items.map { $0.toItems } ))
+                    let items = try ProductItemMapper.map(data, response)
+                    completion(.success(items))
                 } catch {
                     completion(.failure(.invalidData))
                 }
@@ -49,26 +48,39 @@ final public class RemoteProductsLoader {
     }
 }
 
-private struct RemoteProductItem: Decodable {
-    let id: Int
-    let title: String
-    let price: Double
-    let description: String
-    let category: String
-    let image: URL
-    let rating: RemoteProductRatingItem
 
-    var toItems: ProductItem {
-        ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: ProductRatingItem(rate: rating.rate, count: rating.count))
-    }
-}
-
-private struct RemoteProductRatingItem: Decodable {
-    let rate: Double
-    let count: Int
+private class ProductItemMapper {
     
-    init(rate: Double, count: Int) {
-        self.rate = rate
-        self.count = count
+    private struct RemoteProductItem: Decodable {
+        let id: Int
+        let title: String
+        let price: Double
+        let description: String
+        let category: String
+        let image: URL
+        let rating: RemoteProductRatingItem
+
+        var toItems: ProductItem {
+            ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: ProductRatingItem(rate: rating.rate, count: rating.count))
+        }
+    }
+
+    private struct RemoteProductRatingItem: Decodable {
+        let rate: Double
+        let count: Int
+        
+        init(rate: Double, count: Int) {
+            self.rate = rate
+            self.count = count
+        }
+    }
+    
+    private static var OK_200: Int { 200 }
+    
+    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [ProductItem] {
+        
+        guard response.statusCode == OK_200 else { throw RemoteProductsLoader.Error.invalidData }
+        
+        return try JSONDecoder().decode([RemoteProductItem].self, from: data).map { $0.toItems }
     }
 }

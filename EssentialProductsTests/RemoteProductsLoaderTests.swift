@@ -54,7 +54,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let errorCodeSample = [199, 201, 300, 400, 500]
         errorCodeSample.enumerated().forEach { index, code in
             expect(sut, with: [.failure(.invalidData)], when: {
-                client.complete(with: code, data: Data("[]".utf8), at: index)
+                client.complete(with: code, data: makeEmptyJSON(), at: index)
             })
         }
     }
@@ -64,7 +64,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut, with: [.failure(.invalidData)], when: {
-            let invalidJsonData = Data("invalid json".utf8)
+            let invalidJsonData = makeInvalidJSON()
             client.complete(with: 200, data: invalidJsonData)
         })
     }
@@ -74,7 +74,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut, with: [.success([])], when: {
-            let emptyJSON = Data("[]".utf8)
+            let emptyJSON = makeEmptyJSON()
             client.complete(with: 200, data: emptyJSON)
         })
     }
@@ -124,6 +124,14 @@ final class RemoteProductsLoaderTests: XCTestCase {
     func makeItemsJSON(_ items: [[String: Any]]) -> Data {
         let json = items
         return try! JSONSerialization.data(withJSONObject: json)
+    }
+    
+    func makeInvalidJSON() -> Data {
+        Data("invalid json".utf8)
+    }
+    
+    func makeEmptyJSON() -> Data {
+        Data("[]".utf8)
     }
     
     func expect(_ sut: RemoteProductsLoader, with results: [RemoteProductsLoader.Result], when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {

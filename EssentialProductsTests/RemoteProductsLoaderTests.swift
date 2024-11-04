@@ -42,7 +42,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, withError: [.connectivity], when: {
+        expect(sut, with: [.failure(.connectivity)], when: {
             client.complete(with: NSError(domain: "test", code: 0))
         })
     }
@@ -53,17 +53,17 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let errorCodeSample = [199, 201, 300, 400, 500]
         errorCodeSample.enumerated().forEach { index, code in
-            expect(sut, withError: [.invalidData], when: {
+            expect(sut, with: [.failure(.invalidData)], when: {
                 client.complete(with: code, at: index)
             })
         }
     }
     
-    func test_load_deliversErrorOn200WithInvalidJson() {
+    func test_load_deliversErrorOn200WithInvalidJSON() {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, withError: [.invalidData], when: {
+        expect(sut, with: [.failure(.invalidData)], when: {
             let invalidJsonData = Data("invalid json".utf8)
             client.complete(with: 200, data: invalidJsonData)
         })
@@ -79,14 +79,14 @@ final class RemoteProductsLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    func expect(_ sut: RemoteProductsLoader, withError errors: [RemoteProductsLoader.Error], when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: RemoteProductsLoader, with results: [RemoteProductsLoader.Result], when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
         
-        var clientErrors: [RemoteProductsLoader.Error] = []
-        sut.load { clientErrors.append($0) }
+        var clientResults: [RemoteProductsLoader.Result] = []
+        sut.load { clientResults.append($0) }
         
         action()
         
-        XCTAssertEqual(clientErrors, errors, file: file, line: line)
+        XCTAssertEqual(clientResults, results, file: file, line: line)
     }
     
     final class HTTPClientSpy: HTTPClient {

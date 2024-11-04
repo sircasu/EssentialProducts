@@ -73,13 +73,10 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        var capturedResult: [RemoteProductsLoader.Result] = []
-        sut.load { capturedResult.append($0) }
-        
-        let emptyJSON = Data("[]".utf8)
-        client.complete(with: 200, data: emptyJSON)
-
-        XCTAssertEqual(capturedResult, [.success([])])
+        expect(sut, with: [.success([])], when: {
+            let emptyJSON = Data("[]".utf8)
+            client.complete(with: 200, data: emptyJSON)
+        })
     }
     
     // MARK: - Helpers

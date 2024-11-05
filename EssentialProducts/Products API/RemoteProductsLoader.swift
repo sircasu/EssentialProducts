@@ -29,13 +29,7 @@ final public class RemoteProductsLoader {
             
             switch result {
             case let .success((data, response)):
-                do {
-                    let items = try ProductItemMapper.map(data, response)
-                    completion(.success(items))
-                } catch {
-                    completion(.failure(.invalidData))
-                }
-
+                completion(ProductItemMapper.map(data, response))
             case .failure:
                 completion(.failure(.connectivity))
             }

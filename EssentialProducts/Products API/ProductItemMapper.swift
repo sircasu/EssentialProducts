@@ -35,10 +35,13 @@ final class ProductItemMapper {
     
     private static var OK_200: Int { 200 }
     
-    static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [ProductItem] {
+    static func map(_ data: Data, _ response: HTTPURLResponse) -> RemoteProductsLoader.Result {
         
-        guard response.statusCode == OK_200 else { throw RemoteProductsLoader.Error.invalidData }
-        
-        return try JSONDecoder().decode([RemoteProductItem].self, from: data).map { $0.toItems }
+        guard response.statusCode == OK_200,
+              let items = try? JSONDecoder().decode([RemoteProductItem].self, from: data) else {
+            return .failure(.invalidData)
+        }
+
+        return .success(items.map { $0.toItems })
     }
 }

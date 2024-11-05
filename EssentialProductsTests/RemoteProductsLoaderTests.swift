@@ -95,6 +95,22 @@ final class RemoteProductsLoaderTests: XCTestCase {
         XCTAssertEqual(clientResults, [.success([product1.model, product2.model])])
     }
     
+    func test_load_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
+        
+        let url = URL(string: "https://example.com/products")!
+        let client = HTTPClientSpy()
+        var sut: RemoteProductsLoader? = RemoteProductsLoader(client: client, url: url)
+        
+        var clientResults: [RemoteProductsLoader.Result] = []
+        sut?.load { clientResults.append($0) }
+        
+        sut = nil
+        
+        client.complete(with: 200, data: makeItemsJSON([]))
+        
+        XCTAssertTrue(clientResults.isEmpty)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "https://example.com/products")!, file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {

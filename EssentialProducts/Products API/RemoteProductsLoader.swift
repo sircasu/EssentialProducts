@@ -7,11 +7,6 @@
 
 import Foundation
 
-public protocol HTTPClient {
-    typealias Result = Swift.Result<(Data, HTTPURLResponse), Error>
-    func get(from: URL, completion: @escaping (Result) -> Void)
-}
-
 final public class RemoteProductsLoader {
     
     private var client: HTTPClient

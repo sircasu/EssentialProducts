@@ -17,7 +17,7 @@ final public class RemoteProductsLoader {
         case invalidData
     }
     
-    public typealias Result = Swift.Result<[ProductItem], Error>
+    public typealias Result = ProductsLoader.Result
     
     public init(client: HTTPClient, url: URL) {
         self.client = client
@@ -32,7 +32,7 @@ final public class RemoteProductsLoader {
             case let .success((data, response)):
                 completion(ProductItemMapper.map(data, response))
             case .failure:
-                completion(.failure(.connectivity))
+                completion(.failure(Error.connectivity))
             }
         }
     }

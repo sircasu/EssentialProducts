@@ -39,7 +39,7 @@ final class ProductItemMapper {
         
         guard response.statusCode == OK_200,
               let items = try? JSONDecoder().decode([RemoteProductItem].self, from: data) else {
-            return .failure(.invalidData)
+            return .failure(RemoteProductsLoader.Error.invalidData)
         }
 
         return .success(items.map { $0.toItems })

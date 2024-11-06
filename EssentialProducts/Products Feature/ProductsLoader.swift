@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ProductsLoader {
+public protocol ProductsLoader {
     typealias Result = Swift.Result<[ProductItem], Error>
     func load(completion: @escaping (Result) -> Void)
 }

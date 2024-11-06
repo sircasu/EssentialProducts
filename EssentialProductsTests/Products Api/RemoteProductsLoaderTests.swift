@@ -42,7 +42,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, with: [.failure(.connectivity)], when: {
+        expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.connectivity), when: {
             client.complete(with: NSError(domain: "test", code: 0))
         })
     }
@@ -53,7 +53,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let errorCodeSample = [199, 201, 300, 400, 500]
         errorCodeSample.enumerated().forEach { index, code in
-            expect(sut, with: [.failure(.invalidData)], when: {
+            expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.invalidData), when: {
                 client.complete(with: code, data: makeEmptyJSON(), at: index)
             })
         }
@@ -63,7 +63,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, with: [.failure(.invalidData)], when: {
+        expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.invalidData), when: {
             let invalidJsonData = makeInvalidJSON()
             client.complete(with: 200, data: invalidJsonData)
         })
@@ -73,7 +73,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, with: [.success([])], when: {
+        expect(sut, toCompleteWith: .success([]), when: {
             let emptyJSON = makeEmptyJSON()
             client.complete(with: 200, data: emptyJSON)
         })
@@ -82,17 +82,14 @@ final class RemoteProductsLoaderTests: XCTestCase {
     func test_load_deliversItemsOn200HTTPResponseWithJSONListItems() {
         let (sut, client) = makeSUT()
         
-        var clientResults: [RemoteProductsLoader.Result] = []
-        sut.load { clientResults.append($0) }
-        
         let product1 = makeItem(id: 1, title: "a title", price: 20, description: "a description", category: "a category", image: URL(string: "https://example.com/products/1.jpg")!, rating: ProductRatingItem(rate: 3, count: 5))
    
         let product2 = makeItem(id: 2, title: "another title", price: 15, description: "another description", category: "another category", image: URL(string: "https://example.com/products/2.jpg")!, rating: ProductRatingItem(rate: 4, count: 12))
- 
-        let json = makeItemsJSON([product1.json, product2.json])
-        client.complete(with: 200, data: json)
-        
-        XCTAssertEqual(clientResults, [.success([product1.model, product2.model])])
+
+        expect(sut, toCompleteWith: .success([product1.model, product2.model]), when: {
+            let json = makeItemsJSON([product1.json, product2.json])
+            client.complete(with: 200, data: json)
+        })
     }
     
     func test_load_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
@@ -159,14 +156,26 @@ final class RemoteProductsLoaderTests: XCTestCase {
         Data("[]".utf8)
     }
     
-    func expect(_ sut: RemoteProductsLoader, with results: [RemoteProductsLoader.Result], when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: RemoteProductsLoader, toCompleteWith expectedResult: RemoteProductsLoader.Result, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
         
-        var clientResults: [RemoteProductsLoader.Result] = []
-        sut.load { clientResults.append($0) }
+        let exp = expectation(description: "Wait for load complete")
+        sut.load { receivedResult in
+            
+            switch (receivedResult, expectedResult) {
+            case let (.success(receivedItems), .success(expectedItems)):
+                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+            case let (.failure(receivedError as RemoteProductsLoader.Error), .failure(expectedError as RemoteProductsLoader.Error)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+            default:
+                XCTFail("Expected result: \(expectedResult) got \(receivedResult) instead", file: file, line: line)
+            }
+            
+            exp.fulfill()
+        }
         
         action()
         
-        XCTAssertEqual(clientResults, results, file: file, line: line)
+        wait(for: [exp], timeout: 1.0)
     }
     
     final class HTTPClientSpy: HTTPClient {

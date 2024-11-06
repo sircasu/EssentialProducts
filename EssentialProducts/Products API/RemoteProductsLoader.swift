@@ -7,7 +7,7 @@
 
 import Foundation
 
-final public class RemoteProductsLoader {
+final public class RemoteProductsLoader: ProductsLoader {
     
     private var client: HTTPClient
     private var url: URL

@@ -42,7 +42,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.connectivity), when: {
+        expect(sut, toCompleteWith: failure(.connectivity), when: {
             client.complete(with: NSError(domain: "test", code: 0))
         })
     }
@@ -53,7 +53,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let errorCodeSample = [199, 201, 300, 400, 500]
         errorCodeSample.enumerated().forEach { index, code in
-            expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.invalidData), when: {
+            expect(sut, toCompleteWith: failure(.invalidData), when: {
                 client.complete(with: code, data: makeEmptyJSON(), at: index)
             })
         }
@@ -63,7 +63,7 @@ final class RemoteProductsLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.invalidData), when: {
+        expect(sut, toCompleteWith: failure(.invalidData), when: {
             let invalidJsonData = makeInvalidJSON()
             client.complete(with: 200, data: invalidJsonData)
         })
@@ -121,7 +121,12 @@ final class RemoteProductsLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    func trackForMemoryLeak(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+    private func failure(_ error: RemoteProductsLoader.Error) -> RemoteProductsLoader.Result {
+        return .failure(error)
+    }
+    
+    
+    private func trackForMemoryLeak(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
         addTeardownBlock { [weak instance] in
             XCTAssertNil(instance, "Instance should have been deallocated, Potential memory leak.", file: file, line: line)
         }
@@ -143,20 +148,20 @@ final class RemoteProductsLoaderTests: XCTestCase {
         return (model, json)
     }
     
-    func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
         let json = items
         return try! JSONSerialization.data(withJSONObject: json)
     }
     
-    func makeInvalidJSON() -> Data {
+    private func makeInvalidJSON() -> Data {
         Data("invalid json".utf8)
     }
     
-    func makeEmptyJSON() -> Data {
+    private func makeEmptyJSON() -> Data {
         Data("[]".utf8)
     }
     
-    func expect(_ sut: RemoteProductsLoader, toCompleteWith expectedResult: RemoteProductsLoader.Result, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
+    private func expect(_ sut: RemoteProductsLoader, toCompleteWith expectedResult: RemoteProductsLoader.Result, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
         
         let exp = expectation(description: "Wait for load complete")
         sut.load { receivedResult in

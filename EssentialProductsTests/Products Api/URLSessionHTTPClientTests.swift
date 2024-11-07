@@ -30,12 +30,11 @@ class URLSessionHTTPClient {
 final class URLSessionHTTPClientTests: XCTestCase {
     
     func test_getFromURL_failsOnRequestError() {
-        
         URLProtocolStub.register()
         
         let url = URL(string: "https://example.com")!
         let anyError = NSError(domain: "test", code: 0)
-        URLProtocolStub.stub(url: url, error: anyError)
+        URLProtocolStub.stub(url: url, data: nil, response: nil, error: anyError)
         let sut = URLSessionHTTPClient()
 
         let exp = expectation(description: "Wait for completion")
@@ -62,11 +61,13 @@ final class URLSessionHTTPClientTests: XCTestCase {
         private static var stubs = [URL: Stub]()
         
         private struct Stub {
+            let data: Data?
+            let response: HTTPURLResponse?
             let error: Error?
         }
         
-        static func stub(url: URL, error: Error? = nil) {
-            stubs[url] = Stub(error: error)
+        static func stub(url: URL, data: Data?, response: HTTPURLResponse?, error: Error?) {
+            stubs[url] = Stub(data: data, response: response, error: error)
         }
         
         static func register() {
@@ -75,6 +76,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         static func unregister() {
             URLProtocol.unregisterClass(URLProtocolStub.self)
+            stubs = [:]
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
@@ -92,6 +94,14 @@ final class URLSessionHTTPClientTests: XCTestCase {
             
             if let error = stub.error {
                 client?.urlProtocol(self, didFailWithError: error)
+            }
+            
+            if let data = stub.data {
+                client?.urlProtocol(self, didLoad: data)
+            }
+            
+            if let response = stub.response {
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             }
         }
         

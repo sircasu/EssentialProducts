@@ -30,7 +30,7 @@ class URLSessionHTTPClient {
 final class URLSessionHTTPClientTests: XCTestCase {
     
     func test_getFromURL_failsOnRequestError() {
-        URLProtocolStub.register()
+        URLProtocolStub.startInterceptingRequests()
         
         let url = URL(string: "https://example.com")!
         let anyError = NSError(domain: "test", code: 0)
@@ -53,7 +53,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
         
-        URLProtocolStub.unregister()
+        URLProtocolStub.stopInterceptingRequests()
     }
     
     
@@ -70,11 +70,11 @@ final class URLSessionHTTPClientTests: XCTestCase {
             stubs[url] = Stub(data: data, response: response, error: error)
         }
         
-        static func register() {
+        static func startInterceptingRequests() {
             URLProtocol.registerClass(URLProtocolStub.self)
         }
         
-        static func unregister() {
+        static func stopInterceptingRequests() {
             URLProtocol.unregisterClass(URLProtocolStub.self)
             stubs = [:]
         }

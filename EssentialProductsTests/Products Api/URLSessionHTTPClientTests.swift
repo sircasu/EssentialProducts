@@ -43,8 +43,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
     func test_getFromURL_performGETRequestWithURL() {
         
         let url = anyURL()
-        let anyError = NSError(domain: "test", code: 0)
-        URLProtocolStub.stub(data: nil, response: nil, error: anyError)
         let sut = makeSUT()
 
         let exp = expectation(description: "Wait for completion")

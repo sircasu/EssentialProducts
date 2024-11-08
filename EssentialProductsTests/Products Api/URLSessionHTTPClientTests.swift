@@ -12,6 +12,8 @@ class URLSessionHTTPClient {
     
     let session: URLSession
     
+    struct UnexpectedError: Error {}
+    
     init(session: URLSession = .shared) {
         self.session = session
     }
@@ -22,6 +24,8 @@ class URLSessionHTTPClient {
             
             if let error = error {
                 completion(.failure(error))
+            } else {
+                completion(.failure(UnexpectedError()))
             }
         }.resume()
     }
@@ -66,6 +70,10 @@ final class URLSessionHTTPClientTests: XCTestCase {
 
         XCTAssertEqual(receivedError?.code, requestError.code)
         XCTAssertEqual(receivedError?.domain, requestError.domain)
+    }
+    
+    func test_getFromURL_failsOnAllNillValue() {
+        XCTAssertNotNil(resultErrorFor(data: nil, response: nil, error: nil))
     }
      
     // MARK: - Helpers
@@ -141,20 +149,19 @@ final class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override func startLoading() {
-            guard let stub = URLProtocolStub.stub else { return }
             
-            if let data = stub.data {
+            if let data = URLProtocolStub.stub?.data {
                 client?.urlProtocol(self, didLoad: data)
             }
-            
-            if let response = stub.response {
+
+            if let response = URLProtocolStub.stub?.response {
                 client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             }
-            
-            if let error = stub.error {
+
+            if let error = URLProtocolStub.stub?.error {
                 client?.urlProtocol(self, didFailWithError: error)
             }
-            
+
             client?.urlProtocolDidFinishLoading(self)
         }
         

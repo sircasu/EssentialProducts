@@ -8,7 +8,7 @@
 import XCTest
 import EssentialProducts
 
-class URLSessionHTTPClient {
+class URLSessionHTTPClient: HTTPClient {
     
     let session: URLSession
     

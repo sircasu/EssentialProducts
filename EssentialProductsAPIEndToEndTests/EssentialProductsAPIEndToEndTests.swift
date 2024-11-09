@@ -29,10 +29,13 @@ final class EssentialProductsAPIEndToEndTests: XCTestCase {
     
     // MARK: Helpers
     
-    private func getProductsResult() -> ProductsLoader.Result? {
+    private func getProductsResult(file: StaticString = #filePath, line: UInt = #line) -> ProductsLoader.Result? {
+        let serverURL = URL(string: "https://fakestoreapi.com/products?limit=3")!
         let client = URLSessionHTTPClient()
-        let url = URL(string: "https://fakestoreapi.com/products?limit=3")!
-        let loader = RemoteProductsLoader(client: client, url: url)
+        let loader = RemoteProductsLoader(client: client, url: serverURL)
+        
+        trackForMemoryLeak(client, file: file, line: line)
+        trackForMemoryLeak(loader, file: file, line: line)
         
         let exp = expectation(description: "Wait for loading completion")
         

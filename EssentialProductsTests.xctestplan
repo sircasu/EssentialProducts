@@ -9,11 +9,11 @@
     }
   ],
   "defaultOptions" : {
-
+    "testExecutionOrdering" : "random"
   },
   "testTargets" : [
     {
-      "parallelizable" : true,
+      "parallelizable" : false,
       "target" : {
         "containerPath" : "container:EssentialProducts.xcodeproj",
         "identifier" : "85578B142CD284EA00DCD2BB",

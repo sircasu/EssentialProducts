@@ -23,6 +23,7 @@
 /* Begin PBXFileReference section */
 		85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EssentialProducts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85578B152CD284EA00DCD2BB /* EssentialProductsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialProductsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8596370A2CDF4ADE0053991C /* EssentialProductsTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProductsTests.xctestplan; sourceTree = "<group>"; };
 		85CAAA802CD556DA00D2F5B4 /* EssentialProducts.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProducts.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,6 +75,7 @@
 		85578B032CD284E900DCD2BB = {
 			isa = PBXGroup;
 			children = (
+				8596370A2CDF4ADE0053991C /* EssentialProductsTests.xctestplan */,
 				85CAAA802CD556DA00D2F5B4 /* EssentialProducts.xctestplan */,
 				85578B0F2CD284EA00DCD2BB /* EssentialProducts */,
 				85578B192CD284EA00DCD2BB /* EssentialProductsTests */,

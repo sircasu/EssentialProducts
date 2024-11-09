@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "114D5FEB-0B32-4638-BA6B-7F937E248CED",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:EssentialProducts.xcodeproj",
+        "identifier" : "8596370E2CDF99380053991C",
+        "name" : "EssentialProductsAPIEndToEndTests"
+      }
+    }
+  ],
+  "version" : 1
+}

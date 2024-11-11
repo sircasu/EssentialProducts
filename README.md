@@ -59,7 +59,6 @@ No connectiivty - error course (sad path):
   
 1. System delivers error  
   
--  
   
 **\|\| Load product fallback (cache) use case**  
   
@@ -76,7 +75,6 @@ No cache - error course (sad apath)
   
 1. System delivers no products.  
   
--  
   
 **\|\| Save product items use case**  
   
@@ -95,7 +93,7 @@ Primary course (happy path):
 API Contract
 
 Products - Get
-
+```
 [
     {
         "id": 1,
@@ -123,3 +121,4 @@ Products - Get
     }
     ...
 ]
+```

@@ -31,7 +31,7 @@ final class EssentialProductsAPIEndToEndTests: XCTestCase {
     
     private func getProductsResult(file: StaticString = #filePath, line: UInt = #line) -> ProductsLoader.Result? {
         let serverURL = URL(string: "https://fakestoreapi.com/products?limit=3")!
-        let client = URLSessionHTTPClient()
+        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         let loader = RemoteProductsLoader(client: client, url: serverURL)
         
         trackForMemoryLeak(client, file: file, line: line)

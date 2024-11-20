@@ -27,8 +27,15 @@ Narrative \#2
 Scenarios (Acceptance criteria)  
 - Given the customer does not have connectivity  
 - And there's a cache version of products  
+- And the cache is less than seven days old
 - When the customer request to see the products  
 - The app should display the latest products saved  
+
+- Given the customer does not have connectivity  
+- And there's a cache version of products  
+- And the cache is  seven days old or more
+- When the customer request to see the products  
+- The app should display an error message 
   
 - Given the customer does not have connectivity  
 - And the cache is empty  
@@ -48,7 +55,7 @@ Primary course (happy path):
 1. Execute "Load Product Items" command with above data,  
 2. System downloads data from the URL.  
 3. System validates downloaded data.  
-4. System creates product items from valid data,  
+4. System creates product items from valid data. 
 5. System delivers product items.  
   
 Invalida data - error course (sad apath)  
@@ -60,34 +67,51 @@ No connectiivty - error course (sad path):
 1. System delivers error  
   
   
-**\|\| Load product fallback (cache) use case**  
-  
-**Data: **Max age  
-  
+**\|\| Load product from cache use case**  
+
 Primary course (happy path):  
   
-1. Execute "Load Product Items" command with above data,  
-2. System fetches product data from cache  
-3. System creates product items from cache  
-4. System delivers product items  
-  
-No cache - error course (sad apath)  
+1. Execute "Load Product Items" command with above data.
+2. System fetches product data from cache.
+3. System validates caches is less than seven years old.
+4. System creates product items from cache. 
+5. System delivers product items.  
+
+Error course (sad path)
+
+1. System delivers error.
+
+Expired cache (sad path)
+
+1. System deletes cache.
+2. System delivers no products.
+
+Empty cache - error course (sad apath)  
   
 1. System delivers no products.  
   
   
-**\|\| Save product items use case**  
+**\|\| Cache product use case**  
   
 **Data: **Product items  
   
 Primary course (happy path):  
   
-1. Execute "Save Product Items" command with above data,  
-2. System encode product items  
-3. System timestamps the new cache  
-4. System replace cache with new data  
-5. System delivers a success message  
+1. Execute "Save Product Items" command with above data.  
+2. System deletes old cache data.
+3. System encode product items.  
+4. System timestamps the new cache.
+5. System save new cache data.  
+6. System delivers a success message.  
   
+Deleting Error course (sad path):
+
+1. System delivers error.
+
+Saving Error course (sad path):
+
+1. System delivers error.
+
 ---
 
 API Contract

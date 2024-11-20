@@ -1,5 +1,5 @@
 //
-//  RemoteProductsLoaderTests.swift
+//  LoadProductsFromRemoteUseCaseTests.swift
 //  EssentialProductsTests
 //
 //  Created by Matteo Casu on 01/11/24.
@@ -8,7 +8,7 @@
 import XCTest
 import EssentialProducts
 
-final class RemoteProductsLoaderTests: XCTestCase {
+final class LoadProductsFromRemoteUseCaseTests: XCTestCase {
     
     func test_init_doesNotRequestDataFromURL() {
     

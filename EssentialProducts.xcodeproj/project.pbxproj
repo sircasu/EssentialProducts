@@ -53,24 +53,7 @@
 			);
 			target = 85578B0C2CD284E900DCD2BB /* EssentialProducts */;
 		};
-		85F894512CEDCCD80090FE50 /* Exceptions for "EssentialProductsTests" folder in "EssentialProductsTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Products Api/LoadProductsFromRemoteUseCaseTests",
-			);
-			target = 85578B142CD284EA00DCD2BB /* EssentialProductsTests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		85F894522CEDCCD80090FE50 /* Exceptions for "EssentialProductsTests" folder in "Compile Sources" phase from "EssentialProductsTests" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 85578B112CD284EA00DCD2BB /* Sources */;
-			membershipExceptions = (
-				"Products Api/LoadProductsFromRemoteUseCaseTests",
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		85578B0F2CD284EA00DCD2BB /* EssentialProducts */ = {
@@ -84,8 +67,6 @@
 		85578B192CD284EA00DCD2BB /* EssentialProductsTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				85F894512CEDCCD80090FE50 /* Exceptions for "EssentialProductsTests" folder in "EssentialProductsTests" target */,
-				85F894522CEDCCD80090FE50 /* Exceptions for "EssentialProductsTests" folder in "Compile Sources" phase from "EssentialProductsTests" target */,
 				850E256E2CDF9FA5008226EF /* Exceptions for "EssentialProductsTests" folder in "EssentialProductsAPIEndToEndTests" target */,
 			);
 			path = EssentialProductsTests;

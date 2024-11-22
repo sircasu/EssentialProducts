@@ -34,21 +34,28 @@ class ProductStore {
 final class CacheProductsUseCaseTests: XCTestCase {
     
     func test_init_doesNotRequestToDeleteCache() {
-    
-        let store = ProductStore()
-        let _ = LocalProductsLoader(store: store)
+
+        let (_, store) = makeSUT()
         
         XCTAssertEqual(store.deleteCallCount, 0)
     }
     
     func test_save_requestToDeleteCache() {
         
-        let store = ProductStore()
-        let sut = LocalProductsLoader(store: store)
-    
+        let (sut, store) = makeSUT()
+        
         sut.save()
         
         XCTAssertEqual(store.deleteCallCount, 1)
+    }
+    
+    
+    // MARK: - Helpers
+    
+    private func makeSUT() -> (sut: LocalProductsLoader, ProductStore) {
+        let store = ProductStore()
+        let sut = LocalProductsLoader(store: store)
+        return (sut: sut, store: store)
     }
 
 }

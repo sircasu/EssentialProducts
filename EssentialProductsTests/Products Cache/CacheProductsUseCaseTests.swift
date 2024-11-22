@@ -52,9 +52,13 @@ final class CacheProductsUseCaseTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT() -> (sut: LocalProductsLoader, ProductStore) {
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStore) {
         let store = ProductStore()
         let sut = LocalProductsLoader(store: store)
+        
+        trackForMemoryLeak(sut, file: file, line: line)
+        trackForMemoryLeak(store, file: file, line: line)
+        
         return (sut: sut, store: store)
     }
 

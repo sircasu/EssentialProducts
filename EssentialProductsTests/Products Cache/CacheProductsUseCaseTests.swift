@@ -24,9 +24,14 @@ class LocalProductsLoader {
 class ProductStore {
     
     var deleteCallCount = 0
+    var saveCallCount = 0
     
     func delete() {
         deleteCallCount += 1
+    }
+    
+    func completeWithError(error: Error?, at index: Int = 0) {
+        
     }
 }
 
@@ -49,6 +54,16 @@ final class CacheProductsUseCaseTests: XCTestCase {
         XCTAssertEqual(store.deleteCallCount, 1)
     }
     
+    func test_save_doesNotRequestToSaveCacheOnDeletionError() {
+        
+        let (sut, store) = makeSUT()
+        
+        sut.save()
+        store.completeWithError(error: anyNSError())
+        
+        XCTAssertEqual(store.saveCallCount, 0)
+    }
+    
     
     // MARK: - Helpers
     
@@ -61,5 +76,10 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         return (sut: sut, store: store)
     }
+    
+    private func anyNSError() -> NSError {
+        return NSError(domain: "test", code: 0)
+    }
+    
 
 }

@@ -6,7 +6,7 @@
 //
 
 import XCTest
-
+import EssentialProducts
 
 class LocalProductsLoader {
     
@@ -16,22 +16,39 @@ class LocalProductsLoader {
         self.store = store
     }
     
-    func save() {
-        store.delete()
+    func save(_ items: [ProductItem]) {
+        store.delete() { [weak self] error in
+            if error == nil {
+                self?.store.insert(items)
+            }
+        }
     }
 }
 
 class ProductStore {
     
-    var deleteCallCount = 0
-    var saveCallCount = 0
+    typealias DeletionCompletion = (Error?) -> Void
     
-    func delete() {
+    private var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
+    
+    var deleteCallCount = 0
+    var insertCallCount = 0
+    
+    func delete(completion: @escaping DeletionCompletion) {
         deleteCallCount += 1
+        deletionCompletions.append(completion)
+    }
+    
+    func insert(_ items: [ProductItem]) {
+        insertCallCount += 1
     }
     
     func completeWithError(error: Error?, at index: Int = 0) {
         
+    }
+    
+    func completeDeletionSuccessfully(at index: Int = 0) {
+        deletionCompletions[index](nil)
     }
 }
 
@@ -49,7 +66,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         let (sut, store) = makeSUT()
         
-        sut.save()
+        sut.save([uniqueItem(id: 1)])
         
         XCTAssertEqual(store.deleteCallCount, 1)
     }
@@ -58,12 +75,21 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         let (sut, store) = makeSUT()
         
-        sut.save()
+        sut.save([uniqueItem(id: 1)])
         store.completeWithError(error: anyNSError())
         
-        XCTAssertEqual(store.saveCallCount, 0)
+        XCTAssertEqual(store.insertCallCount, 0)
     }
     
+    func test_save_doesRequestToSaveCacheOnDeletionSuccess() {
+        
+        let (sut, store) = makeSUT()
+        
+        sut.save([uniqueItem(id: 1), uniqueItem(id: 2)])
+        store.completeDeletionSuccessfully()
+        
+        XCTAssertEqual(store.insertCallCount, 1)
+    }
     
     // MARK: - Helpers
     
@@ -81,5 +107,11 @@ final class CacheProductsUseCaseTests: XCTestCase {
         return NSError(domain: "test", code: 0)
     }
     
-
+    private func anyURL() -> URL {
+        return URL(string: "https://example.com/")!
+    }
+    
+    private func uniqueItem(id: Int) -> ProductItem {
+        return ProductItem(id: 1, title: "any title", price: 12.99, description: "a description", category: "a category", image: anyURL(), rating: ProductRatingItem(rate: 4.3, count: 24))
+    }
 }

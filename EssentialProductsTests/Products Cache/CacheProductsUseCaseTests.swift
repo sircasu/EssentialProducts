@@ -11,15 +11,17 @@ import EssentialProducts
 class LocalProductsLoader {
     
     let store: ProductStore
+    let currentDate: () -> Date
     
-    init(store: ProductStore) {
+    init(store: ProductStore, currentDate: @escaping () -> Date) {
         self.store = store
+        self.currentDate = currentDate
     }
     
     func save(_ items: [ProductItem]) {
-        store.delete() { [weak self] error in
+        store.delete() { [unowned self] error in
             if error == nil {
-                self?.store.insert(items)
+                self.store.insert(items, timestamp: self.currentDate())
             }
         }
     }
@@ -28,6 +30,7 @@ class LocalProductsLoader {
 class ProductStore {
     
     typealias DeletionCompletion = (Error?) -> Void
+    var insertions = [(items: [ProductItem], timestamp: Date)]()
     
     private var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
     
@@ -39,8 +42,9 @@ class ProductStore {
         deletionCompletions.append(completion)
     }
     
-    func insert(_ items: [ProductItem]) {
+    func insert(_ items: [ProductItem], timestamp: Date) {
         insertCallCount += 1
+        insertions.append((items, timestamp))
     }
     
     func completeWithError(error: Error?, at index: Int = 0) {
@@ -74,8 +78,9 @@ final class CacheProductsUseCaseTests: XCTestCase {
     func test_save_doesNotRequestToSaveCacheOnDeletionError() {
         
         let (sut, store) = makeSUT()
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
         
-        sut.save([uniqueItem(id: 1)])
+        sut.save(items)
         store.completeWithError(error: anyNSError())
         
         XCTAssertEqual(store.insertCallCount, 0)
@@ -84,18 +89,33 @@ final class CacheProductsUseCaseTests: XCTestCase {
     func test_save_doesRequestToSaveCacheOnDeletionSuccess() {
         
         let (sut, store) = makeSUT()
-        
-        sut.save([uniqueItem(id: 1), uniqueItem(id: 2)])
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+
+        sut.save(items)
         store.completeDeletionSuccessfully()
         
         XCTAssertEqual(store.insertCallCount, 1)
     }
     
+    func test_save_doesRequestToSaveCacheWithTimestampOnDeletionSuccess() {
+        
+        let timestamp = Date.init()
+        let (sut, store) = makeSUT(currentDate: { timestamp })
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+        
+        sut.save(items)
+        store.completeDeletionSuccessfully()
+      
+        XCTAssertEqual(store.insertions.count, 1)
+        XCTAssertEqual(store.insertions.first?.items, items)
+        XCTAssertEqual(store.insertions.first?.timestamp, timestamp)
+    }
+    
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStore) {
+    private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStore) {
         let store = ProductStore()
-        let sut = LocalProductsLoader(store: store)
+        let sut = LocalProductsLoader(store: store, currentDate: currentDate)
         
         trackForMemoryLeak(sut, file: file, line: line)
         trackForMemoryLeak(store, file: file, line: line)

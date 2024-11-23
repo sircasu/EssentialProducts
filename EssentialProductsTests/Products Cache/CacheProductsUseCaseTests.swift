@@ -21,7 +21,7 @@ class LocalProductsLoader {
     func save(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
         store.delete() { [unowned self] error in
             if error == nil {
-                self.store.insert(items, timestamp: self.currentDate())
+                self.store.insert(items, timestamp: self.currentDate(), completion: completion)
             } else {
                 completion(error)
             }
@@ -32,6 +32,7 @@ class LocalProductsLoader {
 class ProductStore {
     
     typealias DeletionCompletion = (Error?) -> Void
+    typealias InsertionCompletion = (Error?) -> Void
     
     enum ReceivedMessages: Equatable {
         case deleteCachedProducts
@@ -42,15 +43,17 @@ class ProductStore {
     var receivedMessages: [ReceivedMessages] = [ReceivedMessages]()
     
     var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
+    var insertionsCompletion: [InsertionCompletion] = [InsertionCompletion]()
     
     func delete(completion: @escaping DeletionCompletion) {
         deletionCompletions.append(completion)
         receivedMessages.append(.deleteCachedProducts)
     }
     
-    func insert(_ items: [ProductItem], timestamp: Date) {
+    func insert(_ items: [ProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
         insertions.append((items, timestamp))
         receivedMessages.append(.insert(items, timestamp))
+        insertionsCompletion.append(completion)
     }
     
     func completeWithError(error: Error?, at index: Int = 0) {
@@ -59,6 +62,10 @@ class ProductStore {
     
     func completeDeletionSuccessfully(at index: Int = 0) {
         deletionCompletions[index](nil)
+    }
+    
+    func completeInsertWithError(error: Error?, at index: Int = 0) {
+        insertionsCompletion[index](error)
     }
 }
 
@@ -117,6 +124,26 @@ final class CacheProductsUseCaseTests: XCTestCase {
             exp.fulfill()
         }
         store.completeWithError(error: error)
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(receivedError as NSError?, error)
+    }
+
+    func test_save_deliverErrorOnSavingError() {
+        
+        let (sut, store) = makeSUT()
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+        let error = anyNSError()
+        
+        let exp = expectation(description: "Waid for load completion")
+        var receivedError: Error?
+        sut.save(items) {
+            receivedError = $0
+            exp.fulfill()
+        }
+        store.completeDeletionSuccessfully()
+        store.completeInsertWithError(error: error)
         
         wait(for: [exp], timeout: 1.0)
         

@@ -31,16 +31,24 @@ class ProductStore {
     
     typealias DeletionCompletion = (Error?) -> Void
     
+    enum ReceivedMessages: Equatable {
+        case deleteCachedProducts
+        case insert([ProductItem], Date)
+    }
+    
     var insertions = [(items: [ProductItem], timestamp: Date)]()
+    var receivedMessages: [ReceivedMessages] = [ReceivedMessages]()
     
     var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
     
     func delete(completion: @escaping DeletionCompletion) {
         deletionCompletions.append(completion)
+        receivedMessages.append(.deleteCachedProducts)
     }
     
     func insert(_ items: [ProductItem], timestamp: Date) {
         insertions.append((items, timestamp))
+        receivedMessages.append(.insert(items, timestamp))
     }
     
     func completeWithError(error: Error?, at index: Int = 0) {
@@ -59,7 +67,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
 
         let (_, store) = makeSUT()
         
-        XCTAssertEqual(store.deletionCompletions.count, 0)
+        XCTAssertEqual(store.receivedMessages, [])
     }
     
     func test_save_requestToDeleteCache() {
@@ -68,7 +76,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         sut.save([uniqueItem(id: 1)])
         
-        XCTAssertEqual(store.deletionCompletions.count, 1)
+        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts])
     }
     
     func test_save_doesNotRequestToSaveCacheOnDeletionError() {
@@ -79,18 +87,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         sut.save(items)
         store.completeWithError(error: anyNSError())
         
-        XCTAssertEqual(store.insertions.count, 0)
-    }
-    
-    func test_save_doesRequestToSaveCacheOnDeletionSuccess() {
-        
-        let (sut, store) = makeSUT()
-        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
-
-        sut.save(items)
-        store.completeDeletionSuccessfully()
-        
-        XCTAssertEqual(store.insertions.count, 1)
+        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts])
     }
     
     func test_save_doesRequestToSaveCacheWithTimestampOnDeletionSuccess() {
@@ -102,9 +99,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         sut.save(items)
         store.completeDeletionSuccessfully()
       
-        XCTAssertEqual(store.insertions.count, 1)
-        XCTAssertEqual(store.insertions.first?.items, items)
-        XCTAssertEqual(store.insertions.first?.timestamp, timestamp)
+        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts, .insert(items, timestamp)])
     }
     
     // MARK: - Helpers

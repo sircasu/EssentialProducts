@@ -30,20 +30,16 @@ class LocalProductsLoader {
 class ProductStore {
     
     typealias DeletionCompletion = (Error?) -> Void
+    
     var insertions = [(items: [ProductItem], timestamp: Date)]()
     
-    private var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
-    
-    var deleteCallCount = 0
-    var insertCallCount = 0
+    var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
     
     func delete(completion: @escaping DeletionCompletion) {
-        deleteCallCount += 1
         deletionCompletions.append(completion)
     }
     
     func insert(_ items: [ProductItem], timestamp: Date) {
-        insertCallCount += 1
         insertions.append((items, timestamp))
     }
     
@@ -63,7 +59,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
 
         let (_, store) = makeSUT()
         
-        XCTAssertEqual(store.deleteCallCount, 0)
+        XCTAssertEqual(store.deletionCompletions.count, 0)
     }
     
     func test_save_requestToDeleteCache() {
@@ -72,7 +68,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         sut.save([uniqueItem(id: 1)])
         
-        XCTAssertEqual(store.deleteCallCount, 1)
+        XCTAssertEqual(store.deletionCompletions.count, 1)
     }
     
     func test_save_doesNotRequestToSaveCacheOnDeletionError() {
@@ -83,7 +79,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         sut.save(items)
         store.completeWithError(error: anyNSError())
         
-        XCTAssertEqual(store.insertCallCount, 0)
+        XCTAssertEqual(store.insertions.count, 0)
     }
     
     func test_save_doesRequestToSaveCacheOnDeletionSuccess() {
@@ -94,7 +90,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         sut.save(items)
         store.completeDeletionSuccessfully()
         
-        XCTAssertEqual(store.insertCallCount, 1)
+        XCTAssertEqual(store.insertions.count, 1)
     }
     
     func test_save_doesRequestToSaveCacheWithTimestampOnDeletionSuccess() {

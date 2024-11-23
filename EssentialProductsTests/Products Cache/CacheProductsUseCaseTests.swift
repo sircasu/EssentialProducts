@@ -117,59 +117,31 @@ final class CacheProductsUseCaseTests: XCTestCase {
     func test_save_deliverErrorOnDeletingError() {
         
         let (sut, store) = makeSUT()
-        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
         let error = anyNSError()
-        
-        let exp = expectation(description: "Waid for load completion")
-        var receivedError: Error?
-        sut.save(items) {
-            receivedError = $0
-            exp.fulfill()
-        }
-        store.completeWithError(error: error)
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(receivedError as NSError?, error)
+
+        expect(sut, toCompleteWithError: error, when: {
+            store.completeWithError(error: error)
+        })
     }
 
     func test_save_deliverErrorOnInsertionError() {
         
         let (sut, store) = makeSUT()
-        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
         let error = anyNSError()
-        
-        let exp = expectation(description: "Waid for load completion")
-        var receivedError: Error?
-        sut.save(items) {
-            receivedError = $0
-            exp.fulfill()
-        }
-        store.completeDeletionSuccessfully()
-        store.completeInsertWithError(error: error)
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual(receivedError as NSError?, error)
+
+        expect(sut, toCompleteWithError: error, when: {
+            store.completeDeletionSuccessfully()
+            store.completeInsertWithError(error: error)
+        })
     }
     
     func test_save_succeedsOnSuccessInsertion() {
         
         let (sut, store) = makeSUT()
-        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
-
-        let exp = expectation(description: "Waid for load completion")
-        var receivedError: Error?
-        sut.save(items) {
-            receivedError = $0
-            exp.fulfill()
-        }
-        store.completeDeletionSuccessfully()
-        store.completeInsertSuccessfully()
-        
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertNil(receivedError)
+        expect(sut, toCompleteWithError: nil, when: {
+            store.completeDeletionSuccessfully()
+            store.completeInsertSuccessfully()
+        })
     }
     
     // MARK: - Helpers
@@ -182,6 +154,24 @@ final class CacheProductsUseCaseTests: XCTestCase {
         trackForMemoryLeak(store, file: file, line: line)
         
         return (sut: sut, store: store)
+    }
+    
+    private func expect(_ sut: LocalProductsLoader, toCompleteWithError error: NSError?, when action: @escaping () -> Void, file: StaticString = #filePath, line: UInt = #line) {
+        
+        let exp = expectation(description: "Waid for load completion")
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+
+        var receivedError: Error?
+        sut.save(items) {
+            receivedError = $0
+            exp.fulfill()
+        }
+        
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(receivedError as NSError?, error, file: file, line: line)
     }
     
     private func anyNSError() -> NSError {

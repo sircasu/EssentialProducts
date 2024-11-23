@@ -67,6 +67,9 @@ class ProductStore {
     func completeInsertWithError(error: Error?, at index: Int = 0) {
         insertionsCompletion[index](error)
     }
+    func completeInsertSuccessfully(at index: Int = 0) {
+        insertionsCompletion[index](nil)
+    }
 }
 
 
@@ -88,7 +91,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts])
     }
     
-    func test_save_doesNotRequestToSaveCacheOnDeletionError() {
+    func test_save_doesNotRequestToInsertCacheOnDeletionError() {
         
         let (sut, store) = makeSUT()
         let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
@@ -99,7 +102,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts])
     }
     
-    func test_save_doesRequestToSaveCacheWithTimestampOnDeletionSuccess() {
+    func test_save_doesRequestToInsertCacheWithTimestampOnDeletionSuccess() {
         
         let timestamp = Date.init()
         let (sut, store) = makeSUT(currentDate: { timestamp })
@@ -130,7 +133,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedError as NSError?, error)
     }
 
-    func test_save_deliverErrorOnSavingError() {
+    func test_save_deliverErrorOnInsertionError() {
         
         let (sut, store) = makeSUT()
         let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
@@ -148,6 +151,25 @@ final class CacheProductsUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
         
         XCTAssertEqual(receivedError as NSError?, error)
+    }
+    
+    func test_save_succeedsOnSuccessInsertion() {
+        
+        let (sut, store) = makeSUT()
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+
+        let exp = expectation(description: "Waid for load completion")
+        var receivedError: Error?
+        sut.save(items) {
+            receivedError = $0
+            exp.fulfill()
+        }
+        store.completeDeletionSuccessfully()
+        store.completeInsertSuccessfully()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertNil(receivedError)
     }
     
     // MARK: - Helpers

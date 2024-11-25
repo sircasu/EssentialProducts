@@ -12,12 +12,14 @@ public class LocalProductsLoader {
     let store: ProductStore
     let currentDate: () -> Date
     
+    public typealias SaveResult = Error?
+    
     public init(store: ProductStore, currentDate: @escaping () -> Date) {
         self.store = store
         self.currentDate = currentDate
     }
     
-    public func save(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
+    public func save(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
         store.delete() { [weak self] error in
             
             guard let self = self else { return }
@@ -32,7 +34,7 @@ public class LocalProductsLoader {
         }
     }
     
-    private func insert(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
+    private func insert(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
         self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
             
             guard self != nil else { return }

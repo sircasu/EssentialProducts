@@ -84,7 +84,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         let store = ProductStoreSpy()
         var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
         
-        var receivedMessages = [Error?]()
+        var receivedMessages = [LocalProductsLoader.SaveResult]()
         sut?.save([uniqueItem(id: 1)]) { receivedMessages.append($0) }
         
         sut = nil
@@ -99,7 +99,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         let store = ProductStoreSpy()
         var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
         
-        var receivedMessages = [Error?]()
+        var receivedMessages = [LocalProductsLoader.SaveResult]()
         sut?.save([uniqueItem(id: 1)]) { receivedMessages.append($0) }
         
         store.completeDeletionSuccessfully()

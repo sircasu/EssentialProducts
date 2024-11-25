@@ -23,16 +23,22 @@ class LocalProductsLoader {
             
             guard let self = self else { return }
             
-            if error == nil {
-                self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
-                    
-                    guard self != nil else { return }
-                    
-                    completion(error)
-                }
-            } else {
+            if error != nil {
                 completion(error)
+
+            } else {
+                self.insert(items, completion: completion)
             }
+
+        }
+    }
+    
+    private func insert(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
+        self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
+            
+            guard self != nil else { return }
+            
+            completion(error)
         }
     }
 }

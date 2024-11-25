@@ -24,7 +24,12 @@ class LocalProductsLoader {
             guard let self = self else { return }
             
             if error == nil {
-                self.store.insert(items, timestamp: self.currentDate(), completion: completion)
+                self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
+                    
+                    guard self != nil else { return }
+                    
+                    completion(error)
+                }
             } else {
                 completion(error)
             }
@@ -123,6 +128,21 @@ final class CacheProductsUseCaseTests: XCTestCase {
         sut = nil
         
         store.completeWithError(error: anyNSError())
+        
+        XCTAssertTrue(receivedMessages.isEmpty)
+    }
+    
+    func test_save_doesNotDeliverErrorOnInsertionErrorAfterSUTHasBeendeallocated() {
+        
+        let store = ProductStoreSpy()
+        var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
+        
+        var receivedMessages = [Error?]()
+        sut?.save([uniqueItem(id: 1)]) { receivedMessages.append($0) }
+        
+        store.completeDeletionSuccessfully()
+        sut = nil
+        store.completeInsertWithError(error: anyNSError())
         
         XCTAssertTrue(receivedMessages.isEmpty)
     }

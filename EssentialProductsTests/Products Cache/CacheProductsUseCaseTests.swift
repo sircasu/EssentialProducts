@@ -19,7 +19,10 @@ class LocalProductsLoader {
     }
     
     func save(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
-        store.delete() { [unowned self] error in
+        store.delete() { [weak self] error in
+            
+            guard let self = self else { return }
+            
             if error == nil {
                 self.store.insert(items, timestamp: self.currentDate(), completion: completion)
             } else {
@@ -107,6 +110,21 @@ final class CacheProductsUseCaseTests: XCTestCase {
             store.completeDeletionSuccessfully()
             store.completeInsertSuccessfully()
         })
+    }
+    
+    func test_save_doesNotDeliverErrorOnDeletionErrorAfterSUTHasBeendeallocated() {
+        
+        let store = ProductStoreSpy()
+        var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
+        
+        var receivedMessages = [Error?]()
+        sut?.save([uniqueItem(id: 1)]) { receivedMessages.append($0) }
+        
+        sut = nil
+        
+        store.completeWithError(error: anyNSError())
+        
+        XCTAssertTrue(receivedMessages.isEmpty)
     }
     
     // MARK: - Helpers

@@ -43,15 +43,6 @@ class LocalProductsLoader {
     }
 }
 
-protocol ProductStore {
-    typealias DeletionCompletion = (Error?) -> Void
-    typealias InsertionCompletion = (Error?) -> Void
-    
-    func delete(completion: @escaping DeletionCompletion)
-    func insert(_ items: [ProductItem], timestamp: Date, completion: @escaping InsertionCompletion)
-}
-
-
 final class CacheProductsUseCaseTests: XCTestCase {
     
     func test_init_doesNotRequestToDeleteCache() {

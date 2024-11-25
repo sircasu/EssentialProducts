@@ -8,41 +8,6 @@
 import XCTest
 import EssentialProducts
 
-class LocalProductsLoader {
-    
-    let store: ProductStore
-    let currentDate: () -> Date
-    
-    init(store: ProductStore, currentDate: @escaping () -> Date) {
-        self.store = store
-        self.currentDate = currentDate
-    }
-    
-    func save(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
-        store.delete() { [weak self] error in
-            
-            guard let self = self else { return }
-            
-            if error != nil {
-                completion(error)
-
-            } else {
-                self.insert(items, completion: completion)
-            }
-
-        }
-    }
-    
-    private func insert(_ items: [ProductItem], completion: @escaping (Error?) -> Void) {
-        self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
-            
-            guard self != nil else { return }
-            
-            completion(error)
-        }
-    }
-}
-
 final class CacheProductsUseCaseTests: XCTestCase {
     
     func test_init_doesNotRequestToDeleteCache() {

@@ -42,11 +42,12 @@ final class CacheProductsUseCaseTests: XCTestCase {
         let timestamp = Date.init()
         let (sut, store) = makeSUT(currentDate: { timestamp })
         let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+        let localItems = items.map { LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: LocalProductRatingItem(rate: $0.rating.rate, count: $0.rating.count))}
         
         sut.save(items) { _ in }
         store.completeDeletionSuccessfully()
       
-        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts, .insert(items, timestamp)])
+        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts, .insert(localItems, timestamp)])
     }
         
     func test_save_deliverErrorOnDeletingError() {
@@ -112,13 +113,13 @@ final class CacheProductsUseCaseTests: XCTestCase {
     // MARK: - Helpers
     
     private class ProductStoreSpy: ProductStore {
-        
+                
         enum ReceivedMessages: Equatable {
             case deleteCachedProducts
-            case insert([ProductItem], Date)
+            case insert([LocalProductItem], Date)
         }
         
-        var insertions = [(items: [ProductItem], timestamp: Date)]()
+        var insertions = [(items: [LocalProductItem], timestamp: Date)]()
         var receivedMessages: [ReceivedMessages] = [ReceivedMessages]()
         
         var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
@@ -129,7 +130,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
             receivedMessages.append(.deleteCachedProducts)
         }
         
-        func insert(_ items: [ProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+        func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
             insertions.append((items, timestamp))
             receivedMessages.append(.insert(items, timestamp))
             insertionsCompletion.append(completion)

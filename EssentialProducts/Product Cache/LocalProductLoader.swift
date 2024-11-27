@@ -35,11 +35,18 @@ public class LocalProductsLoader {
     }
     
     private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
-        self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
+        self.store.insert(items.toLocal(), timestamp: self.currentDate()) { [weak self] error in
             
             guard self != nil else { return }
             
             completion(error)
         }
+    }
+}
+
+
+extension Array where Element == ProductItem {
+    func toLocal() -> [LocalProductItem] {
+        map { LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: LocalProductRatingItem(rate: $0.rating.rate, count: $0.rating.count)) }
     }
 }

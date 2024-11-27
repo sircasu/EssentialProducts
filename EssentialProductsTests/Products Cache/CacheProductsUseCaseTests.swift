@@ -21,7 +21,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         let (sut, store) = makeSUT()
         
-        sut.save([uniqueItem(id: 1)]) { _ in }
+        sut.save(uniqueItems().model) { _ in }
         
         XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts])
     }
@@ -31,7 +31,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
         
-        sut.save(items) { _ in }
+        sut.save(uniqueItems().model) { _ in }
         store.completeWithError(error: anyNSError())
         
         XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts])
@@ -41,13 +41,12 @@ final class CacheProductsUseCaseTests: XCTestCase {
         
         let timestamp = Date.init()
         let (sut, store) = makeSUT(currentDate: { timestamp })
-        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
-        let localItems = items.map { LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: LocalProductRatingItem(rate: $0.rating.rate, count: $0.rating.count))}
+        let items = uniqueItems()
         
-        sut.save(items) { _ in }
+        sut.save(items.model) { _ in }
         store.completeDeletionSuccessfully()
       
-        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts, .insert(localItems, timestamp)])
+        XCTAssertEqual(store.receivedMessages, [.deleteCachedProducts, .insert(items.local, timestamp)])
     }
         
     func test_save_deliverErrorOnDeletingError() {
@@ -101,7 +100,7 @@ final class CacheProductsUseCaseTests: XCTestCase {
         var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
         
         var receivedMessages = [LocalProductsLoader.SaveResult]()
-        sut?.save([uniqueItem(id: 1)]) { receivedMessages.append($0) }
+        sut?.save(uniqueItems().model) { receivedMessages.append($0) }
         
         store.completeDeletionSuccessfully()
         sut = nil
@@ -190,5 +189,14 @@ final class CacheProductsUseCaseTests: XCTestCase {
     
     private func uniqueItem(id: Int) -> ProductItem {
         return ProductItem(id: 1, title: "any title", price: 12.99, description: "a description", category: "a category", image: anyURL(), rating: ProductRatingItem(rate: 4.3, count: 24))
+    }
+    
+    
+    private func uniqueItems() -> (model: [ProductItem], local: [LocalProductItem]) {
+        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
+        
+        let localItems = items.map { LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: LocalProductRatingItem(rate: $0.rating.rate, count: $0.rating.count))}
+        
+        return (items, localItems)
     }
 }

@@ -30,10 +30,21 @@ final public class RemoteProductsLoader: ProductsLoader {
             
             switch result {
             case let .success((data, response)):
-                completion(ProductItemMapper.map(data, response))
+                do {
+                    let items = try ProductItemMapper.map(data, response)
+                    completion(.success(items.toModels()))
+                } catch {
+                    completion(.failure(error))
+                }
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
+    }
+}
+
+extension Array where Element == RemoteProductItem {
+    func toModels() -> [ProductItem] {
+        map { ProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: ProductRatingItem(rate: $0.rating.rate, count: $0.rating.count)) }
     }
 }

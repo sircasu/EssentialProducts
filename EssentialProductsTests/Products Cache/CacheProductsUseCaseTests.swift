@@ -29,7 +29,6 @@ final class CacheProductsUseCaseTests: XCTestCase {
     func test_save_doesNotRequestToInsertCacheOnDeletionError() {
         
         let (sut, store) = makeSUT()
-        let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
         
         sut.save(uniqueItems().model) { _ in }
         store.completeWithError(error: anyNSError())

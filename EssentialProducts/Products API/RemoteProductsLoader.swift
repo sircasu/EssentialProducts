@@ -30,15 +30,19 @@ final public class RemoteProductsLoader: ProductsLoader {
             
             switch result {
             case let .success((data, response)):
-                do {
-                    let items = try ProductItemMapper.map(data, response)
-                    completion(.success(items.toModels()))
-                } catch {
-                    completion(.failure(error))
-                }
+                completion(RemoteProductsLoader.map(data, from: response))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
+        }
+    }
+    
+    private static func map(_ data: Data, from response: HTTPURLResponse) -> Result {
+        do {
+            let items = try ProductItemMapper.map(data, response)
+            return .success(items.toModels())
+        } catch {
+            return .failure(error)
         }
     }
 }

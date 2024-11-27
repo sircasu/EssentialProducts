@@ -28,13 +28,13 @@ public class LocalProductsLoader {
                 completion(error)
 
             } else {
-                self.insert(items, completion: completion)
+                self.cache(items, completion: completion)
             }
 
         }
     }
     
-    private func insert(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
+    private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
         self.store.insert(items, timestamp: self.currentDate()) { [weak self] error in
             
             guard self != nil else { return }

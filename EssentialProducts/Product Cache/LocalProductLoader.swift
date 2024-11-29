@@ -13,6 +13,7 @@ public class LocalProductsLoader {
     let currentDate: () -> Date
     
     public typealias SaveResult = Error?
+    public typealias LoadResult = ProductsLoader.Result
     
     public init(store: ProductStore, currentDate: @escaping () -> Date) {
         self.store = store
@@ -34,8 +35,12 @@ public class LocalProductsLoader {
         }
     }
     
-    public func load(completion: @escaping (Error?) -> Void) {
-        store.retrieve { error in completion(error)}
+    public func load(completion: @escaping (LoadResult) -> Void) {
+        store.retrieve { error in
+            if let error {
+                completion(.failure(error))
+            }
+        }
     }
     
     private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {

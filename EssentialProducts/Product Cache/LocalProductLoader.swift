@@ -34,6 +34,10 @@ public class LocalProductsLoader {
         }
     }
     
+    public func load() {
+        store.retrieve()
+    }
+    
     private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
         self.store.insert(items.toLocal(), timestamp: self.currentDate()) { [weak self] error in
             

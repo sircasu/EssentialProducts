@@ -13,4 +13,5 @@ public protocol ProductStore {
     
     func delete(completion: @escaping DeletionCompletion)
     func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion)
+    func retrieve()
 }

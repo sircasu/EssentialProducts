@@ -13,6 +13,7 @@ public class ProductStoreSpy: ProductStore {
     enum ReceivedMessages: Equatable {
         case deleteCachedProducts
         case insert([LocalProductItem], Date)
+        case retrieve
     }
     
     var insertions = [(items: [LocalProductItem], timestamp: Date)]()
@@ -46,5 +47,9 @@ public class ProductStoreSpy: ProductStore {
     
     func completeInsertSuccessfully(at index: Int = 0) {
         insertionsCompletion[index](nil)
+    }
+    
+    public func retrieve() {
+        receivedMessages.append(.retrieve)
     }
 }

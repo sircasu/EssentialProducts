@@ -10,8 +10,9 @@ import Foundation
 public protocol ProductStore {
     typealias DeletionCompletion = (Error?) -> Void
     typealias InsertionCompletion = (Error?) -> Void
+    typealias RetrievalCompletion = (Error?) -> Void
     
     func delete(completion: @escaping DeletionCompletion)
     func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion)
-    func retrieve()
+    func retrieve(completion: @escaping RetrievalCompletion)
 }

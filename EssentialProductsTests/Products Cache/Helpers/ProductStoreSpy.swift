@@ -21,6 +21,7 @@ public class ProductStoreSpy: ProductStore {
     
     var deletionCompletions: [DeletionCompletion] = [DeletionCompletion]()
     var insertionsCompletion: [InsertionCompletion] = [InsertionCompletion]()
+    var retrievalCompletion: [RetrievalCompletion] = [RetrievalCompletion]()
     
     public func delete(completion: @escaping DeletionCompletion) {
         deletionCompletions.append(completion)
@@ -49,7 +50,12 @@ public class ProductStoreSpy: ProductStore {
         insertionsCompletion[index](nil)
     }
     
-    public func retrieve() {
+    public func retrieve(completion: @escaping RetrievalCompletion) {
+        retrievalCompletion.append(completion)
         receivedMessages.append(.retrieve)
+    }
+    
+    public func completeRetrievalWithError(error: Error?, at index: Int = 0) {
+        retrievalCompletion[index](error)
     }
 }

@@ -39,6 +39,8 @@ public class LocalProductsLoader {
         store.retrieve { error in
             if let error {
                 completion(.failure(error))
+            } else {
+                completion(.success([]))
             }
         }
     }

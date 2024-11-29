@@ -58,4 +58,8 @@ public class ProductStoreSpy: ProductStore {
     public func completeRetrievalWithError(error: Error?, at index: Int = 0) {
         retrievalCompletion[index](error)
     }
+    
+    public func completeRetrievalWithEmptyItems(at index: Int = 0) {
+        retrievalCompletion[index](nil)
+    }
 }

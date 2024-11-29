@@ -50,25 +50,28 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedError as? NSError, expectedError)
     }
     
-//    func test_load_deliversNotemsOnEmptyCache() {
-//        
-//        let (sut, store) = makeSUT()
-//        let expectedError = anyNSError()
-//        
-//        let exp = expectation(description: "Wait for completion")
-//        
-//        var receivedError: Error?
-//        sut.load { result in
-//            receivedError = error
-//            exp.fulfill()
-//        }
-//        
-//        store.completeRetrievalWithError(error: expectedError)
-//        
-//        wait(for: [exp], timeout: 1.0)
-//        
-//        XCTAssertEqual(receivedError as? NSError, expectedError)
-//    }
+    func test_load_deliversNoItemsOnEmptyCache() {
+        
+        let (sut, store) = makeSUT()
+        
+        let exp = expectation(description: "Wait for completion")
+        
+        var items: [ProductItem]?
+        sut.load { result in
+            switch result {
+            case .success(let receivedResult):
+                items = receivedResult
+            default: XCTFail("Expected success got \(result) instead")
+            }
+            exp.fulfill()
+        }
+        
+        store.completeRetrievalWithEmptyItems()
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual(items, [])
+    }
     
     // MARK: - Helpers
     

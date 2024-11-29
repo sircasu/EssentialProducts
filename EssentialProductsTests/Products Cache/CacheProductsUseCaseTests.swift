@@ -10,7 +10,7 @@ import EssentialProducts
 
 final class CacheProductsUseCaseTests: XCTestCase {
     
-    func test_init_doesNotRequestToDeleteCache() {
+    func test_init_doesNotMessageStoreUponCreation() {
 
         let (_, store) = makeSUT()
         

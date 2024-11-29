@@ -26,12 +26,6 @@ public class ProductStoreSpy: ProductStore {
         receivedMessages.append(.deleteCachedProducts)
     }
     
-    public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
-        insertions.append((items, timestamp))
-        receivedMessages.append(.insert(items, timestamp))
-        insertionsCompletion.append(completion)
-    }
-    
     func completeWithError(error: Error?, at index: Int = 0) {
         deletionCompletions[index](error)
     }
@@ -40,9 +34,16 @@ public class ProductStoreSpy: ProductStore {
         deletionCompletions[index](nil)
     }
     
+    public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+        insertions.append((items, timestamp))
+        receivedMessages.append(.insert(items, timestamp))
+        insertionsCompletion.append(completion)
+    }
+    
     func completeInsertWithError(error: Error?, at index: Int = 0) {
         insertionsCompletion[index](error)
     }
+    
     func completeInsertSuccessfully(at index: Int = 0) {
         insertionsCompletion[index](nil)
     }

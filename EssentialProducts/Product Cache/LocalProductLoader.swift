@@ -11,6 +11,7 @@ public class LocalProductsLoader {
     
     let store: ProductStore
     let currentDate: () -> Date
+    private let calendar = Calendar(identifier: .gregorian)
     
     public typealias SaveResult = Error?
     public typealias LoadResult = ProductsLoader.Result
@@ -36,16 +37,25 @@ public class LocalProductsLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrieve { result in
+        store.retrieve { [unowned self] result in
             switch result {
             case let .failure(error):
                 completion(.failure(error))
-            case let .found(products, _):
+            case let .found(products, timestamp) where self.validate(timestamp):
                 completion(.success(products.toModels()))
-            case .empty:
+            case .found, .empty:
                 completion(.success([]))
             }
         }
+    }
+    
+    private var maxCacheAge: Int { 7 }
+    
+    private func validate(_ timestamp: Date) -> Bool {
+        guard let maxCaheAge = calendar.date(byAdding: .day, value: maxCacheAge, to: timestamp) else {
+            return false
+        }
+        return currentDate() < maxCaheAge
     }
     
     private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {

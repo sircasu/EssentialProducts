@@ -47,13 +47,25 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
     
     func test_load_deliversCachedProductOnLessThan7DaysOldCache() {
         
-        let currentDate = Date.init()
-        let (sut, store) = makeSUT() { currentDate }
-        let lessThanSeveDayOldTimestamp = Date.init().adding(days: -7).adding(seconds: 1)
+        let fixedCurrentDate = Date.init()
         let products = uniqueItems()
-        
+        let lessThanSevenDayOldTimestamp = Date.init().adding(days: -7).adding(seconds: 1)
+        let (sut, store) = makeSUT() { fixedCurrentDate }
+
         expect(sut, toCompleteWith: .success(products.model), when: {
-            store.completeRetrieval(with: products.local, timestamp: lessThanSeveDayOldTimestamp)
+            store.completeRetrieval(with: products.local, timestamp: lessThanSevenDayOldTimestamp)
+        })
+    }
+    
+    func test_load_doesNotDeliverProductsOn7DaysOldCache() {
+        
+        let fixedCurrentDate = Date()
+        let sevenDayOldTimestamp = fixedCurrentDate.adding(days: -7)
+        let products = uniqueItems()
+        let (sut, store) = makeSUT() { fixedCurrentDate }
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            store.completeRetrieval(with: products.local, timestamp: sevenDayOldTimestamp)
         })
     }
     

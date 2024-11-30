@@ -55,11 +55,15 @@ public class ProductStoreSpy: ProductStore {
         receivedMessages.append(.retrieve)
     }
     
-    public func completeRetrievalWithError(error: Error?, at index: Int = 0) {
-        retrievalCompletion[index](error)
+    public func completeRetrievalWithError(error: Error, at index: Int = 0) {
+        retrievalCompletion[index](.failure(error))
     }
     
     public func completeRetrievalWithEmptyItems(at index: Int = 0) {
-        retrievalCompletion[index](nil)
+        retrievalCompletion[index](.empty)
+    }
+    
+    public func completeRetrieval(with products: [LocalProductItem], timestamp: Date, at index: Int = 0) {
+        retrievalCompletion[index](.found(products, timestamp))
     }
 }

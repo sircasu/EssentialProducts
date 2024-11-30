@@ -36,10 +36,13 @@ public class LocalProductsLoader {
     }
     
     public func load(completion: @escaping (LoadResult) -> Void) {
-        store.retrieve { error in
-            if let error {
+        store.retrieve { result in
+            switch result {
+            case let .failure(error):
                 completion(.failure(error))
-            } else {
+            case let .found(products, _):
+                completion(.success(products.toModels()))
+            case .empty:
                 completion(.success([]))
             }
         }
@@ -59,5 +62,11 @@ public class LocalProductsLoader {
 extension Array where Element == ProductItem {
     func toLocal() -> [LocalProductItem] {
         map { LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: LocalProductRatingItem(rate: $0.rating.rate, count: $0.rating.count)) }
+    }
+}
+
+extension Array where Element == LocalProductItem {
+    func toModels() -> [ProductItem] {
+        map { ProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: ProductRatingItem(rate: $0.rating.rate, count: $0.rating.count)) }
     }
 }

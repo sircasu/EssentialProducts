@@ -68,6 +68,18 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
             store.completeRetrieval(with: products.local, timestamp: sevenDayOldTimestamp)
         })
     }
+        
+    func test_load_doesNotDeliverProductsOnMoreThan7DaysOldCache() {
+        
+        let fixedCurrentDate = Date()
+        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(days: -1)
+        let products = uniqueItems()
+        let (sut, store) = makeSUT() { fixedCurrentDate }
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            store.completeRetrieval(with: products.local, timestamp: moreThanSevenDayOldTimestamp)
+        })
+    }
     
     // MARK: - Helpers
     

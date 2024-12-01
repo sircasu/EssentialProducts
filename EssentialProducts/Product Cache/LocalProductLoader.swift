@@ -40,6 +40,7 @@ public class LocalProductsLoader {
         store.retrieve { [unowned self] result in
             switch result {
             case let .failure(error):
+                store.delete { _ in  }
                 completion(.failure(error))
             case let .found(products, timestamp) where self.validate(timestamp):
                 completion(.success(products.toModels()))

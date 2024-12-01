@@ -72,14 +72,15 @@ No connectiivty - error course (sad path):
 Primary course (happy path):  
   
 1. Execute "Load Product Items" command with above data.
-2. System fetches product data from cache.
+2. System retrieves product data from cache.
 3. System validates caches is less than seven years old.
-4. System creates product items from cache. 
+4. System creates product items from cache data. 
 5. System delivers product items.  
 
-Error course (sad path)
+Retrieval error course (sad path)
 
-1. System delivers error.
+1. System deletes cache.
+2. System delivers error.
 
 Expired cache (sad path)
 

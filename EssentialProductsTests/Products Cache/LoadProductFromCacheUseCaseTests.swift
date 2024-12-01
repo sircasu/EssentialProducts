@@ -127,6 +127,22 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedProducts])
     }
     
+    func test_load_doesNotDeliversResultAfterSUTHasBeenDeallocated() {
+        
+        let store = ProductStoreSpy()
+        var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
+        
+        var receivedResult = [LocalProductsLoader.LoadResult]()
+        sut?.load { receivedResult.append($0) }
+        
+        sut = nil
+        
+        store.completeRetrievalWithEmptyItems()
+        
+        XCTAssertTrue(receivedResult.isEmpty)
+        
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStoreSpy) {

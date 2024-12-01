@@ -101,6 +101,19 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
+    func test_load_deletesCacheOn7DaysOldCache() {
+        
+        let fixedCurrentDate = Date()
+        let sevenDayOldTimestamp = fixedCurrentDate.adding(days: -7)
+        let products = uniqueItems()
+        let (sut, store) = makeSUT() { fixedCurrentDate }
+        
+        sut.load { _ in }
+        store.completeRetrieval(with: products.local, timestamp: sevenDayOldTimestamp)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedProducts])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStoreSpy) {

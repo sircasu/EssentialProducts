@@ -79,17 +79,32 @@ Primary course (happy path):
 
 Retrieval error course (sad path)
 
-1. System deletes cache.
-2. System delivers error.
+1. System delivers error.
 
 Expired cache (sad path)
 
-1. System deletes cache.
-2. System delivers no products.
+1. System delivers no products.
 
 Empty cache - error course (sad apath)  
   
 1. System delivers no products.  
+
+
+**\|\| Validate products from cache use case**  
+
+Primary course (happy path):  
+  
+1. Execute "Validate cache" command with above data.
+2. System retrieves product data from cache.
+3. System validates caches is less than seven years old.
+
+Retrieval error course (sad path)
+
+1. System deletes cache.
+
+Expired cache (sad path)
+
+1. System deletes cache.
   
   
 **\|\| Cache product use case**  

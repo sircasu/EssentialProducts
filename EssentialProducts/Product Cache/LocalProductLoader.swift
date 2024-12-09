@@ -56,8 +56,15 @@ public class LocalProductsLoader {
     }
     
     public func validateCache() {
-        store.retrieve { _ in }
-        store.delete { _ in }
+        store.retrieve { [unowned self] result in
+        
+            switch result {
+            case .failure:
+                store.delete { _ in }
+            default: break
+            }
+        }
+        
     }
     
     private var maxCacheAge: Int { 7 }

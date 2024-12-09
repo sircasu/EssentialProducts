@@ -43,7 +43,6 @@ public class LocalProductsLoader {
             
             switch result {
             case let .failure(error):
-                store.delete { _ in  }
                 completion(.failure(error))
             case let .found(products, timestamp) where self.validate(timestamp):
                 completion(.success(products.toModels()))
@@ -54,6 +53,11 @@ public class LocalProductsLoader {
                 completion(.success([]))
             }
         }
+    }
+    
+    public func validateCache() {
+        store.retrieve { _ in }
+        store.delete { _ in }
     }
     
     private var maxCacheAge: Int { 7 }

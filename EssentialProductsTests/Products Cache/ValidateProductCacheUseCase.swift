@@ -17,6 +17,16 @@ final class ValidateProductCacheUseCase: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [])
     }
     
+    func test_validateCache_deletesCacheOnRetrievalError() {
+        
+        let (sut, store) = makeSUT()
+        
+        sut.validateCache()
+        store.completeRetrievalWithError(error: anyNSError())
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedProducts])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStoreSpy) {
@@ -27,5 +37,9 @@ final class ValidateProductCacheUseCase: XCTestCase {
         trackForMemoryLeak(store, file: file, line: line)
         
         return (sut: sut, store: store)
+    }
+    
+    private func anyNSError() -> NSError {
+        return NSError(domain: "test", code: 0)
     }
 }

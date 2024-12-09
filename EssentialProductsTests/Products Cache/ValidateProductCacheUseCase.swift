@@ -50,6 +50,19 @@ final class ValidateProductCacheUseCase: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedProducts])
     }
     
+    func test_validateCache_doesNotDeleteOnLessThan7DaysOldCache() {
+        let fixedCurrentDate = Date.init()
+        let products = uniqueItems()
+        let lessThanSevenDayOldTimestamp = Date.init().adding(days: -7).adding(seconds: 1)
+        let (sut, store) = makeSUT() { fixedCurrentDate }
+
+        sut.validateCache()
+        
+        store.completeRetrieval(with: products.local, timestamp: lessThanSevenDayOldTimestamp)
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
     func test_validateCache_deletesCacheOnMoreThan7DaysOldCache() {
         
         let fixedCurrentDate = Date()

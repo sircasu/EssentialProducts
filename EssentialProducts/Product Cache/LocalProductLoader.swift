@@ -46,10 +46,7 @@ public class LocalProductsLoader {
                 completion(.failure(error))
             case let .found(products, timestamp) where self.validate(timestamp):
                 completion(.success(products.toModels()))
-            case .found:
-                store.delete { _ in  }
-                completion(.success([]))
-            case .empty:
+            case .found, .empty:
                 completion(.success([]))
             }
         }
@@ -60,6 +57,8 @@ public class LocalProductsLoader {
         
             switch result {
             case .failure:
+                store.delete { _ in }
+            case let .found(_, timestamp) where !self.validate(timestamp):
                 store.delete { _ in }
             default: break
             }

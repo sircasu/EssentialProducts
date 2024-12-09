@@ -138,14 +138,6 @@ final class CacheProductsUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedError as NSError?, error, file: file, line: line)
     }
     
-    private func anyNSError() -> NSError {
-        return NSError(domain: "test", code: 0)
-    }
-    
-    private func anyURL() -> URL {
-        return URL(string: "https://example.com/")!
-    }
-    
     private func uniqueItem(id: Int) -> ProductItem {
         return ProductItem(id: 1, title: "any title", price: 12.99, description: "a description", category: "a category", image: anyURL(), rating: ProductRatingItem(rate: 4.3, count: 24))
     }

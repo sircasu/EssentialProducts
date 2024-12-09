@@ -76,6 +76,20 @@ final class ValidateProductCacheUseCase: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve, .deleteCachedProducts])
     }
     
+    func test_validateCache_doesNotDeleteInvalidCacheAfterSUTHasBeenDeallocated() {
+        
+        let store = ProductStoreSpy()
+        var sut: LocalProductsLoader? = LocalProductsLoader(store: store, currentDate: Date.init)
+        
+        sut?.validateCache()
+        
+        sut = nil
+        
+        store.completeRetrievalWithError(error: anyNSError())
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalProductsLoader, ProductStoreSpy) {

@@ -21,6 +21,18 @@ public class LocalProductsLoader {
         self.currentDate = currentDate
     }
     
+    private var maxCacheAge: Int { 7 }
+    
+    private func validate(_ timestamp: Date) -> Bool {
+        guard let maxCaheAge = calendar.date(byAdding: .day, value: maxCacheAge, to: timestamp) else {
+            return false
+        }
+        return currentDate() < maxCaheAge
+    }
+}
+
+extension LocalProductsLoader {
+    
     public func save(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
         store.delete() { [weak self] error in
             
@@ -28,14 +40,25 @@ public class LocalProductsLoader {
             
             if error != nil {
                 completion(error)
-
+                
             } else {
                 self.cache(items, completion: completion)
             }
-
+            
         }
     }
     
+    private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
+        self.store.insert(items.toLocal(), timestamp: self.currentDate()) { [weak self] error in
+            
+            guard self != nil else { return }
+            
+            completion(error)
+        }
+    }
+}
+
+extension LocalProductsLoader {
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve { [weak self] result in
             
@@ -51,12 +74,15 @@ public class LocalProductsLoader {
             }
         }
     }
+}
+
+extension LocalProductsLoader {
     
     public func validateCache() {
         store.retrieve { [weak self] result in
             
             guard let self = self else { return }
-        
+            
             switch result {
             case .failure:
                 store.delete { _ in }
@@ -64,27 +90,8 @@ public class LocalProductsLoader {
                 store.delete { _ in }
             case .found, .empty:
                 break
-
+                
             }
-        }
-        
-    }
-    
-    private var maxCacheAge: Int { 7 }
-    
-    private func validate(_ timestamp: Date) -> Bool {
-        guard let maxCaheAge = calendar.date(byAdding: .day, value: maxCacheAge, to: timestamp) else {
-            return false
-        }
-        return currentDate() < maxCaheAge
-    }
-    
-    private func cache(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
-        self.store.insert(items.toLocal(), timestamp: self.currentDate()) { [weak self] error in
-            
-            guard self != nil else { return }
-            
-            completion(error)
         }
     }
 }

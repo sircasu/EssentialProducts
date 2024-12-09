@@ -13,9 +13,6 @@ public class LocalProductsLoader: ProductsLoader {
     let currentDate: () -> Date
     private let calendar = Calendar(identifier: .gregorian)
     
-    public typealias SaveResult = Error?
-    public typealias LoadResult = ProductsLoader.Result
-    
     public init(store: ProductStore, currentDate: @escaping () -> Date) {
         self.store = store
         self.currentDate = currentDate
@@ -32,6 +29,8 @@ public class LocalProductsLoader: ProductsLoader {
 }
 
 extension LocalProductsLoader {
+    
+    public typealias SaveResult = Error?
     
     public func save(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
         store.delete() { [weak self] error in
@@ -59,6 +58,9 @@ extension LocalProductsLoader {
 }
 
 extension LocalProductsLoader {
+    
+    public typealias LoadResult = ProductsLoader.Result
+    
     public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve { [weak self] result in
             

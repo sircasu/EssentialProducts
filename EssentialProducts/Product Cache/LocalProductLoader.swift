@@ -62,7 +62,9 @@ public class LocalProductsLoader {
                 store.delete { _ in }
             case let .found(_, timestamp) where !self.validate(timestamp):
                 store.delete { _ in }
-            default: break
+            case .found, .empty:
+                break
+
             }
         }
         

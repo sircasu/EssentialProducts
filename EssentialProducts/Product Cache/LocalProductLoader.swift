@@ -7,24 +7,35 @@
 
 import Foundation
 
-public class LocalProductsLoader: ProductsLoader {
+final class ProductCachePolicy {
     
-    let store: ProductStore
-    let currentDate: () -> Date
     private let calendar = Calendar(identifier: .gregorian)
-    
-    public init(store: ProductStore, currentDate: @escaping () -> Date) {
-        self.store = store
+    let currentDate: () -> Date
+
+    init(currentDate: @escaping () -> Date) {
         self.currentDate = currentDate
     }
     
     private var maxCacheAge: Int { 7 }
     
-    private func validate(_ timestamp: Date) -> Bool {
+    func validate(_ timestamp: Date) -> Bool {
         guard let maxCaheAge = calendar.date(byAdding: .day, value: maxCacheAge, to: timestamp) else {
             return false
         }
         return currentDate() < maxCaheAge
+    }
+}
+
+public class LocalProductsLoader: ProductsLoader {
+    
+    let store: ProductStore
+    let currentDate: () -> Date
+    private let productCachePolicy: ProductCachePolicy
+    
+    public init(store: ProductStore, currentDate: @escaping () -> Date) {
+        self.store = store
+        self.currentDate = currentDate
+        self.productCachePolicy = ProductCachePolicy(currentDate: currentDate)
     }
 }
 
@@ -69,7 +80,7 @@ extension LocalProductsLoader {
             switch result {
             case let .failure(error):
                 completion(.failure(error))
-            case let .found(products, timestamp) where self.validate(timestamp):
+            case let .found(products, timestamp) where self.productCachePolicy.validate(timestamp):
                 completion(.success(products.toModels()))
             case .found, .empty:
                 completion(.success([]))
@@ -88,7 +99,7 @@ extension LocalProductsLoader {
             switch result {
             case .failure:
                 store.delete { _ in }
-            case let .found(_, timestamp) where !self.validate(timestamp):
+            case let .found(_, timestamp) where !self.productCachePolicy.validate(timestamp):
                 store.delete { _ in }
             case .found, .empty:
                 break

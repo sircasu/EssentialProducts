@@ -9,11 +9,13 @@ import Foundation
 
 final class ProductCachePolicy {
     
-    private let calendar = Calendar(identifier: .gregorian)
-
-    private var maxCacheAge: Int { 7 }
+    private init() {}
     
-    func validate(_ timestamp: Date, against date: Date) -> Bool {
+    private static let calendar = Calendar(identifier: .gregorian)
+
+    private static var maxCacheAge: Int { 7 }
+    
+    static func validate(_ timestamp: Date, against date: Date) -> Bool {
         guard let maxCaheAge = calendar.date(byAdding: .day, value: maxCacheAge, to: timestamp) else {
             return false
         }
@@ -25,7 +27,6 @@ public class LocalProductsLoader: ProductsLoader {
     
     private let store: ProductStore
     private let currentDate: () -> Date
-    private let productCachePolicy = ProductCachePolicy()
     
     public init(store: ProductStore, currentDate: @escaping () -> Date) {
         self.store = store
@@ -74,7 +75,7 @@ extension LocalProductsLoader {
             switch result {
             case let .failure(error):
                 completion(.failure(error))
-            case let .found(products, timestamp) where self.productCachePolicy.validate(timestamp, against: currentDate()):
+            case let .found(products, timestamp) where ProductCachePolicy.validate(timestamp, against: currentDate()):
                 completion(.success(products.toModels()))
             case .found, .empty:
                 completion(.success([]))
@@ -93,7 +94,7 @@ extension LocalProductsLoader {
             switch result {
             case .failure:
                 store.delete { _ in }
-            case let .found(_, timestamp) where !self.productCachePolicy.validate(timestamp, against: currentDate()):
+            case let .found(_, timestamp) where !ProductCachePolicy.validate(timestamp, against: currentDate()):
                 store.delete { _ in }
             case .found, .empty:
                 break

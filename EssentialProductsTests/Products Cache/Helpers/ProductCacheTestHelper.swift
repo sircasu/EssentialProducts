@@ -26,6 +26,6 @@ extension Date {
     }
     
     func adding(seconds: TimeInterval) -> Date {
-        return Date.init() + seconds
+        return self + seconds
     }
 }

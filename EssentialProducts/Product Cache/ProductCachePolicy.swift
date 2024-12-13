@@ -13,12 +13,12 @@ final class ProductCachePolicy {
     
     private static let calendar = Calendar(identifier: .gregorian)
 
-    private static var maxCacheAge: Int { 7 }
+    private static var maxCacheAgeInDays: Int { 7 }
     
     static func validate(_ timestamp: Date, against date: Date) -> Bool {
-        guard let maxCaheAge = calendar.date(byAdding: .day, value: maxCacheAge, to: timestamp) else {
+        guard let maxCacheAge = calendar.date(byAdding: .day, value: maxCacheAgeInDays, to: timestamp) else {
             return false
         }
-        return date < maxCaheAge
+        return date < maxCacheAge
     }
 }

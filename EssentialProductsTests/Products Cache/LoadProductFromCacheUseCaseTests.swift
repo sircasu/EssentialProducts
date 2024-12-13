@@ -47,9 +47,9 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
     
     func test_load_deliversCachedProductOnLessThan7DaysOldCache() {
         
-        let fixedCurrentDate = Date.init()
+        let fixedCurrentDate = Date()
         let products = uniqueItems()
-        let lessThanSevenDayOldTimestamp = Date.init().adding(days: -7).adding(seconds: 1)
+        let lessThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
         let (sut, store) = makeSUT() { fixedCurrentDate }
 
         expect(sut, toCompleteWith: .success(products.model), when: {
@@ -72,7 +72,7 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
     func test_load_doesNotDeliverProductsOnMoreThan7DaysOldCache() {
         
         let fixedCurrentDate = Date()
-        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(days: -1)
+        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
         let products = uniqueItems()
         let (sut, store) = makeSUT() { fixedCurrentDate }
         
@@ -115,9 +115,9 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
     }
     
     func test_load_doesNotDeleteOnLessThan7DaysOldCache() {
-        let fixedCurrentDate = Date.init()
+        let fixedCurrentDate = Date()
         let products = uniqueItems()
-        let lessThanSevenDayOldTimestamp = Date.init().adding(days: -7).adding(seconds: 1)
+        let lessThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
         let (sut, store) = makeSUT() { fixedCurrentDate }
 
         sut.load { _ in }
@@ -130,7 +130,7 @@ final class LoadProductFromCacheUseCaseTests: XCTestCase {
     func test_load_hasNoSideEffectOnMoreThan7DaysOldCache() {
         
         let fixedCurrentDate = Date()
-        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(days: -1)
+        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
         let products = uniqueItems()
         let (sut, store) = makeSUT() { fixedCurrentDate }
         

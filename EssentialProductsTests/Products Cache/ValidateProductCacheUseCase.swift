@@ -51,9 +51,9 @@ final class ValidateProductCacheUseCase: XCTestCase {
     }
     
     func test_validateCache_doesNotDeleteOnLessThan7DaysOldCache() {
-        let fixedCurrentDate = Date.init()
+        let fixedCurrentDate = Date()
         let products = uniqueItems()
-        let lessThanSevenDayOldTimestamp = Date.init().adding(days: -7).adding(seconds: 1)
+        let lessThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: 1)
         let (sut, store) = makeSUT() { fixedCurrentDate }
 
         sut.validateCache()
@@ -66,7 +66,7 @@ final class ValidateProductCacheUseCase: XCTestCase {
     func test_validateCache_deletesCacheOnMoreThan7DaysOldCache() {
         
         let fixedCurrentDate = Date()
-        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(days: -1)
+        let moreThanSevenDayOldTimestamp = fixedCurrentDate.adding(days: -7).adding(seconds: -1)
         let products = uniqueItems()
         let (sut, store) = makeSUT() { fixedCurrentDate }
         

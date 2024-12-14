@@ -21,7 +21,14 @@ func uniqueItems() -> (model: [ProductItem], local: [LocalProductItem]) {
 }
 
 extension Date {
-    func adding(days: Int) -> Date {
+    
+    private var productMaxCacheInDays: Int { 7 }
+    
+    func minusMaxCacheAge() -> Date {
+        return adding(days: -productMaxCacheInDays)
+    }
+    
+    private func adding(days: Int) -> Date {
         return Calendar(identifier: .gregorian).date(byAdding: .day, value: days, to: self)!
     }
     

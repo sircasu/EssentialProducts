@@ -162,3 +162,25 @@ Products - Get
     ...
 ]
 ```
+
+---
+
+ProductStore implementation Inbox
+
+```
+Insert
+ - To empty cache
+ - To non-empty cache overrides data with new data
+ - Error (if applicable from infrastracture Framework like CoreData, e.g. no write permission)
+Retrieve:
+ - Empty cache
+ - Non-empty cache returns data
+ - Non-empty cache twice returns same data (no side-effects)
+ - Error (if applicable from infrastracture Framework like CoreData, e.g. invalid data)
+Delete
+ - Empty cache does nothing (cache stays empty and does not fail)
+ - Non-empty cache leaves cache empty
+ - Error (if applicable from infrastracture Framework like CoreData, e.g. no delete permission)
+
+- Side-effects must run serially to avoid race-conditions (deleting the wrong cache... overriding the latest data...)
+```

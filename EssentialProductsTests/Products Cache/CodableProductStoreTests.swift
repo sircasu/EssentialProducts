@@ -10,7 +10,11 @@ import EssentialProducts
 
 public final class CodableProductStore {
     
-    private let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("products.store")
+    private let storeURL: URL
+    
+    init(storeURL: URL) {
+        self.storeURL = storeURL
+    }
     
     private struct CodableProductItem: Codable {
         private let id: Int
@@ -83,18 +87,12 @@ final class CodableProductStoreTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("products.store")
-        
-        try? FileManager.default.removeItem(at: storeURL)
+        try? FileManager.default.removeItem(at: testSpecificStoreURL())
     }
     
     override func tearDown() {
         super.tearDown()
-        
-        let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("products.store")
-        
-        try? FileManager.default.removeItem(at: storeURL)
+        try? FileManager.default.removeItem(at: testSpecificStoreURL())
     }
     
     func test_retrieve_deliversEmptyOnEmptyCache() {
@@ -167,12 +165,16 @@ final class CodableProductStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> CodableProductStore {
-        let sut = CodableProductStore()
+        let storeURL = testSpecificStoreURL()
+        let sut = CodableProductStore(storeURL: storeURL)
         trackForMemoryLeak(sut, file: file, line: line)
         return sut
+    }
+    
+    private func testSpecificStoreURL() -> URL {
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct LocalProductItem: Equatable, Codable {
+public struct LocalProductItem: Equatable {
     public let id: Int
     public let title: String
     public let price: Double
@@ -27,7 +27,7 @@ public struct LocalProductItem: Equatable, Codable {
     }
 }
 
-public struct LocalProductRatingItem: Equatable, Codable {
+public struct LocalProductRatingItem: Equatable {
     public let rate: Double
     public let count: Int
     

@@ -8,15 +8,53 @@
 import XCTest
 import EssentialProducts
 
-class CodableProductStore {
+public final class CodableProductStore {
     
     private let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("products.store")
     
-    private struct Cache: Codable {
-        let products: [LocalProductItem]
-        let timestamp: Date
+    private struct CodableProductItem: Codable {
+        private let id: Int
+        private let title: String
+        private let price: Double
+        private let description: String
+        private let category: String
+        private let image: URL
+        private let rating: CodableProductRatingItem
+        
+        init(_ item: LocalProductItem) {
+            id = item.id
+            title = item.title
+            price = item.price
+            description = item.description
+            category = item.category
+            image = item.image
+            rating = CodableProductRatingItem(item.rating)
+        }
+        
+        var local: LocalProductItem { LocalProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: rating.local) }
     }
 
+    private struct CodableProductRatingItem: Codable {
+        private let rate: Double
+        private let count: Int
+        
+        init(_ item: LocalProductRatingItem) {
+            rate = item.rate
+            count = item.count
+        }
+        
+        var local: LocalProductRatingItem { LocalProductRatingItem(rate: rate, count: count) }
+    }
+    
+    private struct Cache: Codable {
+        let products: [CodableProductItem]
+        let timestamp: Date
+        
+        var localProducts: [LocalProductItem] {
+            products.map { $0.local }
+        }
+    }
+    
     func retrieve(completion: @escaping ProductStore.RetrievalCompletion) {
         
         guard let data = try? Data(contentsOf: storeURL) else {
@@ -26,13 +64,14 @@ class CodableProductStore {
         let decoder = JSONDecoder()
         let cache = try! decoder.decode(Cache.self, from: data)
         
-        completion(.found(cache.products, cache.timestamp))
+        completion(.found(cache.localProducts, cache.timestamp))
     }
     
     func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping ProductStore.InsertionCompletion) {
         
         let encoder = JSONEncoder()
-        let encoded = try! encoder.encode(Cache(products: items, timestamp: timestamp))
+        let cache = Cache(products: items.map (CodableProductItem.init), timestamp: timestamp)
+        let encoded = try! encoder.encode(cache)
         try! encoded.write(to: storeURL)
         
         completion(nil)

@@ -99,9 +99,9 @@ final class CodableProductStoreTests: XCTestCase {
     
     func test_retrieve_deliversEmptyOnEmptyCache() {
         
-        let sut = CodableProductStore()
-        
+        let sut = makeSUT()
         let exp = expectation(description: "Wait for completion")
+        
         sut.retrieve { result in
             
             switch result {
@@ -118,7 +118,7 @@ final class CodableProductStoreTests: XCTestCase {
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         
-        let sut = CodableProductStore()
+        let sut = makeSUT()
         
         let exp = expectation(description: "Wait for completion")
         
@@ -140,7 +140,7 @@ final class CodableProductStoreTests: XCTestCase {
     
     func test_retrieveAfterInsert_deliversInsertedValues() {
         
-        let sut = CodableProductStore()
+        let sut = makeSUT()
         
         let products = uniqueItems().local
         let timestamp = Date()
@@ -167,4 +167,10 @@ final class CodableProductStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    
+    // MARK: - Helpers
+    
+    private func makeSUT() -> CodableProductStore {
+        return CodableProductStore()
+    }
 }

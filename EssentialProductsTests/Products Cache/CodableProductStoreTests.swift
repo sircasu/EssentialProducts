@@ -91,6 +91,11 @@ public final class CodableProductStore {
     
     }
     
+    func delete(completion: @escaping ProductStore.DeletionCompletion) {
+        
+        completion(nil)
+    }
+    
 }
 
 final class CodableProductStoreTests: XCTestCase {
@@ -184,6 +189,19 @@ final class CodableProductStoreTests: XCTestCase {
         
         let insertionError = insert((products, timestamp: timestamp), to: sut)
         XCTAssertNotNil(insertionError, "Expected error")
+    }
+    
+    func test_delete_hasNoSideEffectsOnEmptyCache() {
+        
+        let sut = makeSUT()
+        
+        let exp = expectation(description: "Wait for completion")
+        sut.delete { deletionError in 
+            XCTAssertNil(deletionError, "Expected no error")
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
     }
     
     // MARK: - Helpers

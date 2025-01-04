@@ -92,7 +92,10 @@ public final class CodableProductStore {
     }
     
     func delete(completion: @escaping ProductStore.DeletionCompletion) {
-        
+        guard FileManager.default.fileExists(atPath: storeURL.path) else {
+            return completion(nil)
+        }
+        try! FileManager.default.removeItem(at: storeURL)
         completion(nil)
     }
     
@@ -200,8 +203,25 @@ final class CodableProductStoreTests: XCTestCase {
             XCTAssertNil(deletionError, "Expected no error")
             exp.fulfill()
         }
-        
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_delete_leavesCacheEmptyOnNonEmptyCache() {
+        let sut = makeSUT()
+        let products = uniqueItems().local
+        let timestamp = Date()
+        
+        let insertionError = insert((products, timestamp: timestamp), to: sut)
+        XCTAssertNil(insertionError, "Expected to insert cache successfully")
+        
+        let exp = expectation(description: "Wait for completion")
+        sut.delete { deletionError in
+            XCTAssertNil(deletionError, "Expected no error")
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+        
+        expect(sut, toRetrieve: .empty)
     }
     
     // MARK: - Helpers

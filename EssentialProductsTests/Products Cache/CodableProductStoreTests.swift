@@ -203,7 +203,8 @@ final class CodableProductStoreTests: XCTestCase {
         
         let sut = makeSUT()
         
-        deleteCache(from: sut)
+        let deletionError = deleteCache(from: sut)
+        XCTAssertNil(deletionError, "Expected empty cache deletion to succeed")
     }
     
     func test_delete_leavesCacheEmptyOnNonEmptyCache() {
@@ -213,7 +214,8 @@ final class CodableProductStoreTests: XCTestCase {
         
         insert((products, timestamp: timestamp), to: sut)
         
-        deleteCache(from: sut)
+        let deletionError =  deleteCache(from: sut)
+        XCTAssertNil(deletionError, "Expected non-empty cache deletion to succeed")
         
         expect(sut, toRetrieve: .empty)
     }

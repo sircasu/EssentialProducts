@@ -107,23 +107,8 @@ final class CodableProductStoreTests: XCTestCase {
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         
         let sut = makeSUT()
-        
-        let exp = expectation(description: "Wait for completion")
-        
-        sut.retrieve { firstResult in
-            
-            sut.retrieve { secondResult in
-                
-                switch (firstResult, secondResult) {
-                    case (.empty, .empty): break
-                default: XCTFail("Expected empty results got \(firstResult) and \(secondResult) instead")
-                }
-            }
-            
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+
+        expect(sut, toRetrieveTwice: .empty)
     }
     
     func test_retrieveAfterInsert_deliversInsertedValues() {
@@ -150,33 +135,13 @@ final class CodableProductStoreTests: XCTestCase {
         let timestamp = Date()
         
         let exp = expectation(description: "Wait for completion")
-        
         sut.insert(products, timestamp: timestamp) { insertionError in
             XCTAssertNil(insertionError, "Expected products to be inserted successfully")
-            
-            sut.retrieve { firstResult in
-                
-                sut.retrieve { secondResult in
-                    
-                    switch (firstResult, secondResult) {
-                        
-                    case let (.found(firstProductsFound, firstTimestampFound), .found(secondProductsFound, secondTimestampFound)):
-                        
-                        XCTAssertEqual(firstProductsFound, products)
-                        XCTAssertEqual(firstTimestampFound, timestamp)
-
-                        XCTAssertEqual(secondProductsFound, products)
-                        XCTAssertEqual(secondTimestampFound, timestamp)
-                    default:
-                        XCTFail("Expected retrieving twice from non empty cache to delivers same found results with products \(products), got \(firstResult), \(secondResult) instead")
-                    }
-                    
-                }
-            }
             exp.fulfill()
         }
-        
         wait(for: [exp], timeout: 1.0)
+        
+        expect(sut, toRetrieve: .found(products, timestamp))
     }
     
     // MARK: - Helpers
@@ -208,6 +173,12 @@ final class CodableProductStoreTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    private func expect(_ sut: CodableProductStore, toRetrieveTwice expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
+        
+        expect(sut, toRetrieve: expectedResult)
+        expect(sut, toRetrieve: expectedResult)
     }
     
     private func testSpecificStoreURL() -> URL {

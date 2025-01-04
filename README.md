@@ -182,7 +182,7 @@ ProductStore implementation Inbox
 ✅ Delete
     ✅ Empty cache does nothing (cache stays empty and does not fail)
     ✅ Non-empty cache leaves cache empty
- - Error (if applicable from infrastracture Framework like CoreData, e.g. no delete permission)
+    ✅ Error (if applicable from infrastracture Framework like CoreData, e.g. no delete permission)
 
 - Side-effects must run serially to avoid race-conditions (deleting the wrong cache... overriding the latest data...)
 ```

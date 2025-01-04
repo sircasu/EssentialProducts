@@ -198,12 +198,7 @@ final class CodableProductStoreTests: XCTestCase {
         
         let sut = makeSUT()
         
-        let exp = expectation(description: "Wait for completion")
-        sut.delete { deletionError in 
-            XCTAssertNil(deletionError, "Expected no error")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        deleteCache(from: sut)
     }
     
     func test_delete_leavesCacheEmptyOnNonEmptyCache() {
@@ -211,15 +206,9 @@ final class CodableProductStoreTests: XCTestCase {
         let products = uniqueItems().local
         let timestamp = Date()
         
-        let insertionError = insert((products, timestamp: timestamp), to: sut)
-        XCTAssertNil(insertionError, "Expected to insert cache successfully")
+        insert((products, timestamp: timestamp), to: sut)
         
-        let exp = expectation(description: "Wait for completion")
-        sut.delete { deletionError in
-            XCTAssertNil(deletionError, "Expected no error")
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        deleteCache(from: sut)
         
         expect(sut, toRetrieve: .empty)
     }
@@ -246,6 +235,16 @@ final class CodableProductStoreTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
         return insertionError
+    }
+    
+    func deleteCache(from sut: CodableProductStore, file: StaticString = #filePath, line: UInt = #line) {
+        
+        let exp = expectation(description: "Wait for completion")
+        sut.delete { deletionError in
+            XCTAssertNil(deletionError, "Expectet deletion to be successfully", file: file, line: line)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func expect(_ sut: CodableProductStore, toRetrieve expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {

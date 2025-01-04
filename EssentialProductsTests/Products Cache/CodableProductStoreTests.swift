@@ -95,8 +95,13 @@ public final class CodableProductStore {
         guard FileManager.default.fileExists(atPath: storeURL.path) else {
             return completion(nil)
         }
-        try! FileManager.default.removeItem(at: storeURL)
-        completion(nil)
+        
+        do {
+            try FileManager.default.removeItem(at: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
     }
     
 }
@@ -213,6 +218,14 @@ final class CodableProductStoreTests: XCTestCase {
         expect(sut, toRetrieve: .empty)
     }
     
+    func test_delete_deliversErrorOnDeletionError() {
+        let noDeletePermissionURL = cachesDirectory()
+        let sut = makeSUT(storeURL: noDeletePermissionURL)
+        
+        let deletionError = deleteCache(from: sut)
+        XCTAssertNotNil(deletionError, "Expected cache deletion to fail")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(storeURL: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> CodableProductStore {
@@ -237,14 +250,17 @@ final class CodableProductStoreTests: XCTestCase {
         return insertionError
     }
     
-    func deleteCache(from sut: CodableProductStore, file: StaticString = #filePath, line: UInt = #line) {
+    @discardableResult
+    func deleteCache(from sut: CodableProductStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
         
         let exp = expectation(description: "Wait for completion")
-        sut.delete { deletionError in
-            XCTAssertNil(deletionError, "Expectet deletion to be successfully", file: file, line: line)
+        var deletionError: Error?
+        sut.delete { receivedDeletionError in
             exp.fulfill()
+            deletionError = receivedDeletionError
         }
         wait(for: [exp], timeout: 1.0)
+        return deletionError
     }
     
     private func expect(_ sut: CodableProductStore, toRetrieve expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
@@ -277,7 +293,11 @@ final class CodableProductStoreTests: XCTestCase {
     }
     
     private func testSpecificStoreURL() -> URL {
-        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
+        return cachesDirectory().appendingPathComponent("\(type(of: self)).store")
+    }
+    
+    private func cachesDirectory() -> URL {
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
     private func setupEmptyStoreState() {

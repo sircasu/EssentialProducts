@@ -166,6 +166,42 @@ final class CodableProductStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
+        
+        let sut = makeSUT()
+        let products = uniqueItems().local
+        let timestamp = Date()
+        
+        let exp = expectation(description: "Wait for completion")
+        
+        sut.insert(products, timestamp: timestamp) { insertionError in
+            XCTAssertNil(insertionError, "Expected products to be inserted successfully")
+            
+            sut.retrieve { firstResult in
+                
+                sut.retrieve { secondResult in
+                    
+                    switch (firstResult, secondResult) {
+                        
+                    case let (.found(firstProductsFound, firstTimestampFound), .found(secondProductsFound, secondTimestampFound)):
+                        
+                        XCTAssertEqual(firstProductsFound, products)
+                        XCTAssertEqual(firstTimestampFound, timestamp)
+
+                        XCTAssertEqual(secondProductsFound, products)
+                        XCTAssertEqual(secondTimestampFound, timestamp)
+                    default:
+                        XCTFail("Expected retrieving twice from non empty cache to delivers same found results with products \(products), got \(firstResult), \(secondResult) instead")
+                    }
+                    
+                }
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> CodableProductStore {

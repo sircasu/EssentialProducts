@@ -155,6 +155,23 @@ final class CodableProductStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .failure(anyNSError()))
     }
     
+    func test_insert_overridesExistingCache() {
+        let sut = makeSUT()
+        let products = uniqueItems().local
+        let timestamp = Date()
+        
+        let insertionError = insert((products, timestamp: timestamp), to: sut)
+        XCTAssertNil(insertionError, "Expected to insert cache successfully")
+        expect(sut, toRetrieve: .found(products, timestamp))
+        
+        let latestProducts = uniqueItems2().local
+        let latestTimestamp = Date()
+        let latestInsertionError = insert((latestProducts, timestamp: latestTimestamp), to: sut)
+        
+        XCTAssertNil(latestInsertionError, "Expected to override cache successfully")
+        expect(sut, toRetrieve: .found(latestProducts, latestTimestamp))
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(storeURL: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> CodableProductStore {
@@ -163,16 +180,20 @@ final class CodableProductStoreTests: XCTestCase {
         return sut
     }
     
-    private func insert(_ cache: (products: [LocalProductItem], timestamp: Date), to sut: CodableProductStore) {
+    @discardableResult
+    private func insert(_ cache: (products: [LocalProductItem], timestamp: Date), to sut: CodableProductStore) -> Error? {
         
         let exp = expectation(description: "Wait for completion")
         
-        sut.insert(cache.products, timestamp: cache.timestamp) { insertionError in
+        var insertionError: Error?
+        sut.insert(cache.products, timestamp: cache.timestamp) { receivedInsertionError in
             XCTAssertNil(insertionError, "Expected products to be inserted successfully")
             exp.fulfill()
+            insertionError = receivedInsertionError
         }
         
         wait(for: [exp], timeout: 1.0)
+        return insertionError
     }
     
     private func expect(_ sut: CodableProductStore, toRetrieve expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {

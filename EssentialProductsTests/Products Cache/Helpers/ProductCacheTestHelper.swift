@@ -20,6 +20,14 @@ func uniqueItems() -> (model: [ProductItem], local: [LocalProductItem]) {
     return (items, localItems)
 }
 
+func uniqueItems2() -> (model: [ProductItem], local: [LocalProductItem]) {
+    let items = [uniqueItem(id: 3), uniqueItem(id: 4)]
+    
+    let localItems = items.map { LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.description, category: $0.category, image: $0.image, rating: LocalProductRatingItem(rate: $0.rating.rate, count: $0.rating.count))}
+    
+    return (items, localItems)
+}
+
 extension Date {
     
     private var productMaxCacheInDays: Int { 7 }

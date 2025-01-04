@@ -170,7 +170,7 @@ ProductStore implementation Inbox
 ```
 Insert
     ✅ To empty cache
- - To non-empty cache overrides data with new data
+    ✅ To non-empty cache overrides data with new data
  - Error (if applicable from infrastracture Framework like CoreData, e.g. no write permission)
  - Error twice return same error (if applicable from infrastracture Framework like CoreData, e.g. no write permission)
 ✅ Retrieve:

@@ -179,7 +179,7 @@ Retrieve:
 ✅ Non-empty cache returns data
 ✅ Non-empty cache twice returns same data (no side-effects)
 ✅ Error return errors (if applicable from infrastracture Framework like CoreData, e.g. invalid data)
- - Error twice return same error (if applicable from infrastracture Framework like CoreData, e.g. invalid data)
+✅ Error twice return same error (if applicable from infrastracture Framework like CoreData, e.g. invalid data)
 Delete
  - Empty cache does nothing (cache stays empty and does not fail)
  - Non-empty cache leaves cache empty

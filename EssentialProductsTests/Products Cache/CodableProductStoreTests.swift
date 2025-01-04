@@ -111,7 +111,7 @@ final class CodableProductStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .empty)
     }
     
-    func test_retrieveAfterInsert_deliversInsertedValues() {
+    func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
         
         let sut = makeSUT()
         let products = uniqueItems().local

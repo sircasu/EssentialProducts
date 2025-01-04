@@ -65,10 +65,16 @@ public final class CodableProductStore {
             return completion(.empty)
         }
         
-        let decoder = JSONDecoder()
-        let cache = try! decoder.decode(Cache.self, from: data)
+        do {
+            let decoder = JSONDecoder()
+            let cache = try decoder.decode(Cache.self, from: data)
+            completion(.found(cache.localProducts, cache.timestamp))
+        } catch {
+            completion(.failure(error))
+        }
+
         
-        completion(.found(cache.localProducts, cache.timestamp))
+       
     }
     
     func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping ProductStore.InsertionCompletion) {
@@ -131,6 +137,15 @@ final class CodableProductStoreTests: XCTestCase {
         expect(sut, toRetrieveTwice: .found(products, timestamp))
     }
     
+    func test_retrieve_deliversErrorOnInvalidData() {
+        
+        let sut = makeSUT()
+        
+        try! "invalid data".write(to: testSpecificStoreURL(), atomically: false, encoding: .utf8)
+        
+        expect(sut, toRetrieve: .failure(anyNSError()))
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> CodableProductStore {
@@ -159,7 +174,8 @@ final class CodableProductStoreTests: XCTestCase {
         sut.retrieve { retrievedResult in
             
             switch(expectedResult, retrievedResult) {
-            case (.empty, .empty):
+            case (.empty, .empty),
+                 (.failure, .failure):
                 break
             case let (.found(expected, expectedTimestamp), .found(retrieved, retrievedTimestamp)):
                 XCTAssertEqual(expected, retrieved, file: file, line: line)

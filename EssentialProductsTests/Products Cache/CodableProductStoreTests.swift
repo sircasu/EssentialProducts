@@ -222,13 +222,13 @@ final class CodableProductStoreTests: XCTestCase {
     }
     
     @discardableResult
-    private func insert(_ cache: (products: [LocalProductItem], timestamp: Date), to sut: CodableProductStore) -> Error? {
+    private func insert(_ cache: (products: [LocalProductItem], timestamp: Date), to sut: CodableProductStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
         
         let exp = expectation(description: "Wait for completion")
         
         var insertionError: Error?
         sut.insert(cache.products, timestamp: cache.timestamp) { receivedInsertionError in
-            XCTAssertNil(insertionError, "Expected products to be inserted successfully")
+            XCTAssertNil(insertionError, "Expected products to be inserted successfully", file: file, line: line)
             exp.fulfill()
             insertionError = receivedInsertionError
         }

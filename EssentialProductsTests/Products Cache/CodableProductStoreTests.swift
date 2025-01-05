@@ -8,7 +8,7 @@
 import XCTest
 import EssentialProducts
 
-public final class CodableProductStore {
+public final class CodableProductStore: ProductStore {
     
     private let storeURL: URL
     
@@ -59,7 +59,7 @@ public final class CodableProductStore {
         }
     }
     
-    func retrieve(completion: @escaping ProductStore.RetrievalCompletion) {
+    public func retrieve(completion: @escaping RetrievalCompletion) {
         
         guard let data = try? Data(contentsOf: storeURL) else {
             return completion(.empty)
@@ -73,11 +73,9 @@ public final class CodableProductStore {
             completion(.failure(error))
         }
 
-        
-       
     }
     
-    func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping ProductStore.InsertionCompletion) {
+    public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
         
         do {
             let encoder = JSONEncoder()
@@ -91,7 +89,7 @@ public final class CodableProductStore {
     
     }
     
-    func delete(completion: @escaping ProductStore.DeletionCompletion) {
+    public func delete(completion: @escaping DeletionCompletion) {
         guard FileManager.default.fileExists(atPath: storeURL.path) else {
             return completion(nil)
         }

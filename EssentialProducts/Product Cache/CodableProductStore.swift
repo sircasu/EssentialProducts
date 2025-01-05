@@ -9,7 +9,7 @@ import Foundation
 
 public final class CodableProductStore: ProductStore {
     
-    private let queue = DispatchQueue(label: "\(CodableProductStore.self)Queue", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "\(CodableProductStore.self)Queue", qos: .userInitiated, attributes: .concurrent)
     private let storeURL: URL
     
     public init(storeURL: URL) {
@@ -79,7 +79,7 @@ public final class CodableProductStore: ProductStore {
     
     public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
         let storeURL = self.storeURL
-        queue.async {
+        queue.async(flags: .barrier) {
             do {
                 let encoder = JSONEncoder()
                 let cache = Cache(products: items.map (CodableProductItem.init), timestamp: timestamp)
@@ -94,7 +94,7 @@ public final class CodableProductStore: ProductStore {
     
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
         let storeURL = self.storeURL
-        queue.async {
+        queue.async(flags: .barrier) {
             guard FileManager.default.fileExists(atPath: storeURL.path) else {
                 return completion(nil)
             }

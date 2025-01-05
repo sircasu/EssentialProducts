@@ -6,13 +6,36 @@
 //
 
 import XCTest
+import EssentialProducts
 
-final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
-    func test_delete_deliversErrorOnDeletionError() {
+class CoreDataProductStore: ProductStore {
+    func deleteCachedProducts(completion: @escaping DeletionCompletion) {
         
     }
     
-    func test_delete_hasNoSideEffectOnDeletionError() {
+    func insert(_ items: [EssentialProducts.LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+        
+    }
+    
+    func retrieve(completion: @escaping RetrievalCompletion) {
+        completion(.empty)
+    }
+    
+    
+}
+
+final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
+    
+    func test_retrieve_deliversEmptyOnEmptyCache() {
+        let sut = makeSUT()
+        assertThatRetrieveDeliversEmptyOnEmptyCache(on: sut)
+    }
+    
+    func test_retrieve_deliversErrorOnInvalidData() {
+        
+    }
+    
+    func test_retrieve_hasNoSideEffectsOnFailure() {
         
     }
     
@@ -24,15 +47,11 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
         
     }
     
-    func test_retrieve_deliversErrorOnInvalidData() {
+    func test_delete_deliversErrorOnDeletionError() {
         
     }
     
-    func test_retrieve_hasNoSideEffectsOnFailure() {
-        
-    }
-    
-    func test_retrieve_deliversEmptyOnEmptyCache() {
+    func test_delete_hasNoSideEffectOnDeletionError() {
         
     }
     
@@ -78,6 +97,17 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
     
     func test_storeSideEffects_runSerially() {
         
+    }
+    
+  
+    
+    
+    // MARK: - Helpers
+    
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> ProductStore {
+        let sut = CoreDataProductStore()
+        trackForMemoryLeak(sut, file: file, line: line)
+        return sut
     }
     
     

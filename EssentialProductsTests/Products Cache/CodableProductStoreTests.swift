@@ -131,6 +131,33 @@ final class CodableProductStoreTests: XCTestCase {
         XCTAssertNotNil(deletionError, "Expected cache deletion to fail")
     }
     
+    func test_storeSideEffects_runSerially() {
+        let sut = makeSUT()
+        
+        var completedOperation = [XCTestExpectation]()
+        
+        let op1 = expectation(description: "Wait for op1")
+        sut.insert(uniqueItems().local, timestamp: Date()) { _ in
+            completedOperation.append(op1)
+            op1.fulfill()
+        }
+        
+        let op2 = expectation(description: "Wait for op2")
+        sut.retrieve { _ in
+            completedOperation.append(op2)
+            op2.fulfill()
+        }
+        
+        let op3 = expectation(description: "Wait for op3")
+        sut.deleteCachedProducts { _ in
+            completedOperation.append(op3)
+            op3.fulfill()
+        }
+        
+        wait(for: [op1, op2, op3], timeout: 1.0)
+        XCTAssertEqual(completedOperation, [op1, op2, op3], "Expected store side-effects to run serially but operation finished in wrong order")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(storeURL: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> ProductStore {

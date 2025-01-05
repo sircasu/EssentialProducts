@@ -90,21 +90,15 @@ final class CodableProductStoreTests: XCTestCase, FailableProductStoreSpecs {
     func test_insert_deliversErrorOnInsertionError() {
         let invalidStore = URL(string: "invalid:/store-url")
         let sut = makeSUT(storeURL: invalidStore)
-        let products = uniqueItems().local
-        let timestamp = Date()
         
-        let insertionError = insert((products, timestamp: timestamp), to: sut)
-        XCTAssertNotNil(insertionError, "Expected error")
+        assertThatInsertDeliversErrorOnInsertionError(on: sut)
     }
     
     func test_insert_hasNoSideEffectsOnInsertionError() {
         let invalidStore = URL(string: "invalid:/store-url")
         let sut = makeSUT(storeURL: invalidStore)
-        let products = uniqueItems().local
-        let timestamp = Date()
         
-        insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieve: .empty)
+        assertThatInsertHasNoSideEffectsOnInsertionError(on: sut)
     }
     
     func test_delete_deliversNoErrorOnEmptyCache() {

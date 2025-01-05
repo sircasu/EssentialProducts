@@ -36,6 +36,18 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
         assertThatRetrieveHasNoSideEffectsOnEmptyCache(on: sut)
     }
     
+    func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
+        
+    }
+    
+    func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
+        
+    }
+    
+    func test_retrieve_hasNoSideEffectsOnEmptyCache() {
+        
+    }
+    
     func test_retrieve_deliversErrorOnInvalidData() {
         
     }
@@ -53,18 +65,6 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
     }
     
     func test_delete_hasNoSideEffectOnDeletionError() {
-        
-    }
-    
-    func test_retrieve_hasNoSideEffectsOnEmptyCache() {
-        
-    }
-    
-    func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
-        
-    }
-    
-    func test_retrieve_hasNoSideEffectsOnNonEmptyCache() {
         
     }
     

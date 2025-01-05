@@ -23,7 +23,7 @@ public class ProductStoreSpy: ProductStore {
     var insertionsCompletion: [InsertionCompletion] = [InsertionCompletion]()
     var retrievalCompletion: [RetrievalCompletion] = [RetrievalCompletion]()
     
-    public func delete(completion: @escaping DeletionCompletion) {
+    public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
         deletionCompletions.append(completion)
         receivedMessages.append(.deleteCachedProducts)
     }

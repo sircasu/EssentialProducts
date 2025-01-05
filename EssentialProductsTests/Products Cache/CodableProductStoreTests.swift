@@ -89,7 +89,7 @@ public final class CodableProductStore: ProductStore {
     
     }
     
-    public func delete(completion: @escaping DeletionCompletion) {
+    public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
         guard FileManager.default.fileExists(atPath: storeURL.path) else {
             return completion(nil)
         }
@@ -255,7 +255,7 @@ final class CodableProductStoreTests: XCTestCase {
         
         let exp = expectation(description: "Wait for completion")
         var deletionError: Error?
-        sut.delete { receivedDeletionError in
+        sut.deleteCachedProducts { receivedDeletionError in
             exp.fulfill()
             deletionError = receivedDeletionError
         }

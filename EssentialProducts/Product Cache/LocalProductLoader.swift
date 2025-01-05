@@ -23,7 +23,7 @@ extension LocalProductsLoader {
     public typealias SaveResult = Error?
     
     public func save(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
-        store.delete() { [weak self] error in
+        store.deleteCachedProducts() { [weak self] error in
             
             guard let self = self else { return }
             
@@ -77,9 +77,9 @@ extension LocalProductsLoader {
             
             switch result {
             case .failure:
-                store.delete { _ in }
+                store.deleteCachedProducts { _ in }
             case let .found(_, timestamp) where !ProductCachePolicy.validate(timestamp, against: currentDate()):
-                store.delete { _ in }
+                store.deleteCachedProducts { _ in }
             case .found, .empty:
                 break
                 

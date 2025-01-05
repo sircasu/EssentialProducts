@@ -18,7 +18,7 @@ public protocol ProductStore {
     typealias InsertionCompletion = (Error?) -> Void
     typealias RetrievalCompletion = (RetrievalCachedProductResult) -> Void
     
-    func delete(completion: @escaping DeletionCompletion)
+    func deleteCachedProducts(completion: @escaping DeletionCompletion)
     func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion)
     func retrieve(completion: @escaping RetrievalCompletion)
 }

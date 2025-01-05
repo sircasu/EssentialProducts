@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		85578B162CD284EA00DCD2BB /* EssentialProducts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; };
 		859637132CDF99380053991C /* EssentialProducts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; };
-		85A2287F2D2B1D1B0046EFC0 /* XCTestCase+FailableInsertProductStoreSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A2287E2D2B1D1B0046EFC0 /* XCTestCase+FailableInsertProductStoreSpecs.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +34,6 @@
 		8596370A2CDF4ADE0053991C /* EssentialProductsTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProductsTests.xctestplan; sourceTree = "<group>"; };
 		8596370F2CDF99380053991C /* EssentialProductsAPIEndToEndTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialProductsAPIEndToEndTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		859637192CDF9ADD0053991C /* EssentialProductsAPIEndToEndTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProductsAPIEndToEndTests.xctestplan; sourceTree = "<group>"; };
-		85A2287E2D2B1D1B0046EFC0 /* XCTestCase+FailableInsertProductStoreSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+FailableInsertProductStoreSpecs.swift"; sourceTree = "<group>"; };
 		85CAAA802CD556DA00D2F5B4 /* EssentialProducts.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProducts.xctestplan; sourceTree = "<group>"; };
 		85DE247A2CDFA4E800820519 /* CI.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = CI.xctestplan; path = ../CI.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -112,7 +110,6 @@
 		85578B032CD284E900DCD2BB = {
 			isa = PBXGroup;
 			children = (
-				85A2287E2D2B1D1B0046EFC0 /* XCTestCase+FailableInsertProductStoreSpecs.swift */,
 				85DE247A2CDFA4E800820519 /* CI.xctestplan */,
 				859637192CDF9ADD0053991C /* EssentialProductsAPIEndToEndTests.xctestplan */,
 				8596370A2CDF4ADE0053991C /* EssentialProductsTests.xctestplan */,
@@ -296,7 +293,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85A2287F2D2B1D1B0046EFC0 /* XCTestCase+FailableInsertProductStoreSpecs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -228,14 +228,14 @@ final class CodableProductStoreTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(storeURL: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> CodableProductStore {
+    private func makeSUT(storeURL: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> ProductStore {
         let sut = CodableProductStore(storeURL: storeURL ?? testSpecificStoreURL())
         trackForMemoryLeak(sut, file: file, line: line)
         return sut
     }
     
     @discardableResult
-    private func insert(_ cache: (products: [LocalProductItem], timestamp: Date), to sut: CodableProductStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
+    private func insert(_ cache: (products: [LocalProductItem], timestamp: Date), to sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
         
         let exp = expectation(description: "Wait for completion")
         
@@ -251,7 +251,7 @@ final class CodableProductStoreTests: XCTestCase {
     }
     
     @discardableResult
-    func deleteCache(from sut: CodableProductStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
+    func deleteCache(from sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) -> Error? {
         
         let exp = expectation(description: "Wait for completion")
         var deletionError: Error?
@@ -263,7 +263,7 @@ final class CodableProductStoreTests: XCTestCase {
         return deletionError
     }
     
-    private func expect(_ sut: CodableProductStore, toRetrieve expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
+    private func expect(_ sut: ProductStore, toRetrieve expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
 
         let exp = expectation(description: "Wait for completion")
         
@@ -286,7 +286,7 @@ final class CodableProductStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    private func expect(_ sut: CodableProductStore, toRetrieveTwice expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
+    private func expect(_ sut: ProductStore, toRetrieveTwice expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
         
         expect(sut, toRetrieve: expectedResult)
         expect(sut, toRetrieve: expectedResult)

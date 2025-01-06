@@ -11,9 +11,11 @@ import CoreData
 public class CoreDataProductStore: ProductStore {
     
     private let container: NSPersistentContainer
+    private let context: NSManagedObjectContext
     
     public init (bundle: Bundle = .main) throws {
         container = try NSPersistentContainer.load(modelName: "ProductStore", in: bundle)
+        context = container.newBackgroundContext()
     }
     
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {

@@ -8,22 +8,6 @@
 import XCTest
 import EssentialProducts
 
-class CoreDataProductStore: ProductStore {
-    func deleteCachedProducts(completion: @escaping DeletionCompletion) {
-        
-    }
-    
-    func insert(_ items: [EssentialProducts.LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
-        
-    }
-    
-    func retrieve(completion: @escaping RetrievalCompletion) {
-        completion(.empty)
-    }
-    
-    
-}
-
 final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
     
     func test_retrieve_deliversEmptyOnEmptyCache() {

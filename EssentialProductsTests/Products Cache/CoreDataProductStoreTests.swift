@@ -88,7 +88,8 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> ProductStore {
         let storeBundle = Bundle(for: CoreDataProductStore.self)
-        let sut = try! CoreDataProductStore(bundle: storeBundle)
+        let storeURL = URL(fileURLWithPath: "/dev/null") // `/dev/null` used to avoid sharing state with production (and other tests)
+        let sut = try! CoreDataProductStore(storeURL: storeURL, bundle: storeBundle)
         trackForMemoryLeak(sut, file: file, line: line)
         return sut
     }

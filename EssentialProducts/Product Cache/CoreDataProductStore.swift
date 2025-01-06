@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 public class CoreDataProductStore: ProductStore {
     
@@ -23,4 +24,22 @@ public class CoreDataProductStore: ProductStore {
         completion(.empty)
     }
     
+}
+
+
+private class ManagedCache: NSManagedObject {
+    @NSManaged var timestamp: Date
+    @NSManaged var products: NSOrderedSet
+}
+
+private class ManagedProduct: NSManagedObject {
+    @NSManaged var id: String
+    @NSManaged var title: String
+    @NSManaged var price: Double
+    @NSManaged var desc: String
+    @NSManaged var category: String
+    @NSManaged var imageURL: URL
+    @NSManaged var ratingValue: Double
+    @NSManaged var ratingCount: Int
+    @NSManaged var cache: ManagedCache
 }

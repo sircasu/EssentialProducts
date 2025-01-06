@@ -84,16 +84,13 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
         
     }
     
-  
-    
-    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> ProductStore {
-        let sut = CoreDataProductStore()
+        let storeBundle = Bundle(for: CoreDataProductStore.self)
+        let sut = try! CoreDataProductStore(bundle: storeBundle)
         trackForMemoryLeak(sut, file: file, line: line)
         return sut
     }
-    
     
 }

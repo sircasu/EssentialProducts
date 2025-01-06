@@ -10,7 +10,11 @@ import CoreData
 
 public class CoreDataProductStore: ProductStore {
     
-    public init() {}
+    private let container: NSPersistentContainer
+    
+    public init (bundle: Bundle = .main) throws {
+        container = try NSPersistentContainer.load(modelName: "ProductStore", in: bundle)
+    }
     
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
         
@@ -24,6 +28,42 @@ public class CoreDataProductStore: ProductStore {
         completion(.empty)
     }
     
+}
+
+extension NSPersistentContainer {
+    enum LoadingError: Swift.Error {
+        case modelNotFound
+        case failedToLoadePersistentStore(Swift.Error)
+    }
+    
+    static func load(modelName name: String, in bundle: Bundle) throws -> NSPersistentContainer {
+        
+        guard let model = NSManagedObjectModel.with(name: name, in: bundle) else {
+            throw LoadingError.modelNotFound
+        }
+        
+        let container = NSPersistentContainer(name: name, managedObjectModel: model)
+        var loadError: Swift.Error?
+        container.loadPersistentStores { description, error in
+            loadError = error
+        }
+        
+        guard loadError == nil else {
+            throw LoadingError.failedToLoadePersistentStore(loadError!)
+        }
+        
+        return container
+        
+    }
+    
+}
+
+private extension NSManagedObjectModel {
+    static func with(name: String, in bundle: Bundle) -> NSManagedObjectModel? {
+        return bundle
+            .url(forResource: name, withExtension: "momd")
+            .flatMap { NSManagedObjectModel(contentsOf: $0) }
+    }
 }
 
 

@@ -14,7 +14,7 @@ public struct ProductItem: Equatable {
     public  let description: String
     public let category: String
     public let image: URL
-    public  let rating: ProductRatingItem
+    public let rating: ProductRatingItem
     
     public init(id: Int, title: String, price: Double, description: String, category: String, image: URL, rating: ProductRatingItem) {
         self.id = id

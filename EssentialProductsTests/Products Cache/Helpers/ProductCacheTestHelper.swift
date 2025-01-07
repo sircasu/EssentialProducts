@@ -9,7 +9,7 @@ import Foundation
 import EssentialProducts
 
 func uniqueItem(id: Int) -> ProductItem {
-    return ProductItem(id: 1, title: "any title", price: 12.99, description: "a description", category: "a category", image: anyURL(), rating: ProductRatingItem(rate: 4.3, count: 24))
+    return ProductItem(id: id, title: "any title", price: 12.99, description: "a description", category: "a category", image: anyURL(), rating: ProductRatingItem(rate: 4.3, count: 24))
 }
 
 func uniqueItems() -> (model: [ProductItem], local: [LocalProductItem]) {

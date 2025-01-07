@@ -14,7 +14,7 @@ public class CoreDataProductStore: ProductStore {
     private let context: NSManagedObjectContext
     
     public init (storeURL: URL, bundle: Bundle = .main) throws {
-        container = try NSPersistentContainer.load(modelName: "ProductStore", url: storeURL, in: bundle)
+        container = try NSPersistentContainer.load(modelName: "ProductDataStore", url: storeURL, in: bundle)
         context = container.newBackgroundContext()
     }
     
@@ -22,12 +22,58 @@ public class CoreDataProductStore: ProductStore {
         
     }
     
-    public func insert(_ items: [EssentialProducts.LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+    public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
         
+        let context = self.context
+        context.perform {
+            do {
+                let managedCache = ManagedCache(context: context)
+                managedCache.timestamp = timestamp
+                
+                let managedProducts: [ManagedProduct] = items.map { local in
+                    let managedProduct = ManagedProduct(context: context)
+                    managedProduct.id = local.id
+                    managedProduct.title = local.title
+                    managedProduct.price = local.price
+                    managedProduct.desc = local.description
+                    managedProduct.category = local.category
+                    managedProduct.imageURL = local.image
+                    managedProduct.ratingCount = local.rating.count
+                    managedProduct.ratingValue = local.rating.rate
+                    return managedProduct
+                }
+                managedCache.products = NSOrderedSet(array: managedProducts)
+                try context.save()
+                completion(nil)
+            } catch {
+                completion(error)
+            }
+        }
     }
     
     public func retrieve(completion: @escaping RetrievalCompletion) {
-        completion(.empty)
+
+        let context = self.context
+        context.perform {
+            do {
+                let request = NSFetchRequest<ManagedCache>(entityName: ManagedCache.entity().name!)
+                request.returnsObjectsAsFaults = false
+                if let cache = try context.fetch(request).first {
+                    completion(.found(
+                        cache.products
+                            .compactMap { $0 as? ManagedProduct }
+                            .map {
+                                LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.desc, category: $0.category, image: $0.imageURL, rating: LocalProductRatingItem(rate: $0.ratingValue, count: $0.ratingCount))
+                            },
+                        cache.timestamp
+                    ))
+                } else {
+                    completion(.empty)
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
 }
@@ -70,14 +116,15 @@ private extension NSManagedObjectModel {
     }
 }
 
-
+@objc(ManagedCache)
 private class ManagedCache: NSManagedObject {
     @NSManaged var timestamp: Date
     @NSManaged var products: NSOrderedSet
 }
 
+@objc(ManagedProduct)
 private class ManagedProduct: NSManagedObject {
-    @NSManaged var id: String
+    @NSManaged var id: Int
     @NSManaged var title: String
     @NSManaged var price: Double
     @NSManaged var desc: String

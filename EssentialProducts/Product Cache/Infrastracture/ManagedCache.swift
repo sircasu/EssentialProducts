@@ -11,6 +11,9 @@ import CoreData
 class ManagedCache: NSManagedObject {
     @NSManaged var timestamp: Date
     @NSManaged var products: NSOrderedSet
+}
+
+extension ManagedCache {
     
     static func find(in context: NSManagedObjectContext) throws -> ManagedCache? {
         let request = NSFetchRequest<ManagedCache>(entityName: ManagedCache.entity().name!)

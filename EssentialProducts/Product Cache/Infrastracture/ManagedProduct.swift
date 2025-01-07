@@ -18,6 +18,9 @@ class ManagedProduct: NSManagedObject {
     @NSManaged var ratingValue: Double
     @NSManaged var ratingCount: Int
     @NSManaged var cache: ManagedCache
+}
+
+extension ManagedProduct {
     
     static func products(from items: [LocalProductItem], in context: NSManagedObjectContext) -> NSOrderedSet {
         

@@ -8,16 +8,11 @@
 import XCTest
 import EssentialProducts
 
-final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
-    
+final class CoreDataProductStoreTests: XCTestCase, ProductStoreSpecs {
+        
     func test_retrieve_deliversEmptyOnEmptyCache() {
         let sut = makeSUT()
         assertThatRetrieveDeliversEmptyOnEmptyCache(on: sut)
-    }
-    
-    func test_retrieve_hasNoSideEffectsOnFailure() {
-        let sut = makeSUT()
-        assertThatRetrieveHasNoSideEffectsOnEmptyCache(on: sut)
     }
     
     func test_retrieve_deliversFoundValuesOnNonEmptyCache() {
@@ -31,27 +26,8 @@ final class CoreDataProductStoreTests: XCTestCase, FailableProductStoreSpecs {
     }
     
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
-        
-    }
-    
-    func test_retrieve_deliversErrorOnInvalidData() {
-        
-    }
-    
-    func test_insert_deliversErrorOnInsertionError() {
-        
-    }
-    
-    func test_insert_hasNoSideEffectsOnInsertionError() {
-        
-    }
-    
-    func test_delete_deliversErrorOnDeletionError() {
-        
-    }
-    
-    func test_delete_hasNoSideEffectOnDeletionError() {
-        
+        let sut = makeSUT()
+        assertThatRetrieveHasNoSideEffectsOnEmptyCache(on: sut)
     }
     
     func test_insert_deliversNoErrorOnEmptyCache() {

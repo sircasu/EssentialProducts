@@ -2,7 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="ManagedCache" representedClassName="ManagedCache" syncable="YES">
         <attribute name="timestamp" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="products" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ManagedProduct" inverseName="cache" inverseEntity="ManagedProduct"/>
+        <relationship name="products" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ManagedProduct" inverseName="cache" inverseEntity="ManagedProduct"/>
     </entity>
     <entity name="ManagedProduct" representedClassName="ManagedProduct" syncable="YES">
         <attribute name="category" attributeType="String"/>

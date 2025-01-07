@@ -41,7 +41,8 @@ final class CoreDataProductStoreTests: XCTestCase, ProductStoreSpecs {
     }
     
     func test_insert_overridesExistingCache() {
-        
+        let sut = makeSUT()
+        assertThatInsertOverridesExistingCache(on: sut)
     }
     
     func test_delete_deliversNoErrorOnEmptyCache() {

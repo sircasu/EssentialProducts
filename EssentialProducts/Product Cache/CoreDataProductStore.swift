@@ -19,7 +19,7 @@ public class CoreDataProductStore: ProductStore {
     }
     
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
-        
+        completion(nil)
     }
     
     public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {

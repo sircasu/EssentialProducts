@@ -30,19 +30,8 @@ public class CoreDataProductStore: ProductStore {
                 let managedCache = ManagedCache(context: context)
                 managedCache.timestamp = timestamp
                 
-                let managedProducts: [ManagedProduct] = items.map { local in
-                    let managedProduct = ManagedProduct(context: context)
-                    managedProduct.id = local.id
-                    managedProduct.title = local.title
-                    managedProduct.price = local.price
-                    managedProduct.desc = local.description
-                    managedProduct.category = local.category
-                    managedProduct.imageURL = local.image
-                    managedProduct.ratingCount = local.rating.count
-                    managedProduct.ratingValue = local.rating.rate
-                    return managedProduct
-                }
-                managedCache.products = NSOrderedSet(array: managedProducts)
+                managedCache.products = ManagedProduct.products(from: items, in: context)
+
                 try context.save()
                 completion(nil)
             } catch {
@@ -59,14 +48,7 @@ public class CoreDataProductStore: ProductStore {
                 let request = NSFetchRequest<ManagedCache>(entityName: ManagedCache.entity().name!)
                 request.returnsObjectsAsFaults = false
                 if let cache = try context.fetch(request).first {
-                    completion(.found(
-                        cache.products
-                            .compactMap { $0 as? ManagedProduct }
-                            .map {
-                                LocalProductItem(id: $0.id, title: $0.title, price: $0.price, description: $0.desc, category: $0.category, image: $0.imageURL, rating: LocalProductRatingItem(rate: $0.ratingValue, count: $0.ratingCount))
-                            },
-                        cache.timestamp
-                    ))
+                    completion(.found(cache.localProducts, cache.timestamp))
                 } else {
                     completion(.empty)
                 }
@@ -120,6 +102,10 @@ private extension NSManagedObjectModel {
 private class ManagedCache: NSManagedObject {
     @NSManaged var timestamp: Date
     @NSManaged var products: NSOrderedSet
+    
+    var localProducts: [LocalProductItem] {
+        return products.compactMap { ($0 as? ManagedProduct)?.local }
+    }
 }
 
 @objc(ManagedProduct)
@@ -133,4 +119,26 @@ private class ManagedProduct: NSManagedObject {
     @NSManaged var ratingValue: Double
     @NSManaged var ratingCount: Int
     @NSManaged var cache: ManagedCache
+    
+    static func products(from items: [LocalProductItem], in context: NSManagedObjectContext) -> NSOrderedSet {
+        
+        let managedProducts: [ManagedProduct] = items.map { local in
+            let managedProduct = ManagedProduct(context: context)
+            managedProduct.id = local.id
+            managedProduct.title = local.title
+            managedProduct.price = local.price
+            managedProduct.desc = local.description
+            managedProduct.category = local.category
+            managedProduct.imageURL = local.image
+            managedProduct.ratingCount = local.rating.count
+            managedProduct.ratingValue = local.rating.rate
+            return managedProduct
+        }
+        
+        return NSOrderedSet(array: managedProducts)
+    }
+    
+    var local: LocalProductItem {
+        return LocalProductItem(id: id, title: title, price: price, description: desc, category: category, image: imageURL, rating: LocalProductRatingItem(rate: ratingValue, count: ratingCount))
+    }
 }

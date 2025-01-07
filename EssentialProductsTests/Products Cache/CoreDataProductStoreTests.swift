@@ -66,7 +66,8 @@ final class CoreDataProductStoreTests: XCTestCase, ProductStoreSpecs {
     }
     
     func test_storeSideEffects_runSerially() {
-        
+        let sut = makeSUT()
+        assertThatStoresSideEffectsRunSerially(on: sut)
     }
     
     // MARK: - Helpers

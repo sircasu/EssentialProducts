@@ -21,11 +21,13 @@ public class CoreDataProductStore: ProductStore {
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
 
         let context = self.context
-        do {
-            try ManagedCache.find(in: context).map(context.delete)
-            completion(nil)
-        } catch {
-            completion(error)
+        context.perform {
+            do {
+                try ManagedCache.find(in: context).map(context.delete)
+                completion(nil)
+            } catch {
+                completion(error)
+            }
         }
     }
     

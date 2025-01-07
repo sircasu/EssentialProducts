@@ -19,7 +19,14 @@ public class CoreDataProductStore: ProductStore {
     }
     
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
-        completion(nil)
+
+        let context = self.context
+        do {
+            try ManagedCache.find(in: context).map(context.delete)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
     }
     
     public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {

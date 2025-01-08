@@ -59,9 +59,9 @@ extension LocalProductsLoader {
             switch result {
             case let .failure(error):
                 completion(.failure(error))
-            case let .success(.found(products, timestamp)) where ProductCachePolicy.validate(timestamp, against: currentDate()):
-                completion(.success(products.toModels()))
-            case .success(.found), .success(.empty):
+            case let .success(.some(cache)) where ProductCachePolicy.validate(cache.timestamp, against: currentDate()):
+                completion(.success(cache.products.toModels()))
+            case .success:
                 completion(.success([]))
             }
         }
@@ -78,9 +78,9 @@ extension LocalProductsLoader {
             switch result {
             case .failure:
                 store.deleteCachedProducts { _ in }
-            case let .success(.found(_, timestamp)) where !ProductCachePolicy.validate(timestamp, against: currentDate()):
+            case let .success(.some(cache)) where !ProductCachePolicy.validate(cache.timestamp, against: currentDate()):
                 store.deleteCachedProducts { _ in }
-            case .success(.found), .success(.empty):
+            case .success:
                 break
                 
             }

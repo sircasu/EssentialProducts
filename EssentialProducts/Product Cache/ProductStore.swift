@@ -7,18 +7,13 @@
 
 import Foundation
 
-
-
-public enum CachedProducts {
-    case empty
-    case found([LocalProductItem], Date)
-}
+public typealias CachedProducts = (products: [LocalProductItem], timestamp: Date)
 
 public protocol ProductStore {
     typealias DeletionCompletion = (Error?) -> Void
     typealias InsertionCompletion = (Error?) -> Void
     
-    typealias RetrievalResult = Result<CachedProducts, Error>
+    typealias RetrievalResult = Result<CachedProducts?, Error>
     typealias RetrievalCompletion = (RetrievalResult) -> Void
     
     /// The completion handler can be invoked in any thread.

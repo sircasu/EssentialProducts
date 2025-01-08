@@ -10,11 +10,11 @@ import EssentialProducts
 
 extension ProductStoreSpecs where Self: XCTestCase {
     func assertThatRetrieveDeliversEmptyOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
-        expect(sut, toRetrieve: .success(.empty), file: file, line: line)
+        expect(sut, toRetrieve: .success(.none), file: file, line: line)
     }
         
     func assertThatRetrieveHasNoSideEffectsOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
-        expect(sut, toRetrieveTwice: .success(.empty), file: file, line: line)
+        expect(sut, toRetrieveTwice: .success(.none), file: file, line: line)
     }
     
     func assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -22,7 +22,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let timestamp = Date()
         
         insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieve: .success(.found(products, timestamp)), file: file, line: line)
+        expect(sut, toRetrieve: .success(CachedProducts(products: products, timestamp: timestamp)), file: file, line: line)
     }
     
     func assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -30,7 +30,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let timestamp = Date()
         
         insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieveTwice: .success(.found(products, timestamp)), file: file, line: line)
+        expect(sut, toRetrieveTwice: .success(CachedProducts(products: products, timestamp: timestamp)), file: file, line: line)
     }
     
     func assertThatInsertDeliversNoErrorOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -64,7 +64,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let latestTimestamp = Date()
         insert((latestProducts, timestamp: latestTimestamp), to: sut)
         
-        expect(sut, toRetrieve: .success(.found(latestProducts, latestTimestamp)), file: file, line: line)
+        expect(sut, toRetrieve: .success(CachedProducts(products: latestProducts, timestamp: latestTimestamp)), file: file, line: line)
     }
     
     func assertThatDeleteDeliversNoErrorOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -77,7 +77,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         
         deleteCache(from: sut)
         
-        expect(sut, toRetrieve: .success(.empty))
+        expect(sut, toRetrieve: .success(.none))
         
     }
     
@@ -101,7 +101,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         
         deleteCache(from: sut)
         
-        expect(sut, toRetrieve: .success(.empty), file: file, line: line)
+        expect(sut, toRetrieve: .success(.none), file: file, line: line)
     }
     
     func assertThatStoresSideEffectsRunSerially(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -170,12 +170,12 @@ extension ProductStoreSpecs where Self: XCTestCase {
         sut.retrieve { retrievedResult in
             
             switch(expectedResult, retrievedResult) {
-            case (.success(.empty), .success(.empty)),
+            case (.success(.none), .success(.none)),
                  (.failure, .failure):
                 break
-            case let (.success(.found(expected, expectedTimestamp)), .success(.found(retrieved, retrievedTimestamp))):
-                XCTAssertEqual(expected, retrieved, file: file, line: line)
-                XCTAssertEqual(expectedTimestamp, retrievedTimestamp, file: file, line: line)
+            case let (.success(.some(expected)), .success(.some(retrieved))):
+                XCTAssertEqual(expected.products, retrieved.products, file: file, line: line)
+                XCTAssertEqual(expected.timestamp, retrieved.timestamp, file: file, line: line)
         
             default: XCTFail("Expected to retrieve \(expectedResult) got \(retrievedResult) instead", file: file, line: line)
             }

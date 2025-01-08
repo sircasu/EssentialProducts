@@ -10,11 +10,11 @@ import EssentialProducts
 
 extension ProductStoreSpecs where Self: XCTestCase {
     func assertThatRetrieveDeliversEmptyOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
-        expect(sut, toRetrieve: .empty, file: file, line: line)
+        expect(sut, toRetrieve: .success(.empty), file: file, line: line)
     }
         
     func assertThatRetrieveHasNoSideEffectsOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
-        expect(sut, toRetrieveTwice: .empty, file: file, line: line)
+        expect(sut, toRetrieveTwice: .success(.empty), file: file, line: line)
     }
     
     func assertThatRetrieveDeliversFoundValuesOnNonEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -22,7 +22,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let timestamp = Date()
         
         insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieve: .found(products, timestamp), file: file, line: line)
+        expect(sut, toRetrieve: .success(.found(products, timestamp)), file: file, line: line)
     }
     
     func assertThatRetrieveHasNoSideEffectsOnNonEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -30,7 +30,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let timestamp = Date()
         
         insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieveTwice: .found(products, timestamp), file: file, line: line)
+        expect(sut, toRetrieveTwice: .success(.found(products, timestamp)), file: file, line: line)
     }
     
     func assertThatInsertDeliversNoErrorOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -64,7 +64,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let latestTimestamp = Date()
         insert((latestProducts, timestamp: latestTimestamp), to: sut)
         
-        expect(sut, toRetrieve: .found(latestProducts, latestTimestamp), file: file, line: line)
+        expect(sut, toRetrieve: .success(.found(latestProducts, latestTimestamp)), file: file, line: line)
     }
     
     func assertThatDeleteDeliversNoErrorOnEmptyCache(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -77,7 +77,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         
         deleteCache(from: sut)
         
-        expect(sut, toRetrieve: .empty)
+        expect(sut, toRetrieve: .success(.empty))
         
     }
     
@@ -101,7 +101,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         
         deleteCache(from: sut)
         
-        expect(sut, toRetrieve: .empty, file: file, line: line)
+        expect(sut, toRetrieve: .success(.empty), file: file, line: line)
     }
     
     func assertThatStoresSideEffectsRunSerially(on sut: ProductStore, file: StaticString = #filePath, line: UInt = #line) {
@@ -163,17 +163,17 @@ extension ProductStoreSpecs where Self: XCTestCase {
         return deletionError
     }
     
-    func expect(_ sut: ProductStore, toRetrieve expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: ProductStore, toRetrieve expectedResult: ProductStore.RetrievalResult, file: StaticString = #filePath, line: UInt = #line) {
 
         let exp = expectation(description: "Wait for completion")
         
         sut.retrieve { retrievedResult in
             
             switch(expectedResult, retrievedResult) {
-            case (.empty, .empty),
+            case (.success(.empty), .success(.empty)),
                  (.failure, .failure):
                 break
-            case let (.found(expected, expectedTimestamp), .found(retrieved, retrievedTimestamp)):
+            case let (.success(.found(expected, expectedTimestamp)), .success(.found(retrieved, retrievedTimestamp))):
                 XCTAssertEqual(expected, retrieved, file: file, line: line)
                 XCTAssertEqual(expectedTimestamp, retrievedTimestamp, file: file, line: line)
         
@@ -186,7 +186,7 @@ extension ProductStoreSpecs where Self: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func expect(_ sut: ProductStore, toRetrieveTwice expectedResult: RetrievalCachedProductResult, file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: ProductStore, toRetrieveTwice expectedResult: ProductStore.RetrievalResult, file: StaticString = #filePath, line: UInt = #line) {
         
         expect(sut, toRetrieve: expectedResult)
         expect(sut, toRetrieve: expectedResult)

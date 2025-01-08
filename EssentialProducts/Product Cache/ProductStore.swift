@@ -7,8 +7,9 @@
 
 import Foundation
 
-public enum RetrievalCachedProductResult {
-    case failure(Error)
+
+
+public enum CachedProducts {
     case empty
     case found([LocalProductItem], Date)
 }
@@ -16,7 +17,9 @@ public enum RetrievalCachedProductResult {
 public protocol ProductStore {
     typealias DeletionCompletion = (Error?) -> Void
     typealias InsertionCompletion = (Error?) -> Void
-    typealias RetrievalCompletion = (RetrievalCachedProductResult) -> Void
+    
+    typealias RetrievalResult = Result<CachedProducts, Error>
+    typealias RetrievalCompletion = (RetrievalResult) -> Void
     
     /// The completion handler can be invoked in any thread.
     /// Clients are responsible to dispatch to appropriate threads, if needed

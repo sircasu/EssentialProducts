@@ -60,10 +60,10 @@ public class ProductStoreSpy: ProductStore {
     }
     
     public func completeRetrievalWithEmptyItems(at index: Int = 0) {
-        retrievalCompletion[index](.empty)
+        retrievalCompletion[index](.success(.empty))
     }
     
     public func completeRetrieval(with products: [LocalProductItem], timestamp: Date, at index: Int = 0) {
-        retrievalCompletion[index](.found(products, timestamp))
+        retrievalCompletion[index](.success(.found(products, timestamp)))
     }
 }

@@ -51,9 +51,9 @@ public class CoreDataProductStore: ProductStore {
         perform { context in
             do {
                 if let cache = try ManagedCache.find(in: context) {
-                    completion(.found(cache.localProducts, cache.timestamp))
+                    completion(.success(.found(cache.localProducts, cache.timestamp)))
                 } else {
-                    completion(.empty)
+                    completion(.success(.empty))
                 }
             } catch {
                 completion(.failure(error))

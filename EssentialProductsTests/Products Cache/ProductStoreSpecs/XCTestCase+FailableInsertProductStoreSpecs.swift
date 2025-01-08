@@ -24,6 +24,6 @@ extension FailableInsertProductStoreSpecs where Self: XCTestCase {
         let timestamp = Date()
         
         insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieve: .empty)
+        expect(sut, toRetrieve: .success(.empty))
     }
 }

@@ -36,6 +36,19 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
         expect(sutToPerformLoad, toLoad: products)
     }
     
+    func test_save_overridesItemsSavedOnASeparateInstance() {
+        
+        let sutToPerformFirstSave = makeSUT()
+        let sutToPerformSecondSave = makeSUT()
+        let sutToPerformLoad = makeSUT()
+        let firstProducts = uniqueItems().model
+        let secondProducts = uniqueItems2().model
+        
+        expect(sutToPerformFirstSave, toSave: firstProducts)
+        expect(sutToPerformSecondSave, toSave: secondProducts)
+        expect(sutToPerformLoad, toLoad: secondProducts)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> LocalProductsLoader {

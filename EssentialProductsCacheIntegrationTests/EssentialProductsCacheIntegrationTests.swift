@@ -23,20 +23,7 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
     func test_load_deliversNoItemsOnEmptyCache() {
         let sut = makeSUT()
         
-        let exp = expectation(description: "Wait for completion")
-        sut.load { result in
-            
-            switch result {
-            case let .success(products):
-                XCTAssertEqual(products, [])
-            case let .failure(error):
-                XCTFail("Expected success got \(error) instead")
-            }
-            
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
+        expect(sut, toLoad: [])
     }
     
     func test_load_deliversItemsSavedOnASeparateInstance() {
@@ -45,26 +32,8 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
         let sutToPerformLoad = makeSUT()
         let products = uniqueItems().model
         
-        let saveExp = expectation(description: "Wait for save completion")
-        sutToPerformSave.save(products) { saveError in
-            
-            XCTAssertNil(saveError, "Expect to save products correctly")
-            saveExp.fulfill()
-        }
-        wait(for: [saveExp], timeout: 1.0)
-        
-        let loadExp = expectation(description: "Wait for load completion")
-        sutToPerformLoad.load { result in
-            
-            switch result {
-            case let .success(loadedProducts):
-                XCTAssertEqual(loadedProducts, products)
-            case let .failure(error):
-                XCTFail("Expected success got \(error) instead")
-            }
-            loadExp.fulfill()
-        }
-        wait(for: [loadExp], timeout: 1.0)
+        expect(sutToPerformSave, toSave: products)
+        expect(sutToPerformLoad, toLoad: products)
     }
     
     // MARK: - Helpers
@@ -77,6 +46,32 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
         trackForMemoryLeak(store, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return sut
+    }
+    
+    private func expect(_ sut: LocalProductsLoader, toLoad expectedProducts: [ProductItem], file: StaticString = #filePath, line: UInt = #line) {
+        let exp = expectation(description: "Wait for load completion")
+        sut.load { result in
+            
+            switch result {
+            case let .success(loadedProducts):
+                XCTAssertEqual(loadedProducts, expectedProducts)
+            case let .failure(error):
+                XCTFail("Expected success got \(error) instead")
+            }
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    private func expect(_ sut: LocalProductsLoader, toSave products: [ProductItem], file: StaticString = #filePath, line: UInt = #line) {
+        
+        let exp = expectation(description: "Wait for save completion")
+        sut.save(products) { saveError in
+            
+            XCTAssertNil(saveError, "Expect to save products correctly")
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func setupEmptyStoreState() {

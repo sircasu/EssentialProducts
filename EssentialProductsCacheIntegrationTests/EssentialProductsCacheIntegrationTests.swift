@@ -10,6 +10,16 @@ import EssentialProducts
 
 final class EssentialProductsCacheIntegrationTests: XCTestCase {
     
+    override func setUp() {
+        super.setUp()
+        setupEmptyStoreState()
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        undoStoreSideEffects()
+    }
+    
     func test_load_deliversNoItemsOnEmptyCache() {
         let sut = makeSUT()
         
@@ -29,6 +39,33 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func test_load_deliversItemsSavedOnASeparateInstance() {
+        
+        let sutToPerformSave = makeSUT()
+        let sutToPerformLoad = makeSUT()
+        let products = uniqueItems().model
+        
+        let saveExp = expectation(description: "Wait for save completion")
+        sutToPerformSave.save(products) { saveError in
+            
+            XCTAssertNil(saveError, "Expect to save products correctly")
+            saveExp.fulfill()
+        }
+        wait(for: [saveExp], timeout: 1.0)
+        
+        let loadExp = expectation(description: "Wait for load completion")
+        sutToPerformLoad.load { result in
+            
+            switch result {
+            case let .success(loadedProducts):
+                XCTAssertEqual(loadedProducts, products)
+            case let .failure(error):
+                XCTFail("Expected success got \(error) instead")
+            }
+            loadExp.fulfill()
+        }
+        wait(for: [loadExp], timeout: 1.0)
+    }
     
     // MARK: - Helpers
     
@@ -40,6 +77,18 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
         trackForMemoryLeak(store, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return sut
+    }
+    
+    private func setupEmptyStoreState() {
+        deleteStoreArtifacts()
+    }
+    
+    private func undoStoreSideEffects() {
+        deleteStoreArtifacts()
+    }
+    
+    private func deleteStoreArtifacts() {
+        try? FileManager.default.removeItem(at: testSpecificStoreURL())
     }
     
     private func testSpecificStoreURL() -> URL {

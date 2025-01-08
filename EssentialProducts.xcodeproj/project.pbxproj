@@ -67,7 +67,9 @@
 		85A228B32D2EFCEE0046EFC0 /* Exceptions for "EssentialProductsTests" folder in "EssentialProductsCacheIntegrationTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Helpers/SharedTestHelpers.swift,
 				"Helpers/XCTestCase+trackForMemoryLeak.swift",
+				"Products Cache/Helpers/ProductCacheTestHelper.swift",
 			);
 			target = 85A228A62D2EF9900046EFC0 /* EssentialProductsCacheIntegrationTests */;
 		};

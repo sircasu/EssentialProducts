@@ -21,43 +21,59 @@ public class CoreDataProductStore: ProductStore {
     public func deleteCachedProducts(completion: @escaping DeletionCompletion) {
 
         perform { context in
-            do {
+            
+            completion( Result {
                 try ManagedCache.find(in: context).map(context.delete)
-                completion(.success(()))
-            } catch {
-                completion(.failure(error))
-            }
+            })
+//            do {
+//                try ManagedCache.find(in: context).map(context.delete)
+//                completion(.success(()))
+//            } catch {
+//                completion(.failure(error))
+//            }
         }
     }
     
     public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
         
         perform { context in
-            do {
+            completion( Result {
                 let managedCache = try ManagedCache.newUniqueInstance(in: context)
                 managedCache.timestamp = timestamp
                 managedCache.products = ManagedProduct.products(from: items, in: context)
 
                 try context.save()
-                completion(.success(()))
-            } catch {
-                completion(.failure(error))
-            }
+            })
+//            do {
+//                let managedCache = try ManagedCache.newUniqueInstance(in: context)
+//                managedCache.timestamp = timestamp
+//                managedCache.products = ManagedProduct.products(from: items, in: context)
+//
+//                try context.save()
+//                completion(.success(()))
+//            } catch {
+//                completion(.failure(error))
+//            }
         }
     }
     
     public func retrieve(completion: @escaping RetrievalCompletion) {
 
         perform { context in
-            do {
-                if let cache = try ManagedCache.find(in: context) {
-                    completion(.success(CachedProducts(products: cache.localProducts, timestamp: cache.timestamp)))
-                } else {
-                    completion(.success(.none))
+            completion( Result {
+                try ManagedCache.find(in: context).map {
+                    return CachedProducts(products: $0.localProducts, timestamp: $0.timestamp)
                 }
-            } catch {
-                completion(.failure(error))
-            }
+            })
+//            do {
+//                if let cache = try ManagedCache.find(in: context) {
+//                    completion(.success(CachedProducts(products: cache.localProducts, timestamp: cache.timestamp)))
+//                } else {
+//                    completion(.success(.none))
+//                }
+//            } catch {
+//                completion(.failure(error))
+//            }
         }
     }
     

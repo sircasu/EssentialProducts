@@ -20,20 +20,19 @@ public class LocalProductsLoader: ProductsLoader {
 
 extension LocalProductsLoader {
     
-    public typealias SaveResult = Error?
+    public typealias SaveResult = Result<Void, Error>
     
     public func save(_ items: [ProductItem], completion: @escaping (SaveResult) -> Void) {
-        store.deleteCachedProducts() { [weak self] error in
+        store.deleteCachedProducts { [weak self] deletionResult in
             
             guard let self = self else { return }
             
-            if error != nil {
-                completion(error)
-                
-            } else {
+            switch deletionResult {
+            case .success:
                 self.cache(items, completion: completion)
+            case let .failure(error):
+                completion(.failure(error))
             }
-            
         }
     }
     

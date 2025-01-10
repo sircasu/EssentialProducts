@@ -28,12 +28,12 @@ public class ProductStoreSpy: ProductStore {
         receivedMessages.append(.deleteCachedProducts)
     }
     
-    func completeWithError(error: Error?, at index: Int = 0) {
-        deletionCompletions[index](error)
+    func completeWithError(error: Error, at index: Int = 0) {
+        deletionCompletions[index](.failure(error))
     }
     
     func completeDeletionSuccessfully(at index: Int = 0) {
-        deletionCompletions[index](nil)
+        deletionCompletions[index](.success(()))
     }
     
     public func insert(_ items: [LocalProductItem], timestamp: Date, completion: @escaping InsertionCompletion) {
@@ -42,12 +42,12 @@ public class ProductStoreSpy: ProductStore {
         insertionsCompletion.append(completion)
     }
     
-    func completeInsertWithError(error: Error?, at index: Int = 0) {
-        insertionsCompletion[index](error)
+    func completeInsertWithError(error: Error, at index: Int = 0) {
+        insertionsCompletion[index](.failure(error))
     }
     
     func completeInsertSuccessfully(at index: Int = 0) {
-        insertionsCompletion[index](nil)
+        insertionsCompletion[index](.success(()))
     }
     
     public func retrieve(completion: @escaping RetrievalCompletion) {

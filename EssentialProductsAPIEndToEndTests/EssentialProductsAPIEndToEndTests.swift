@@ -45,7 +45,7 @@ final class EssentialProductsAPIEndToEndTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 3)
+        wait(for: [exp], timeout: 5)
         return receivedResult
     }
     

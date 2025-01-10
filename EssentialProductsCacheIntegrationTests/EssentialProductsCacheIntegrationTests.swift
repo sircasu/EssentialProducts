@@ -69,7 +69,7 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
             case let .success(loadedProducts):
                 XCTAssertEqual(loadedProducts, expectedProducts)
             case let .failure(error):
-                XCTFail("Expected success got \(error) instead")
+                XCTFail("Expected success got \(error) instead", file: file, line: line)
             }
             exp.fulfill()
         }
@@ -79,9 +79,11 @@ final class EssentialProductsCacheIntegrationTests: XCTestCase {
     private func expect(_ sut: LocalProductsLoader, toSave products: [ProductItem], file: StaticString = #filePath, line: UInt = #line) {
         
         let exp = expectation(description: "Wait for save completion")
-        sut.save(products) { saveError in
-            
-            XCTAssertNil(saveError, "Expect to save products correctly")
+        sut.save(products) { result in
+
+            if case let Result.failure(error) = result {
+                XCTAssertNil(error, "Expect to save products correctly", file: file, line: line)
+            }
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)

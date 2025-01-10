@@ -140,10 +140,10 @@ extension ProductStoreSpecs where Self: XCTestCase {
         let exp = expectation(description: "Wait for completion")
         
         var insertionError: Error?
-        sut.insert(cache.products, timestamp: cache.timestamp) { receivedInsertionError in
-            XCTAssertNil(insertionError, "Expected products to be inserted successfully", file: file, line: line)
+        sut.insert(cache.products, timestamp: cache.timestamp) { result in
+            if case let Result.failure(error) = result { insertionError = error }
             exp.fulfill()
-            insertionError = receivedInsertionError
+            
         }
         
         wait(for: [exp], timeout: 1.0)
@@ -155,9 +155,9 @@ extension ProductStoreSpecs where Self: XCTestCase {
         
         let exp = expectation(description: "Wait for completion")
         var deletionError: Error?
-        sut.deleteCachedProducts { receivedDeletionError in
+        sut.deleteCachedProducts { result in
+            if case let Result.failure(error) = result { deletionError = error }
             exp.fulfill()
-            deletionError = receivedDeletionError
         }
         wait(for: [exp], timeout: 1.0)
         return deletionError

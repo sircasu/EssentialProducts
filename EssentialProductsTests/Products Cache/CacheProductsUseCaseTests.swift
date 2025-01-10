@@ -126,8 +126,8 @@ final class CacheProductsUseCaseTests: XCTestCase {
         let items = [uniqueItem(id: 1), uniqueItem(id: 2)]
 
         var receivedError: Error?
-        sut.save(items) {
-            receivedError = $0
+        sut.save(items) { result in
+            if case let Result.failure(error) = result { receivedError = error }
             exp.fulfill()
         }
         

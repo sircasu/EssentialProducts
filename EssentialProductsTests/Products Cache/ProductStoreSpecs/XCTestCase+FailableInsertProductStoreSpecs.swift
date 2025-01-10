@@ -23,7 +23,7 @@ extension FailableInsertProductStoreSpecs where Self: XCTestCase {
         let products = uniqueItems().local
         let timestamp = Date()
         
-        insert((products, timestamp: timestamp), to: sut)
-        expect(sut, toRetrieve: .success(.none))
+        insert((products, timestamp: timestamp), to: sut, file: file, line: line)
+        expect(sut, toRetrieve: .success(.none), file: file, line: line)
     }
 }

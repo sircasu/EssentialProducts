@@ -14,8 +14,32 @@ class ProductListItemCell: UICollectionViewCell {
     @IBOutlet weak var productDescriptionLabel: UILabel!
     @IBOutlet weak var productPriceLabel: UILabel!
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        productImageView.alpha = 0
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        productImageView.alpha = 0
+    }
+
+    public func fadeIn(_ image: String) {
+
+        productImageView.image = UIImage(named: image)
+
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0.3,
+            options: [],
+            animations: {
+                self.productImageView.alpha = 1
+            })
+    }
+    
     public func configure(with viewModel: ProductListViewModel) {
-        productImageView.image = UIImage(named: viewModel.productImage)
         productNameLabel.text = viewModel.productName
         productDescriptionLabel.text = viewModel.productDescription
         productPriceLabel.text = viewModel.productPrice
@@ -55,6 +79,14 @@ class ProductListViewController: UICollectionViewController {
         cell.configure(with: viewModel[indexPath.row])
         
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    
+        if let cell = cell as? ProductListItemCell {
+            cell.fadeIn(viewModel[indexPath.row].productImage)
+        }
+
     }
     
 }

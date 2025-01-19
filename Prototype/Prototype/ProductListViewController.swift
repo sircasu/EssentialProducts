@@ -13,10 +13,25 @@ class ProductListItemCell: UICollectionViewCell {
     @IBOutlet weak var productNameLabel: UILabel!
     @IBOutlet weak var productDescriptionLabel: UILabel!
     @IBOutlet weak var productPriceLabel: UILabel!
+    
+    public func configure(with viewModel: ProductListViewModel) {
+        productImageView.image = UIImage(named: viewModel.productImage)
+        productNameLabel.text = viewModel.productName
+        productDescriptionLabel.text = viewModel.productDescription
+        productPriceLabel.text = viewModel.productPrice
+    }
 }
 
+struct ProductListViewModel {
+    let productImage: String
+    let productName: String
+    let productDescription: String
+    let productPrice: String
+}
 
 class ProductListViewController: UICollectionViewController {
+    
+    let viewModel = ProductListViewModel.prototypeProducts
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,9 +49,10 @@ class ProductListViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "ProductListItemCell", for: indexPath)
+        let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "ProductListItemCell", for: indexPath) as! ProductListItemCell
         
         cell.backgroundColor = .white
+        cell.configure(with: viewModel[indexPath.row])
         
         return cell
     }

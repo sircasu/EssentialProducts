@@ -9,7 +9,16 @@
     }
   ],
   "defaultOptions" : {
-
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:EssentialProducts.xcodeproj",
+          "identifier" : "85578B0C2CD284E900DCD2BB",
+          "name" : "EssentialProducts"
+        }
+      ]
+    },
+    "testExecutionOrdering" : "random"
   },
   "testTargets" : [
     {

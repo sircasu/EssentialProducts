@@ -16,10 +16,34 @@ struct ProductListViewModel {
 
 class ProductListViewController: UICollectionViewController {
     
-    let viewModel = ProductListViewModel.prototypeProducts
+    let refreshControl = UIRefreshControl()
+    private var onViewIsAppearing: ((ProductListViewController) -> Void)?
+    private var products = [ProductListViewModel]()
+    
+    
+    @IBAction public func refresh() {
+        
+        collectionView.refreshControl?.beginRefreshing()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            if self.products.isEmpty {
+                self.products = ProductListViewModel.prototypeProducts
+                self.collectionView.reloadData()
+            }
+            self.collectionView.refreshControl?.endRefreshing()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        collectionView.refreshControl = self.refreshControl
+        
+        onViewIsAppearing = { vc in
+
+            vc.collectionView.refreshControl?.addTarget(vc, action: #selector(vc.refresh), for: .valueChanged)
+            vc.refresh()
+            vc.onViewIsAppearing = nil
+        }
         
         let listLayout = UICollectionViewFlowLayout()
         listLayout.itemSize = CGSize(width: collectionView.frame.size.width, height: 200)
@@ -28,8 +52,14 @@ class ProductListViewController: UICollectionViewController {
         collectionView?.setCollectionViewLayout(listLayout, animated: false)
     }
     
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        
+        onViewIsAppearing?(self)
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        10
+        products.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -37,7 +67,7 @@ class ProductListViewController: UICollectionViewController {
         let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: "ProductListItemCell", for: indexPath) as! ProductListItemCell
         
         cell.backgroundColor = .white
-        cell.configure(with: viewModel[indexPath.row])
+        cell.configure(with: products[indexPath.row])
         
         return cell
     }
@@ -45,7 +75,7 @@ class ProductListViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     
         if let cell = cell as? ProductListItemCell {
-            cell.fadeIn(viewModel[indexPath.row].productImage)
+            cell.fadeIn(products[indexPath.row].productImage)
         }
 
     }

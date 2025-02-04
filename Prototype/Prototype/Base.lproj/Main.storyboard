@@ -29,7 +29,7 @@
         <scene sceneID="ptS-8M-xyv">
             <objects>
                 <collectionViewController id="VCX-8I-NA2" customClass="ProductListViewController" customModule="Prototype" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="7Ne-iN-I0M">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="7Ne-iN-I0M">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.87670068027210879" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

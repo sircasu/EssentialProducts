@@ -165,7 +165,7 @@ Products - Get
 
 ---
 
-ProductStore implementation Inbox
+## ProductStore implementation Inbox
 
 ```
 ✅ Insert
@@ -186,3 +186,18 @@ ProductStore implementation Inbox
 
 ✅ Side-effects must run serially to avoid race-conditions (deleting the wrong cache... overriding the latest data...)
 ```
+
+---
+
+## UX goals for the Products UI Experience
+
+[ ] Load products automatically when view is presented
+[ ] Allow customer to manually reload products (pull to refresh)
+[ ] Show a loading indicator while loading products
+[ ] Render all loaded products items
+[ ] Image loading experience
+    [ ] Load when image view is visible
+    [ ] Cancel when image view is out of screen
+    [ ] Show a loading indicator while loading image (shimmer)
+    [ ] Option to retry on image download error
+    [ ] Preload when image view is near visible

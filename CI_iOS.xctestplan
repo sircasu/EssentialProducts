@@ -1,0 +1,63 @@
+{
+  "configurations" : [
+    {
+      "id" : "9190239D-9114-4685-AB18-DBF5E098D512",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:EssentialProducts.xcodeproj",
+          "identifier" : "85578B0C2CD284E900DCD2BB",
+          "name" : "EssentialProducts"
+        },
+        {
+          "containerPath" : "container:EssentialProducts.xcodeproj",
+          "identifier" : "85D213542D52548F0066F06B",
+          "name" : "EssentialProductsiOS"
+        }
+      ]
+    },
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:EssentialProducts.xcodeproj",
+        "identifier" : "8596370E2CDF99380053991C",
+        "name" : "EssentialProductsAPIEndToEndTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:EssentialProducts.xcodeproj",
+        "identifier" : "85578B142CD284EA00DCD2BB",
+        "name" : "EssentialProductsTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:EssentialProducts.xcodeproj",
+        "identifier" : "85A228A62D2EF9900046EFC0",
+        "name" : "EssentialProductsCacheIntegrationTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:EssentialProducts.xcodeproj",
+        "identifier" : "85D2135B2D52548F0066F06B",
+        "name" : "EssentialProductsiOSTests"
+      }
+    }
+  ],
+  "version" : 1
+}

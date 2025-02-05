@@ -100,7 +100,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         sut.simulateAppareance()
  
-        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
     }
     
     func test_viewdidLoad_hidesLoadingIndicatorOnLoadercompletion() {
@@ -111,11 +111,11 @@ final class ProductsViewControllerTests: XCTestCase {
         
         sut.simulateAppareance()
  
-        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
         
         loader.completeProductsLoading()
         
-        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, false)
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
     func test_userInitiatedProductsReload_showsLoadingIndicator() {
@@ -128,7 +128,7 @@ final class ProductsViewControllerTests: XCTestCase {
         loader.completeProductsLoading()
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
     }
     
     
@@ -142,10 +142,10 @@ final class ProductsViewControllerTests: XCTestCase {
         loader.completeProductsLoading()
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
         
         loader.completeProductsLoading()
-        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, false)
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
     // MARK: - Helpers
@@ -218,5 +218,9 @@ private extension ProductsViewController {
     
     func simulateUserInitiatedProductsReload() {
         collectionView?.refreshControl?.simulatePullToRefresh()
+    }
+    
+    var isShowingLoadingIndicator: Bool {
+        return collectionView?.refreshControl?.isRefreshing == true
     }
 }

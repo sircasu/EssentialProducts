@@ -13,6 +13,8 @@ final class ProductsViewController: UICollectionViewController {
     
     private var loader: ProductsLoader?
     
+    private var onViewIsAppearing: ((ProductsViewController) -> Void)?
+    
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
@@ -32,11 +34,16 @@ final class ProductsViewController: UICollectionViewController {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(load), for: .valueChanged)
         collectionView?.refreshControl = refreshControl
+        
+        onViewIsAppearing = { vc in
+            vc.load()
+            vc.onViewIsAppearing = nil
+        }
     }
 
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
-        load()
+        onViewIsAppearing?(self)
     }
     
     @objc func load() {
@@ -78,7 +85,7 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.callCount, 3)
     }
     
-    func test_viewIsAppearing_showsLoadingIndicator() {
+    func test_viewdidLoad_showsLoadingIndicator() {
         let (sut, _) = makeSUT()
         
         sut.loadViewIfNeeded()

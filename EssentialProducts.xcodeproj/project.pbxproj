@@ -46,6 +46,7 @@
 
 /* Begin PBXFileReference section */
 		85519CFF2D5256AC0016BC6B /* CI_iOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CI_iOS.xctestplan; sourceTree = "<group>"; };
+		85519D162D53505C0016BC6B /* EssentialProductsiOSTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProductsiOSTests.xctestplan; sourceTree = "<group>"; };
 		85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EssentialProducts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85578B152CD284EA00DCD2BB /* EssentialProductsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialProductsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8596370A2CDF4ADE0053991C /* EssentialProductsTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = EssentialProductsTests.xctestplan; sourceTree = "<group>"; };
@@ -180,6 +181,7 @@
 		85578B032CD284E900DCD2BB = {
 			isa = PBXGroup;
 			children = (
+				85519D162D53505C0016BC6B /* EssentialProductsiOSTests.xctestplan */,
 				85519CFF2D5256AC0016BC6B /* CI_iOS.xctestplan */,
 				85D2136B2D5254FA0066F06B /* EssentialProductsiOS.xctestplan */,
 				85A228B12D2EF9AF0046EFC0 /* EssentialProductsCacheIntegrationTests.xctestplan */,
@@ -397,6 +399,7 @@
 					};
 					85D2135B2D52548F0066F06B = {
 						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -908,6 +911,7 @@
 		85D213692D52548F0066F06B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 274M6WJ8NT;
@@ -918,6 +922,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -926,6 +931,7 @@
 		85D2136A2D52548F0066F06B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 274M6WJ8NT;

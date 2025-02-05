@@ -11,7 +11,7 @@ public struct ProductItem: Equatable {
     public let id: Int
     public let title: String
     public let price: Double
-    public  let description: String
+    public let description: String
     public let category: String
     public let image: URL
     public let rating: ProductRatingItem

@@ -91,8 +91,7 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.loadViewIfNeeded()
         sut.replaceRefreshControlWithFake()
         
-        sut.beginAppearanceTransition(true, animated: false) // viewWillAppear
-        sut.endAppearanceTransition() // viewIsAppearing + viewDidAppear
+        sut.simulateAppareance()
  
         XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
     }
@@ -144,6 +143,12 @@ private class FakeRefreshControl: UIRefreshControl {
 }
 
 private extension ProductsViewController {
+    
+    func simulateAppareance() {
+        beginAppearanceTransition(true, animated: false) // viewWillAppear
+        endAppearanceTransition() // viewIsAppearing + viewDidAppear
+    }
+    
     func replaceRefreshControlWithFake() {
         
         let fakeRefreshControl = FakeRefreshControl()

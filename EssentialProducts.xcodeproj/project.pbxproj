@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		85519D182D53541E0016BC6B /* EssentialProducts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; platformFilter = ios; };
+		85519D192D53541E0016BC6B /* EssentialProducts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85578B162CD284EA00DCD2BB /* EssentialProducts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; };
 		859637132CDF99380053991C /* EssentialProducts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; };
 		85A228AB2D2EF9900046EFC0 /* EssentialProducts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85578B0D2CD284EA00DCD2BB /* EssentialProducts.framework */; };
@@ -14,6 +16,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		85519D1A2D53541E0016BC6B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 85578B042CD284E900DCD2BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 85578B0C2CD284E900DCD2BB;
+			remoteInfo = EssentialProducts;
+		};
 		85578B172CD284EA00DCD2BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 85578B042CD284E900DCD2BB /* Project object */;
@@ -43,6 +52,20 @@
 			remoteInfo = EssentialProductsiOS;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		85519D1C2D53541E0016BC6B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				85519D192D53541E0016BC6B /* EssentialProducts.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		85519CFF2D5256AC0016BC6B /* CI_iOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CI_iOS.xctestplan; sourceTree = "<group>"; };
@@ -164,6 +187,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85519D182D53541E0016BC6B /* EssentialProducts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +202,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85519D172D53541E0016BC6B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		85578B032CD284E900DCD2BB = {
 			isa = PBXGroup;
 			children = (
@@ -195,6 +226,7 @@
 				85A228A82D2EF9900046EFC0 /* EssentialProductsCacheIntegrationTests */,
 				85D213562D52548F0066F06B /* EssentialProductsiOS */,
 				85D213602D52548F0066F06B /* EssentialProductsiOSTests */,
+				85519D172D53541E0016BC6B /* Frameworks */,
 				85578B0E2CD284EA00DCD2BB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -332,10 +364,12 @@
 				85D213512D52548F0066F06B /* Sources */,
 				85D213522D52548F0066F06B /* Frameworks */,
 				85D213532D52548F0066F06B /* Resources */,
+				85519D1C2D53541E0016BC6B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				85519D1B2D53541E0016BC6B /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				85D213562D52548F0066F06B /* EssentialProductsiOS */,
@@ -518,6 +552,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		85519D1B2D53541E0016BC6B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = 85578B0C2CD284E900DCD2BB /* EssentialProducts */;
+			targetProxy = 85519D1A2D53541E0016BC6B /* PBXContainerItemProxy */;
+		};
 		85578B182CD284EA00DCD2BB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 85578B0C2CD284E900DCD2BB /* EssentialProducts */;

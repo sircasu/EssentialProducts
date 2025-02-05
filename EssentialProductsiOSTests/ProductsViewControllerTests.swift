@@ -7,9 +7,19 @@
 
 import XCTest
 
-final class ProductsViewController {
+final class ProductsViewController: UIViewController {
     
-    init(loader: ProductsViewControllerTests.LoaderSpy) {}
+    private var loader: ProductsViewControllerTests.LoaderSpy?
+    
+    convenience init(loader: ProductsViewControllerTests.LoaderSpy) {
+        self.init()
+        self.loader = loader
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        loader?.load()
+    }
 }
 
 final class ProductsViewControllerTests: XCTestCase {
@@ -22,8 +32,21 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.callCount, 0)
     }
     
+    func test_viewDidLoad_loadProducts() {
+        
+        let loader = LoaderSpy()
+        let sut = ProductsViewController(loader: loader)
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(loader.callCount, 1)
+    }
     
     class LoaderSpy {
         var callCount = 0
+        
+        func load() {
+            callCount += 1
+        }
     }
 }

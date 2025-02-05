@@ -77,7 +77,7 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.callCount, 1)
     }
     
-    func test_pullToRefresh_loadsProducts() {
+    func test_userInitiatedProductsReload_reloadsProducts() {
         
         let (sut, loader) = makeSUT()
         
@@ -85,10 +85,10 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
-        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        sut.simulateUserInitiatedProductsReload()
         XCTAssertEqual(loader.callCount, 2)
         
-        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        sut.simulateUserInitiatedProductsReload()
         XCTAssertEqual(loader.callCount, 3)
     }
     
@@ -118,7 +118,7 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, false)
     }
     
-    func test_pullToRefresh_showsLoadingIndicator() {
+    func test_userInitiatedProductsReload_showsLoadingIndicator() {
 
         let (sut, loader) = makeSUT()
     
@@ -127,12 +127,12 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.simulateAppareance()
         loader.completeProductsLoading()
         
-        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        sut.simulateUserInitiatedProductsReload()
         XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
     }
     
     
-    func test_pullToRefresh_hidesLoadingIndicatorOnLoadercompletion() {
+    func test_userInitiatedProductsReload_hidesLoadingIndicatorOnLoadercompletion() {
 
         let (sut, loader) = makeSUT()
     
@@ -141,7 +141,7 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.simulateAppareance()
         loader.completeProductsLoading()
         
-        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        sut.simulateUserInitiatedProductsReload()
         XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
         
         loader.completeProductsLoading()
@@ -214,5 +214,9 @@ private extension ProductsViewController {
         fakeRefreshControl.simulatePullToRefresh()
         
         collectionView?.refreshControl = fakeRefreshControl
+    }
+    
+    func simulateUserInitiatedProductsReload() {
+        collectionView?.refreshControl?.simulatePullToRefresh()
     }
 }

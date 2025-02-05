@@ -58,94 +58,42 @@ final class ProductsViewController: UICollectionViewController {
 
 final class ProductsViewControllerTests: XCTestCase {
 
-    func test_init_doesNotLoadProducts() {
-        
-        let (_, loader) = makeSUT()
-        
-        XCTAssertEqual(loader.callCount, 0)
-    }
-    
-    func test_viewDidLoad_loadProducts() {
+    func test_loadProductActions_requestProductsFromLoader() {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
-        
-        sut.simulateAppareance()
-        
-        XCTAssertEqual(loader.callCount, 1)
-    }
-    
-    func test_userInitiatedProductsReload_reloadsProducts() {
-        
-        let (sut, loader) = makeSUT()
+        XCTAssertEqual(loader.callCount, 0, "Expected no loading requests before view is appearing")
         
         sut.loadViewIfNeeded()
         sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
+        
+        XCTAssertEqual(loader.callCount, 1, "Expected q loading requests once view is appeared")
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertEqual(loader.callCount, 2)
+        XCTAssertEqual(loader.callCount, 2, "Expected another loading requests once user initiates reload")
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertEqual(loader.callCount, 3)
+        XCTAssertEqual(loader.callCount, 3, "Expected a third loading requests once user initiates another reload")
     }
     
-    func test_viewdidLoad_showsLoadingIndicator() {
-        let (sut, _) = makeSUT()
-        
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
-        
-        sut.simulateAppareance()
- 
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
-    }
-    
-    func test_viewdidLoad_hidesLoadingIndicatorOnLoadercompletion() {
+    func test_loadProductIndicator_isVisibleWhenLoadingProducts() {
         let (sut, loader) = makeSUT()
-    
+        
         sut.loadViewIfNeeded()
         sut.replaceRefreshControlWithFake()
         
         sut.simulateAppareance()
- 
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is loaded")
         
-        loader.completeProductsLoading()
-        
-        XCTAssertFalse(sut.isShowingLoadingIndicator)
-    }
-    
-    func test_userInitiatedProductsReload_showsLoadingIndicator() {
-
-        let (sut, loader) = makeSUT()
-    
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
-        sut.simulateAppareance()
-        loader.completeProductsLoading()
+        loader.completeProductsLoading(at: 0)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once view loading is completed")
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
-    }
-    
-    
-    func test_userInitiatedProductsReload_hidesLoadingIndicatorOnLoadercompletion() {
-
-        let (sut, loader) = makeSUT()
-    
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
-        sut.simulateAppareance()
-        loader.completeProductsLoading()
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initated reload")
         
-        sut.simulateUserInitiatedProductsReload()
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
-        
-        loader.completeProductsLoading()
-        XCTAssertFalse(sut.isShowingLoadingIndicator)
+        loader.completeProductsLoading(at: 1)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initated reload is complete")
     }
     
     // MARK: - Helpers

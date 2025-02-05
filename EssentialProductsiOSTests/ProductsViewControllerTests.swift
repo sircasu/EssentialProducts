@@ -9,17 +9,36 @@ import XCTest
 import UIKit
 import EssentialProducts
 
-final class ProductsViewController: UIViewController {
+final class ProductsViewController: UICollectionViewController {
     
     private var loader: ProductsLoader?
+    
+    init() {
+        super.init(collectionViewLayout: UICollectionViewFlowLayout())
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     convenience init(loader: ProductsLoader) {
         self.init()
         self.loader = loader
     }
+    
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(load), for: .valueChanged)
+        collectionView?.refreshControl = refreshControl
+        
+        loader?.load { _ in }
+    }
+    
+    @objc func load() {
         loader?.load { _ in }
     }
 }
@@ -40,6 +59,22 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.loadViewIfNeeded()
         
         XCTAssertEqual(loader.callCount, 1)
+    }
+    
+    func test_pullToRefresh_loadsProducts() {
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        sut.collectionView?.refreshControl?.allTargets.forEach { target in
+            sut.collectionView?.refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
+                action in
+                (target as NSObject).perform(Selector(action))
+            }
+        }
+        
+        XCTAssertEqual(loader.callCount, 2)
     }
     
     // MARK: - Helpers

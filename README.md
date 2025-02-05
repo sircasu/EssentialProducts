@@ -192,7 +192,7 @@ Products - Get
 ## UX goals for the Products UI Experience
 
 [✅] Load products automatically when view is presented
-[ ] Allow customer to manually reload products (pull to refresh)
+[✅] Allow customer to manually reload products (pull to refresh)
 [ ] Show a loading indicator while loading products
 [ ] Render all loaded products items
 [ ] Image loading experience

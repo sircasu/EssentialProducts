@@ -25,8 +25,6 @@ final class ProductsViewController: UICollectionViewController {
         self.init()
         self.loader = loader
     }
-    
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,11 +32,15 @@ final class ProductsViewController: UICollectionViewController {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(load), for: .valueChanged)
         collectionView?.refreshControl = refreshControl
-        
-        loader?.load { _ in }
+    }
+
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        load()
     }
     
     @objc func load() {
+        collectionView?.refreshControl?.beginRefreshing()
         loader?.load { _ in }
     }
 }
@@ -57,6 +59,7 @@ final class ProductsViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
+        sut.viewIsAppearing(false)
         
         XCTAssertEqual(loader.callCount, 1)
     }
@@ -66,12 +69,25 @@ final class ProductsViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
+        sut.viewIsAppearing(false)
         
         sut.collectionView?.refreshControl?.simulatePullToRefresh()
         XCTAssertEqual(loader.callCount, 2)
         
         sut.collectionView?.refreshControl?.simulatePullToRefresh()
         XCTAssertEqual(loader.callCount, 3)
+    }
+    
+    func test_viewIsAppearing_showsLoadingIndicator() {
+        let (sut, _) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        
+        sut.beginAppearanceTransition(true, animated: false) // viewWillAppear
+        sut.endAppearanceTransition() // viewIsAppearing + viewDidAppear
+ 
+        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
     }
     
     // MARK: - Helpers
@@ -92,7 +108,6 @@ final class ProductsViewControllerTests: XCTestCase {
             callCount += 1
         }
     }
-
 }
 
 private extension UIRefreshControl {
@@ -104,6 +119,30 @@ private extension UIRefreshControl {
                 (target as NSObject).perform(Selector(action))
             }
         }
+    }
+}
+
+private class FakeRefreshControl: UIRefreshControl {
+    private var _isRefreshing = false
+    
+    override var isRefreshing: Bool { _isRefreshing }
+    
+    override func beginRefreshing() {
+        _isRefreshing = true
+    }
+    
+    override func endRefreshing() {
+        _isRefreshing = false
+    }
+}
+
+private extension ProductsViewController {
+    func replaceRefreshControlWithFake() {
         
+        let fakeRefreshControl = FakeRefreshControl()
+        
+        fakeRefreshControl.simulatePullToRefresh()
+        
+        collectionView?.refreshControl = fakeRefreshControl
     }
 }

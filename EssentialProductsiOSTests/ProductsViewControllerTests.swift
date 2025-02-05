@@ -32,11 +32,13 @@ final class ProductsViewController: UICollectionViewController {
         super.viewDidLoad()
         
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(load), for: .valueChanged)
+        
         collectionView?.refreshControl = refreshControl
+        
         
         onViewIsAppearing = { vc in
             vc.load()
+            vc.collectionView?.refreshControl?.addTarget(self, action: #selector(vc.load), for: .valueChanged)
             vc.onViewIsAppearing = nil
         }
     }
@@ -68,7 +70,9 @@ final class ProductsViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
-        sut.viewIsAppearing(false)
+        sut.replaceRefreshControlWithFake()
+        
+        sut.simulateAppareance()
         
         XCTAssertEqual(loader.callCount, 1)
     }
@@ -78,7 +82,8 @@ final class ProductsViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
-        sut.viewIsAppearing(false)
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
         
         sut.collectionView?.refreshControl?.simulatePullToRefresh()
         XCTAssertEqual(loader.callCount, 2)
@@ -110,6 +115,36 @@ final class ProductsViewControllerTests: XCTestCase {
         
         loader.completeProductsLoading()
         
+        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, false)
+    }
+    
+    func test_pullToRefresh_showsLoadingIndicator() {
+
+        let (sut, loader) = makeSUT()
+    
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        loader.completeProductsLoading()
+        
+        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+    }
+    
+    
+    func test_pullToRefresh_hidesLoadingIndicatorOnLoadercompletion() {
+
+        let (sut, loader) = makeSUT()
+    
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        loader.completeProductsLoading()
+        
+        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+        
+        loader.completeProductsLoading()
         XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, false)
     }
     

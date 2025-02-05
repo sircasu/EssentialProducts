@@ -193,7 +193,7 @@ Products - Get
 
 [✅] Load products automatically when view is presented
 [✅] Allow customer to manually reload products (pull to refresh)
-[ ] Show a loading indicator while loading products
+[✅] Show a loading indicator while loading products
 [ ] Render all loaded products items
 [ ] Image loading experience
     [ ] Load when image view is visible

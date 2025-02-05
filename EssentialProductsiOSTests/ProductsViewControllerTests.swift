@@ -48,7 +48,9 @@ final class ProductsViewController: UICollectionViewController {
     
     @objc func load() {
         collectionView?.refreshControl?.beginRefreshing()
-        loader?.load { _ in }
+        loader?.load { [weak self] _ in
+            self?.collectionView?.refreshControl?.endRefreshing()
+        }
     }
 }
 
@@ -96,6 +98,21 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
     }
     
+    func test_viewdidLoad_hidesLoadingIndicatorOnLoadercompletion() {
+        let (sut, loader) = makeSUT()
+    
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        
+        sut.simulateAppareance()
+ 
+        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, true)
+        
+        loader.completeProductsLoading()
+        
+        XCTAssertEqual(sut.collectionView?.refreshControl?.isRefreshing, false)
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -108,10 +125,16 @@ final class ProductsViewControllerTests: XCTestCase {
     
     class LoaderSpy: ProductsLoader {
         
-        var callCount = 0
+        var messages: [(ProductsLoader.Result) -> Void] = [(ProductsLoader.Result) -> Void]()
+        
+        var callCount: Int { messages.count }
         
         func load(completion: @escaping (ProductsLoader.Result) -> Void) {
-            callCount += 1
+            messages.append(completion)
+        }
+        
+        func completeProductsLoading(at index: Int = 0) {
+            messages[index](.success([]))
         }
     }
 }

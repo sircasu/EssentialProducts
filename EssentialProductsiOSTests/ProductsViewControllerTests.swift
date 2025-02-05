@@ -67,9 +67,11 @@ final class ProductsViewControllerTests: XCTestCase {
         
         sut.loadViewIfNeeded()
         
-        sut.simulatePullToRefresh()
-        
+        sut.collectionView?.refreshControl?.simulatePullToRefresh()
         XCTAssertEqual(loader.callCount, 2)
+        
+        sut.collectionView?.refreshControl?.simulatePullToRefresh()
+        XCTAssertEqual(loader.callCount, 3)
     }
     
     // MARK: - Helpers
@@ -93,11 +95,11 @@ final class ProductsViewControllerTests: XCTestCase {
 
 }
 
-private extension UICollectionViewController {
+private extension UIRefreshControl {
     
     func simulatePullToRefresh() {
-        collectionView?.refreshControl?.allTargets.forEach { target in
-            collectionView?.refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
                 action in
                 (target as NSObject).perform(Selector(action))
             }

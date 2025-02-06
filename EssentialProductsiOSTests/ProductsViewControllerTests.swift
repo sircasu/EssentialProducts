@@ -402,18 +402,6 @@ final class ProductsViewControllerTests: XCTestCase {
     }
 }
 
-private extension UIRefreshControl {
-    
-    func simulatePullToRefresh() {
-        allTargets.forEach { target in
-            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
-                action in
-                (target as NSObject).perform(Selector(action))
-            }
-        }
-    }
-}
-
 private class FakeRefreshControl: UIRefreshControl {
     private var _isRefreshing = false
     

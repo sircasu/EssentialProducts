@@ -17,7 +17,7 @@ public protocol ProductImageDataLoader {
     func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ProductImageDataLoaderTask
 }
 
-final public class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
+public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
     
     private var productsLoader: ProductsLoader?
     private var imageLoader: ProductImageDataLoader?

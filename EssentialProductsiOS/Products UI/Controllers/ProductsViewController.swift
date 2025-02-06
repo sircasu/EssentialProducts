@@ -8,15 +8,6 @@
 import UIKit
 import EssentialProducts
 
-public protocol ProductImageDataLoaderTask {
-    func cancel()
-}
-
-public protocol ProductImageDataLoader {
-    typealias Result = Swift.Result<Data, Error>
-    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ProductImageDataLoaderTask
-}
-
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
     
     private var productsLoader: ProductsLoader?

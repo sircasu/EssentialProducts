@@ -415,34 +415,3 @@ class FakeRefreshControl: UIRefreshControl {
         _isRefreshing = false
     }
 }
-
-private extension ProductItemCell {
-    
-    func simulateRetryAction() {
-        productImageRetryButton.simulateTap()
-    }
-
-    var isShowingLoadingIndicator: Bool {
-        return productContainerImageView.isShimmering
-    }
-    
-    var isShowingRetryAction: Bool {
-        return !productImageRetryButton.isHidden
-    }
-    
-    var renderedImage: Data? {
-        return productImageView.image?.pngData()
-    }
-    
-    var productName: String? {
-        productNameLabel.text
-    }
-    
-    var productDescription: String? {
-        productDescriptionLabel.text
-    }
-    
-    var productPrice: String? {
-        productPriceLabel.text
-    }
-}

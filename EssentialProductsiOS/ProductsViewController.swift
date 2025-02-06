@@ -8,9 +8,12 @@
 import UIKit
 import EssentialProducts
 
+public protocol ProductImageDataLoaderTask {
+    func cancel()
+}
+
 public protocol ProductImageDataLoader {
-    func loadImageData(from url: URL)
-    func cancelImageDataLoad(from url: URL)
+    func loadImageData(from url: URL) -> ProductImageDataLoaderTask
 }
 
 final public class ProductsViewController: UICollectionViewController {
@@ -19,6 +22,7 @@ final public class ProductsViewController: UICollectionViewController {
     private var imageLoader: ProductImageDataLoader?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     private var collectionModel = [ProductItem]()
+    private var tasks = [IndexPath: ProductImageDataLoaderTask]()
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -78,13 +82,13 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productNameLabel.text = cellModel.title
         cell.productDescriptionLabel.text = cellModel.description
         cell.productPriceLabel.text = String(cellModel.price)
-        imageLoader?.loadImageData(from: cellModel.image)
+        tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image)
         return cell
     }
     
     public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        let cellModel = collectionModel[indexPath.row]
-        imageLoader?.cancelImageDataLoad(from: cellModel.image)
+        tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
     }
 }

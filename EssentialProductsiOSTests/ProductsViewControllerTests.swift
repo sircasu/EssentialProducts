@@ -269,6 +269,26 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image, product0.image, product1.image], "Expected fourth image URL request after second retry action")
     }
     
+    func test_productImageView_preloadsImageURLWhenNearVisible() {
+        let product0 = makeProduct()
+        let product1 = makeProduct()
+
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1])
+        XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL request until image is near visible")
+        
+        sut.simulateProductImageViewNearVisible(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image], "Expected first image URL request once first image is near visible")
+        
+        sut.simulateProductImageViewNearVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second image is near visible")
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -419,6 +439,12 @@ private extension ProductsViewController {
         let delegate = collectionView.delegate
         let indexPath = IndexPath(row: index, section: productsSection)
         delegate?.collectionView?(collectionView, didEndDisplaying: view!, forItemAt: indexPath)
+    }
+    
+    func simulateProductImageViewNearVisible(at row: Int) {
+        let dataSource = collectionView.prefetchDataSource
+        let indexPath = IndexPath(row: row, section: productsSection)
+        dataSource?.collectionView(collectionView, prefetchItemsAt: [indexPath])
     }
     
     var isShowingLoadingIndicator: Bool {

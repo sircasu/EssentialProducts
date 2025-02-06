@@ -17,7 +17,7 @@ public protocol ProductImageDataLoader {
     func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ProductImageDataLoaderTask
 }
 
-final public class ProductsViewController: UICollectionViewController {
+final public class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
     
     private var productsLoader: ProductsLoader?
     private var imageLoader: ProductImageDataLoader?
@@ -45,6 +45,7 @@ final public class ProductsViewController: UICollectionViewController {
         let refreshControl = UIRefreshControl()
         
         collectionView?.refreshControl = refreshControl
+        collectionView?.prefetchDataSource = self
         
         onViewIsAppearing = { [weak self] vc in
             guard let self = self else { return }
@@ -112,4 +113,15 @@ final public class ProductsViewController: UICollectionViewController {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
     }
+    
+    // MARK: - UICollectionViewDataSourcePrefetching
+    
+    public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        
+        indexPaths.forEach { indexPath in
+            let cellModel = collectionModel[indexPath.row]
+            _ = imageLoader?.loadImageData(from: cellModel.image) { _ in }
+        }
+    }
+
 }

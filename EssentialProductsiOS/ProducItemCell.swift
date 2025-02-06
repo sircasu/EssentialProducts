@@ -8,6 +8,7 @@
 import UIKit
 
 public final class ProductItemCell: UICollectionViewCell {
+    public let productContainerImageView = UIView()
     public let productNameLabel = UILabel()
     public let productDescriptionLabel = UILabel()
     public let productPriceLabel = UILabel()

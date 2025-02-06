@@ -123,7 +123,6 @@ final class ProductsViewControllerTests: XCTestCase {
                 
         let product1 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg")!)
         
-        
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
@@ -139,8 +138,32 @@ final class ProductsViewControllerTests: XCTestCase {
         
         sut.simulateProductImageViewNotVisible(at: 1)
         XCTAssertEqual(loader.cancelledURLs, [product0.image, product1.image], "Expected two cancelled image URL requests once second image becomes not visible anymore")
+    }
+    
+    func test_productImageViewLoadingIndicator_isVisibleWhileLoadingImage() {
+        let product0 = makeProduct()
+        let product1 = makeProduct()
         
-
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1])
+        
+        let view0 = sut.simulateProductImageViewVisible(at: 0)
+        let view1 = sut.simulateProductImageViewVisible(at: 1)
+        
+        XCTAssertEqual(view0?.isShowingLoadingIndicator, true, "Expected loading indicator for first view while loading first image")
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expected loading indicator for second view while loading second image")
+        
+        loader.completeImageLoading(at: 0)
+        XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expected no loading indicator for first view once first image loading completes successfully")
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expected no loading indicator state change for second view once first view loading completes successfully")        
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expected no loading indicator state change for first view once second image loading completes with error")
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, false, "Expected no loading indicator for second view once second image loading completes with error")
     }
     
     // MARK: - Helpers
@@ -185,7 +208,7 @@ final class ProductsViewControllerTests: XCTestCase {
     }
     
     class LoaderSpy: ProductsLoader, ProductImageDataLoader {
-
+        
         // MARK: - ProductsLoader
         
         private var productsRequests: [(ProductsLoader.Result) -> Void] = [(ProductsLoader.Result) -> Void]()
@@ -213,12 +236,25 @@ final class ProductsViewControllerTests: XCTestCase {
             }
         }
         
-        private(set) var loadedImageURLs: [URL] = [URL]()
+        private var loadImageRequests = [(url: URL, completion: (ProductImageDataLoader.Result) -> Void)]()
+        
+        var loadedImageURLs: [URL] {
+            loadImageRequests.map { $0.url }
+        }
+        
         private(set) var cancelledURLs: [URL] = [URL]()
         
-        func loadImageData(from url: URL) -> ProductImageDataLoaderTask {
-            loadedImageURLs.append(url)
+        func loadImageData(from url: URL, completion: @escaping (ProductImageDataLoader.Result) -> Void) -> ProductImageDataLoaderTask {
+            loadImageRequests.append((url, completion))
             return TaskSpy { [weak self] in self?.cancelledURLs.append(url) }
+        }
+        
+        func completeImageLoading(with imageData: Data = Data(), at index: Int = 0) {
+            loadImageRequests[index].completion(.success(imageData))
+        }
+        
+        func completeImageLoadingWithError(at index: Int = 0) {
+            loadImageRequests[index].completion(.failure(anyNSError()))
         }
     }
 }
@@ -313,5 +349,9 @@ private extension ProductItemCell {
     
     var productPrice: String? {
         productPriceLabel.text
+    }
+    
+    var isShowingLoadingIndicator: Bool {
+        return productContainerImageView.isShimmering
     }
 }

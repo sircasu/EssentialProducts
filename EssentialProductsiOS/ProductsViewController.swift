@@ -13,7 +13,8 @@ public protocol ProductImageDataLoaderTask {
 }
 
 public protocol ProductImageDataLoader {
-    func loadImageData(from url: URL) -> ProductImageDataLoaderTask
+    typealias Result = Swift.Result<Data, Error>
+    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ProductImageDataLoaderTask
 }
 
 final public class ProductsViewController: UICollectionViewController {
@@ -82,7 +83,10 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productNameLabel.text = cellModel.title
         cell.productDescriptionLabel.text = cellModel.description
         cell.productPriceLabel.text = String(cellModel.price)
-        tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image)
+        cell.productContainerImageView.isShimmering = true
+        tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { [weak cell] _ in
+            cell?.productContainerImageView.isShimmering = false
+        }
         return cell
     }
     

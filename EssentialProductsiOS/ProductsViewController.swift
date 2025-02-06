@@ -8,9 +8,14 @@
 import UIKit
 import EssentialProducts
 
+public protocol ProductImageDataLoader {
+    func loadImageData(from url: URL)
+}
+
 final public class ProductsViewController: UICollectionViewController {
     
-    private var loader: ProductsLoader?
+    private var productsLoader: ProductsLoader?
+    private var imageLoader: ProductImageDataLoader?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     private var collectionModel = [ProductItem]()
     
@@ -22,9 +27,10 @@ final public class ProductsViewController: UICollectionViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public convenience init(loader: ProductsLoader) {
+    public convenience init(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) {
         self.init()
-        self.loader = loader
+        self.productsLoader = productsLoader
+        self.imageLoader = imageLoader
     }
 
     override public func viewDidLoad() {
@@ -49,7 +55,7 @@ final public class ProductsViewController: UICollectionViewController {
     
     @objc func load() {
         collectionView?.refreshControl?.beginRefreshing()
-        loader?.load { [weak self] result in
+        productsLoader?.load { [weak self] result in
             
             if let products = try? result.get() {
                 self?.collectionModel = products
@@ -71,6 +77,7 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productNameLabel.text = cellModel.title
         cell.productDescriptionLabel.text = cellModel.description
         cell.productPriceLabel.text = String(cellModel.price)
+        imageLoader?.loadImageData(from: cellModel.image)
         return cell
     }
 }

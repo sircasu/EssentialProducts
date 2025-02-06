@@ -16,19 +16,19 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        XCTAssertEqual(loader.callCount, 0, "Expected no loading requests before view is appearing")
+        XCTAssertEqual(loader.loadProductCallCount, 0, "Expected no loading requests before view is appearing")
         
         sut.loadViewIfNeeded()
         sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
-        XCTAssertEqual(loader.callCount, 1, "Expected q loading requests once view is appeared")
+        XCTAssertEqual(loader.loadProductCallCount, 1, "Expected q loading requests once view is appeared")
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertEqual(loader.callCount, 2, "Expected another loading requests once user initiates reload")
+        XCTAssertEqual(loader.loadProductCallCount, 2, "Expected another loading requests once user initiates reload")
         
         sut.simulateUserInitiatedProductsReload()
-        XCTAssertEqual(loader.callCount, 3, "Expected a third loading requests once user initiates another reload")
+        XCTAssertEqual(loader.loadProductCallCount, 3, "Expected a third loading requests once user initiates another reload")
     }
     
     func test_loadProductIndicator_isVisibleWhenLoadingProducts() {
@@ -95,11 +95,34 @@ final class ProductsViewControllerTests: XCTestCase {
         assertThat(sut, isRendering: [product0])
     }
     
+    func test_productImageView_loadImageURLWhenVisibile() {
+        let product0 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")!)
+                
+        let product1 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg")!)
+        
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1], at: 0)
+        
+        XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL request until view become visible")
+        
+        sut.simulateProductImageViewVisible(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image], "Expected first image URL request once first view becomes visible")
+        
+        sut.simulateProductImageViewVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second view also becomes visible")
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = ProductsViewController(loader: loader)
+        let sut = ProductsViewController(productsLoader: loader, imageLoader: loader)
         trackForMemoryLeak(loader, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return (sut, loader)
@@ -136,22 +159,32 @@ final class ProductsViewControllerTests: XCTestCase {
         return ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: ProductRatingItem(rate: ratingAvarage, count: ratingCount))
     }
     
-    class LoaderSpy: ProductsLoader {
+    class LoaderSpy: ProductsLoader, ProductImageDataLoader {
+
+        // MARK: - ProductsLoader
         
-        var messages: [(ProductsLoader.Result) -> Void] = [(ProductsLoader.Result) -> Void]()
-        
-        var callCount: Int { messages.count }
+        private var productsRequests: [(ProductsLoader.Result) -> Void] = [(ProductsLoader.Result) -> Void]()
+                
+        var loadProductCallCount: Int { productsRequests.count }
         
         func load(completion: @escaping (ProductsLoader.Result) -> Void) {
-            messages.append(completion)
+            productsRequests.append(completion)
         }
         
         func completeProductsLoading(with products: [ProductItem] = [], at index: Int = 0) {
-            messages[index](.success(products))
+            productsRequests[index](.success(products))
         }
         
         func completeProductLoadingWithError(_ error: Error = anyNSError(), at index: Int = 0) {
-            messages[index](.failure(error))
+            productsRequests[index](.failure(error))
+        }
+        
+        // MARK: - ProductImageDataLoader
+        
+        private(set) var loadedImageURLs: [URL] = [URL]()
+        
+        func loadImageData(from url: URL) {
+            loadedImageURLs.append(url)
         }
     }
 }
@@ -200,6 +233,10 @@ private extension ProductsViewController {
     
     func simulateUserInitiatedProductsReload() {
         collectionView?.refreshControl?.simulatePullToRefresh()
+    }
+    
+    func simulateProductImageViewVisible(at index: Int = 0) {
+        _ = productView(at: index)
     }
     
     var isShowingLoadingIndicator: Bool {

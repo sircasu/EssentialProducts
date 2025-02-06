@@ -41,13 +41,19 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is loaded")
         
         loader.completeProductsLoading(at: 0)
-        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once view loading is completed")
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading completes successfully")
         
         sut.simulateUserInitiatedProductsReload()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initated reload")
         
         loader.completeProductsLoading(at: 1)
-        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initated reload is complete")
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initated reload is completed successfully")
+        
+        sut.simulateUserInitiatedProductsReload()
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initated reload for the second time")
+        
+        loader.completeProductLoadingWithError(at: 2)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once user initated second reload is completed with error")
     }
     
     func test_loadProductsCompletion_rendersSuccessfullyLoadedProducts() {
@@ -69,6 +75,24 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.simulateUserInitiatedProductsReload()
         loader.completeProductsLoading(with: [product0, product1], at: 0)
         assertThat(sut, isRendering: [product0, product1])
+    }
+    
+    func test_loadProductsCompletion_doesNotAlterCurrentStateOnError() {
+        let product0 = makeProduct()
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0], at: 0)
+        assertThat(sut, isRendering: [product0])
+        
+        sut.simulateUserInitiatedProductsReload()
+        loader.completeProductLoadingWithError(at: 1)
+        
+        assertThat(sut, isRendering: [product0])
     }
     
     // MARK: - Helpers
@@ -107,7 +131,7 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(cell.productPrice, String(product.price), "Expected product price to be \(String(describing: product.price)) for product view at index \(index)", file: file, line: line)
     }
     
-    private func makeProduct(id: Int, title: String, price: Double, description: String, category: String, image: URL, ratingAvarage: Double, ratingCount: Int) -> ProductItem {
+    private func makeProduct(id: Int = 0, title: String = "title", price: Double = 4.99, description: String = "description", category: String = "category", image: URL = URL(string: "https://any-url.com")!, ratingAvarage: Double = 4.99, ratingCount: Int = 18) -> ProductItem {
         
         return ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: ProductRatingItem(rate: ratingAvarage, count: ratingCount))
     }
@@ -124,6 +148,10 @@ final class ProductsViewControllerTests: XCTestCase {
         
         func completeProductsLoading(with products: [ProductItem] = [], at index: Int = 0) {
             messages[index](.success(products))
+        }
+        
+        func completeProductLoadingWithError(_ error: Error = anyNSError(), at index: Int = 0) {
+            messages[index](.failure(error))
         }
     }
 }

@@ -96,6 +96,7 @@
 		85519D1E2D5355BB0016BC6B /* Exceptions for "EssentialProductsTests" folder in "EssentialProductsiOSTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Helpers/SharedTestHelpers.swift,
 				"Helpers/XCTestCase+trackForMemoryLeak.swift",
 			);
 			target = 85D2135B2D52548F0066F06B /* EssentialProductsiOSTests */;

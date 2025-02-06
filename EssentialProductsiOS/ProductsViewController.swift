@@ -51,11 +51,11 @@ final public class ProductsViewController: UICollectionViewController {
         collectionView?.refreshControl?.beginRefreshing()
         loader?.load { [weak self] result in
             
-            self?.collectionModel = (try? result.get()) ?? []
-            
+            if let products = try? result.get() {
+                self?.collectionModel = products
+                self?.collectionView?.reloadData()
+            }
             self?.collectionView?.refreshControl?.endRefreshing()
-            
-            self?.collectionView?.reloadData()
         }
     }
     

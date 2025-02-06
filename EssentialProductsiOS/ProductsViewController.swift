@@ -10,6 +10,7 @@ import EssentialProducts
 
 public protocol ProductImageDataLoader {
     func loadImageData(from url: URL)
+    func cancelImageDataLoad(from url: URL)
 }
 
 final public class ProductsViewController: UICollectionViewController {
@@ -79,5 +80,11 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productPriceLabel.text = String(cellModel.price)
         imageLoader?.loadImageData(from: cellModel.image)
         return cell
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        let cellModel = collectionModel[indexPath.row]
+        imageLoader?.cancelImageDataLoad(from: cellModel.image)
     }
 }

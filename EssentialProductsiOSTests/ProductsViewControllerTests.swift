@@ -118,6 +118,31 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second view also becomes visible")
     }
     
+    func test_productImageView_cancelLoadImageWhenImageViewIsNotVisibleAnymore() {
+        let product0 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")!)
+                
+        let product1 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg")!)
+        
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1], at: 0)
+        
+        XCTAssertEqual(loader.cancelledURLs, [], "Expected no cancelled image URL request until image is not visible")
+        
+        sut.simulateProductImageViewNotVisible(at: 0)
+        XCTAssertEqual(loader.cancelledURLs, [product0.image], "Expected one cancelled image URL request once first image becomes not visible anymore")
+        
+        sut.simulateProductImageViewNotVisible(at: 1)
+        XCTAssertEqual(loader.cancelledURLs, [product0.image, product1.image], "Expected two cancelled image URL requests once second image becomes not visible anymore")
+        
+
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -182,9 +207,14 @@ final class ProductsViewControllerTests: XCTestCase {
         // MARK: - ProductImageDataLoader
         
         private(set) var loadedImageURLs: [URL] = [URL]()
+        private(set) var cancelledURLs: [URL] = [URL]()
         
         func loadImageData(from url: URL) {
             loadedImageURLs.append(url)
+        }
+        
+        func cancelImageDataLoad(from url: URL) {
+            cancelledURLs.append(url)
         }
     }
 }
@@ -235,8 +265,17 @@ private extension ProductsViewController {
         collectionView?.refreshControl?.simulatePullToRefresh()
     }
     
-    func simulateProductImageViewVisible(at index: Int = 0) {
-        _ = productView(at: index)
+    @discardableResult
+    func simulateProductImageViewVisible(at index: Int = 0) -> ProductItemCell? {
+        return productView(at: index) as? ProductItemCell
+    }
+    
+    func simulateProductImageViewNotVisible(at index: Int = 0) {
+        let view = simulateProductImageViewVisible(at: index)
+        
+        let delegate = collectionView.delegate
+        let indexPath = IndexPath(row: index, section: productsSection)
+        delegate?.collectionView?(collectionView, didEndDisplaying: view!, forItemAt: indexPath)
     }
     
     var isShowingLoadingIndicator: Bool {

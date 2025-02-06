@@ -84,8 +84,11 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productDescriptionLabel.text = cellModel.description
         cell.productPriceLabel.text = String(cellModel.price)
         cell.productContainerImageView.isShimmering = true
-        tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { [weak cell] _ in
+        cell.productImageView.image = nil
+        tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { [weak cell] result in
             cell?.productContainerImageView.isShimmering = false
+            let data = try? result.get()
+            cell?.productImageView.image = data.map(UIImage.init) ?? nil
         }
         return cell
     }

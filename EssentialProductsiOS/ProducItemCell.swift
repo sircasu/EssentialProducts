@@ -13,5 +13,16 @@ public final class ProductItemCell: UICollectionViewCell {
     public let productNameLabel = UILabel()
     public let productDescriptionLabel = UILabel()
     public let productPriceLabel = UILabel()
-    public let productImageRetryButton = UIButton()
+    
+    private(set) public lazy var productImageRetryButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    var onRetry: (() -> Void)?
+    
+    @objc private func retryButtonTapped() {
+        onRetry?()
+    }
 }

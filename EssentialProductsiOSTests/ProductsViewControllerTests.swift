@@ -242,6 +242,33 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view0?.isShowingRetryAction, true, "Expected retry action once image loading complete with invalid image data")
     }
     
+    func test_productImageViewRetryButton_retriesImageLoad() {
+        let product0 = makeProduct()
+        let product1 = makeProduct()
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1])
+        
+        let view0 = sut.simulateProductImageViewVisible(at: 0)
+        let view1 = sut.simulateProductImageViewVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected two image URL requests for the two visivble views")
+        
+        loader.completeImageLoadingWithError(at: 0)
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected only two image URL request before retry action")
+        
+        view0?.simulateRetryAction()
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image, product0.image], "Expected third URL request after first retry action")
+        
+        view1?.simulateRetryAction()
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image, product0.image, product1.image], "Expected fourth image URL request after second retry action")
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -415,6 +442,10 @@ private extension ProductsViewController {
 
 
 private extension ProductItemCell {
+    
+    func simulateRetryAction() {
+        productImageRetryButton.simulateTap()
+    }
 
     var isShowingLoadingIndicator: Bool {
         return productContainerImageView.isShimmering
@@ -439,7 +470,16 @@ private extension ProductItemCell {
     var productPrice: String? {
         productPriceLabel.text
     }
-    
+}
+
+private extension UIButton {
+    func simulateTap() {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .touchUpInside)?.forEach { action in
+                (target as NSObject).perform(Selector(action))
+            }
+        }
+    }
 }
 
 extension UIImage {

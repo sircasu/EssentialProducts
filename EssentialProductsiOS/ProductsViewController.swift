@@ -86,16 +86,24 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productContainerImageView.isShimmering = true
         cell.productImageView.image = nil
         cell.productImageRetryButton.isHidden = true
-        tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { [weak cell] result in
+
+        let loadImage = { [weak self, weak cell] in
+            guard let self = self else { return }
             
-            let data = try? result.get()
-            let image = data.map(UIImage.init) ?? nil
-            cell?.productImageView.image = image
-            cell?.productImageRetryButton.isHidden = (image != nil)
+            self.tasks[indexPath] = self.imageLoader?.loadImageData(from: cellModel.image) { [weak cell] result in
+                
+                let data = try? result.get()
+                let image = data.map(UIImage.init) ?? nil
+                cell?.productImageView.image = image
+                cell?.productImageRetryButton.isHidden = (image != nil)
 
-            cell?.productContainerImageView.isShimmering = false
-
+                cell?.productContainerImageView.isShimmering = false
+            }
         }
+        
+        cell.onRetry = loadImage
+        loadImage()
+        
         return cell
     }
     

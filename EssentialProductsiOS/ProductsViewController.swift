@@ -110,8 +110,7 @@ final public class ProductsViewController: UICollectionViewController, UICollect
     
     public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        tasks[indexPath]?.cancel()
-        tasks[indexPath] = nil
+        cancelTask(forRowAt: indexPath)
     }
     
     // MARK: - UICollectionViewDataSourcePrefetching
@@ -120,8 +119,18 @@ final public class ProductsViewController: UICollectionViewController, UICollect
         
         indexPaths.forEach { indexPath in
             let cellModel = collectionModel[indexPath.row]
-            _ = imageLoader?.loadImageData(from: cellModel.image) { _ in }
+            tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { _ in }
         }
     }
 
+    public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        
+        indexPaths.forEach(cancelTask)
+    }
+    
+    private func cancelTask(forRowAt indexPath: IndexPath) {
+        tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
+        
+    }
 }

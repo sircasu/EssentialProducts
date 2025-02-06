@@ -131,13 +131,13 @@ final class ProductsViewControllerTests: XCTestCase {
         
         loader.completeProductsLoading(with: [product0, product1], at: 0)
         
-        XCTAssertEqual(loader.cancelledURLs, [], "Expected no cancelled image URL request until image is not visible")
+        XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL request until image is not visible")
         
         sut.simulateProductImageViewNotVisible(at: 0)
-        XCTAssertEqual(loader.cancelledURLs, [product0.image], "Expected one cancelled image URL request once first image becomes not visible anymore")
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image], "Expected one cancelled image URL request once first image becomes not visible anymore")
         
         sut.simulateProductImageViewNotVisible(at: 1)
-        XCTAssertEqual(loader.cancelledURLs, [product0.image, product1.image], "Expected two cancelled image URL requests once second image becomes not visible anymore")
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image, product1.image], "Expected two cancelled image URL requests once second image becomes not visible anymore")
     }
     
     func test_productImageViewLoadingIndicator_isVisibleWhileLoadingImage() {
@@ -288,6 +288,26 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.simulateProductImageViewNearVisible(at: 1)
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second image is near visible")
     }
+        
+    func test_productImageView_cancelPreloadsImageURLWhenNotNearVisibleAnymore() {
+        let product0 = makeProduct()
+        let product1 = makeProduct()
+
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1])
+        XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL request until image is not near visible")
+        
+        sut.simulateProductImageViewNotNearVisible(at: 0)
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image], "Expected first cancelled image URL request once first image is not near visible anymore")
+        
+        sut.simulateProductImageViewNotNearVisible(at: 1)
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image, product1.image], "Expected second cancelled image URL request once second image is not near visible anymore")
+    }
     
     // MARK: - Helpers
     
@@ -365,11 +385,11 @@ final class ProductsViewControllerTests: XCTestCase {
             loadImageRequests.map { $0.url }
         }
         
-        private(set) var cancelledURLs: [URL] = [URL]()
+        private(set) var cancelledImageURLs: [URL] = [URL]()
         
         func loadImageData(from url: URL, completion: @escaping (ProductImageDataLoader.Result) -> Void) -> ProductImageDataLoaderTask {
             loadImageRequests.append((url, completion))
-            return TaskSpy { [weak self] in self?.cancelledURLs.append(url) }
+            return TaskSpy { [weak self] in self?.cancelledImageURLs.append(url) }
         }
         
         func completeImageLoading(with imageData: Data = Data(), at index: Int = 0) {
@@ -445,6 +465,14 @@ private extension ProductsViewController {
         let dataSource = collectionView.prefetchDataSource
         let indexPath = IndexPath(row: row, section: productsSection)
         dataSource?.collectionView(collectionView, prefetchItemsAt: [indexPath])
+    }
+    
+    func simulateProductImageViewNotNearVisible(at row: Int) {
+        simulateProductImageViewNearVisible(at: row)
+        
+        let dataSource = collectionView.prefetchDataSource
+        let indexPath = IndexPath(row: row, section: productsSection)
+        dataSource?.collectionView?(collectionView, cancelPrefetchingForItemsAt: [indexPath])
     }
     
     var isShowingLoadingIndicator: Bool {

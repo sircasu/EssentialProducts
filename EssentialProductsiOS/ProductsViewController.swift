@@ -85,10 +85,13 @@ final public class ProductsViewController: UICollectionViewController {
         cell.productPriceLabel.text = String(cellModel.price)
         cell.productContainerImageView.isShimmering = true
         cell.productImageView.image = nil
+        cell.productImageRetryButton.isHidden = true
         tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { [weak cell] result in
             cell?.productContainerImageView.isShimmering = false
+            
             let data = try? result.get()
             cell?.productImageView.image = data.map(UIImage.init) ?? nil
+            cell?.productImageRetryButton.isHidden = data != nil
         }
         return cell
     }

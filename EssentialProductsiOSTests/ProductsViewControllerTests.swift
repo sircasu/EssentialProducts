@@ -195,6 +195,33 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.renderedImage, imageData1, "Expected  image for second view once second image loading completes successfully")
     }
     
+    func test_productImageViewRetryButton_isVisibleOnImageURLLoadError() {
+        let product0 = makeProduct()
+        let product1 = makeProduct()
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFake()
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [product0, product1])
+        
+        let view0 = sut.simulateProductImageViewVisible(at: 0)
+        let view1 = sut.simulateProductImageViewVisible(at: 1)
+        
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view while loading first image")
+        XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action for second view while loading second image")
+        
+        loader.completeImageLoading(at: 0)
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view once first image loading completes successfully")
+        XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action state change for second view once first view loading completes successfully")
+        
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry acion state change for first view once second image loading completes with error")
+        XCTAssertEqual(view1?.isShowingRetryAction, true, "Expected  retry action for second view once second image loading completes with error")
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -368,6 +395,19 @@ private extension ProductsViewController {
 
 
 private extension ProductItemCell {
+
+    var isShowingLoadingIndicator: Bool {
+        return productContainerImageView.isShimmering
+    }
+    
+    var isShowingRetryAction: Bool {
+        return !productImageRetryButton.isHidden
+    }
+    
+    var renderedImage: Data? {
+        return productImageView.image?.pngData()
+    }
+    
     var productName: String? {
         productNameLabel.text
     }
@@ -380,13 +420,6 @@ private extension ProductItemCell {
         productPriceLabel.text
     }
     
-    var isShowingLoadingIndicator: Bool {
-        return productContainerImageView.isShimmering
-    }
-    
-    var renderedImage: Data? {
-        return productImageView.image?.pngData()
-    }
 }
 
 extension UIImage {

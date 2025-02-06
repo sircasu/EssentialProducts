@@ -13,4 +13,5 @@ public final class ProductItemCell: UICollectionViewCell {
     public let productNameLabel = UILabel()
     public let productDescriptionLabel = UILabel()
     public let productPriceLabel = UILabel()
+    public let productImageRetryButton = UIButton()
 }

@@ -60,18 +60,15 @@ final class ProductsViewControllerTests: XCTestCase {
         sut.loadViewIfNeeded()
         sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
-
-        XCTAssertEqual(sut.numberOfRenderedProductViews(), 0)
+        
+        assertThat(sut, isRendering: [])
         
         loader.completeProductsLoading(with: [product0], at: 0)
-        XCTAssertEqual(sut.numberOfRenderedProductViews(), 1)
-        assertThat(sut, hasViewConfiguredFor: product0, at: 0)
+        assertThat(sut, isRendering: [product0])
     
         sut.simulateUserInitiatedProductsReload()
         loader.completeProductsLoading(with: [product0, product1], at: 0)
-        
-        assertThat(sut, hasViewConfiguredFor: product0, at: 0)
-        assertThat(sut, hasViewConfiguredFor: product1, at: 1)
+        assertThat(sut, isRendering: [product0, product1])
     }
     
     // MARK: - Helpers
@@ -82,6 +79,17 @@ final class ProductsViewControllerTests: XCTestCase {
         trackForMemoryLeak(loader, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return (sut, loader)
+    }
+    
+    private func assertThat(_ sut: ProductsViewController, isRendering products: [ProductItem], file: StaticString = #filePath, line: UInt = #line) {
+        
+        guard sut.numberOfRenderedProductViews() == products.count else {
+            return XCTFail("Expected \(products.count) products, got \(sut.numberOfRenderedProductViews()) instead", file: file, line: line)
+        }
+        
+        products.enumerated().forEach { index, item in
+            assertThat(sut, hasViewConfiguredFor: item, at: index, file: file, line: line)
+        }
     }
     
     private func assertThat(_ sut: ProductsViewController, hasViewConfiguredFor product: ProductItem, at index: Int, file: StaticString = #filePath, line: UInt = #line) {

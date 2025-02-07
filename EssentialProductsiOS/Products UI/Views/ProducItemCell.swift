@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 public final class ProductItemCell: UICollectionViewCell {
     public let productContainerImageView = UIView()
     public let productImageView = UIImageView()

@@ -16,7 +16,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     private var collectionModel = [ProductItem]() {
         didSet { collectionView.reloadData() }
     }
-    private var tasks = [IndexPath: ProductImageDataLoaderTask]()
+    private var cellControllers = [IndexPath: ProductItemCellViewController]()
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -60,39 +60,13 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     }
     
     public override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cellModel = collectionModel[indexPath.row]
-        let cell = ProductItemCell()
-        cell.productNameLabel.text = cellModel.title
-        cell.productDescriptionLabel.text = cellModel.description
-        cell.productPriceLabel.text = String(cellModel.price)
-        cell.productContainerImageView.isShimmering = true
-        cell.productImageView.image = nil
-        cell.productImageRetryButton.isHidden = true
 
-        let loadImage = { [weak self, weak cell] in
-            guard let self = self else { return }
-            
-            self.tasks[indexPath] = self.imageLoader?.loadImageData(from: cellModel.image) { [weak cell] result in
-                
-                let data = try? result.get()
-                let image = data.map(UIImage.init) ?? nil
-                cell?.productImageView.image = image
-                cell?.productImageRetryButton.isHidden = (image != nil)
-
-                cell?.productContainerImageView.isShimmering = false
-            }
-        }
-        
-        cell.onRetry = loadImage
-        loadImage()
-        
-        return cell
+        return cellController(forRowAt: indexPath).view()
     }
     
     public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        cancelTask(forRowAt: indexPath)
+        removeCellController(forRowAt: indexPath)
     }
     
     // MARK: - UICollectionViewDataSourcePrefetching
@@ -100,19 +74,24 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         
         indexPaths.forEach { indexPath in
-            let cellModel = collectionModel[indexPath.row]
-            tasks[indexPath] = imageLoader?.loadImageData(from: cellModel.image) { _ in }
+            cellController(forRowAt: indexPath).preload()
         }
     }
 
     public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
         
-        indexPaths.forEach(cancelTask)
+        indexPaths.forEach(removeCellController)
     }
     
-    private func cancelTask(forRowAt indexPath: IndexPath) {
-        tasks[indexPath]?.cancel()
-        tasks[indexPath] = nil
+    private func cellController(forRowAt indexPath: IndexPath) -> ProductItemCellViewController {
+        let cellModel = collectionModel[indexPath.row]
+        let cellController = ProductItemCellViewController(model: cellModel, imageLoader: imageLoader)
+        cellControllers[indexPath] = cellController
         
+        return cellController
+    }
+    
+    private func removeCellController(forRowAt indexPath: IndexPath) {
+        cellControllers[indexPath] = nil
     }
 }

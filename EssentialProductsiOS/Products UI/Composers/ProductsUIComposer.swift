@@ -16,12 +16,17 @@ public final class ProductsUIComposer {
         let refreshController = ProductRefreshViewController(productsLoader: productsLoader)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
-        refreshController.onRefresh = { [weak productsViewController] products in
-            productsViewController?.collectionModel = products.map { product in
-                ProductItemCellViewController(model: product, imageLoader: imageLoader)
-            }
-        }
+        refreshController.onRefresh = adaptProductsToCellControllers(forardingTo: productsViewController, loader: imageLoader)
         
         return productsViewController
+    }
+    
+    
+    private static func adaptProductsToCellControllers(forardingTo controller: ProductsViewController, loader: ProductImageDataLoader) -> ([ProductItem]) -> Void {
+        return { [weak controller] products in
+            controller?.collectionModel = products.map { product in
+                ProductItemCellViewController(model: product, imageLoader: loader)
+            }
+        }
     }
 }

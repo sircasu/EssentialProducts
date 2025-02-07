@@ -52,7 +52,7 @@ final class ProductItemCellViewController {
         task = imageLoader?.loadImageData(from: model.image) { _ in }
     }
     
-    deinit {
+    func cancel() {
         task?.cancel()
     }
 }

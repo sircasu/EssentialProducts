@@ -13,10 +13,9 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     public var refreshController: ProductRefreshViewController?
     private var imageLoader: ProductImageDataLoader?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
-    private var collectionModel = [ProductItem]() {
+    var collectionModel = [ProductItemCellViewController]() {
         didSet { collectionView.reloadData() }
     }
-    private var cellControllers = [IndexPath: ProductItemCellViewController]()
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -26,18 +25,13 @@ public final class ProductsViewController: UICollectionViewController, UICollect
         fatalError("init(coder:) has not been implemented")
     }
     
-    public convenience init(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) {
+    convenience init(refreshController: ProductRefreshViewController) {
         self.init()
-        self.refreshController = ProductRefreshViewController(productsLoader: productsLoader)
-        self.imageLoader = imageLoader
+        self.refreshController = refreshController
     }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
-        refreshController?.onRefresh = { [weak self] products in
-            self?.collectionModel = products
-        }
         
         collectionView?.refreshControl = refreshController?.view
         collectionView?.prefetchDataSource = self
@@ -66,7 +60,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     
     public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        removeCellController(forRowAt: indexPath)
+        cancelCellController(forRowAt: indexPath)
     }
     
     // MARK: - UICollectionViewDataSourcePrefetching
@@ -80,18 +74,14 @@ public final class ProductsViewController: UICollectionViewController, UICollect
 
     public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
         
-        indexPaths.forEach(removeCellController)
+        indexPaths.forEach(cancelCellController)
     }
     
     private func cellController(forRowAt indexPath: IndexPath) -> ProductItemCellViewController {
-        let cellModel = collectionModel[indexPath.row]
-        let cellController = ProductItemCellViewController(model: cellModel, imageLoader: imageLoader)
-        cellControllers[indexPath] = cellController
-        
-        return cellController
+        return collectionModel[indexPath.row]
     }
     
-    private func removeCellController(forRowAt indexPath: IndexPath) {
-        cellControllers[indexPath] = nil
+    private func cancelCellController(forRowAt indexPath: IndexPath) {
+        cellController(forRowAt: indexPath).cancel()
     }
 }

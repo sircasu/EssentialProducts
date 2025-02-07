@@ -286,7 +286,7 @@ final class ProductsViewControllerTests: XCTestCase {
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = ProductsViewController(productsLoader: loader, imageLoader: loader)
+        let sut = ProductsUIComposer.productsComposedWith(productsLoader: loader, imageLoader: loader)
         trackForMemoryLeak(loader, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return (sut, loader)

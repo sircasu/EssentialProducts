@@ -11,6 +11,12 @@ import EssentialProductsiOS
 extension ProductsViewController {
     
     func simulateAppareance() {
+        
+        if !isViewLoaded {
+            loadViewIfNeeded()
+            replaceRefreshControlWithFake()
+        }
+        
         beginAppearanceTransition(true, animated: false) // viewWillAppear
         endAppearanceTransition() // viewIsAppearing + viewDidAppear
     }

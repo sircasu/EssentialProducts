@@ -18,8 +18,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         XCTAssertEqual(loader.loadProductCallCount, 0, "Expected no loading requests before view is appearing")
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         XCTAssertEqual(loader.loadProductCallCount, 1, "Expected q loading requests once view is appeared")
@@ -33,10 +31,7 @@ final class ProductsViewControllerTests: XCTestCase {
     
     func test_loadProductIndicator_isVisibleWhenLoadingProducts() {
         let (sut, loader) = makeSUT()
-        
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
-        
+
         sut.simulateAppareance()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is loaded")
         
@@ -63,8 +58,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         assertThat(sut, isRendering: [])
@@ -82,8 +75,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0], at: 0)
@@ -103,8 +94,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1], at: 0)
@@ -125,8 +114,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1], at: 0)
@@ -146,8 +133,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1])
@@ -172,8 +157,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1])
@@ -201,8 +184,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1])
@@ -228,8 +209,6 @@ final class ProductsViewControllerTests: XCTestCase {
         let product0 = makeProduct()
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0])
@@ -248,8 +227,6 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1])
@@ -275,8 +252,6 @@ final class ProductsViewControllerTests: XCTestCase {
 
         let (sut, loader) = makeSUT()
         
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1])
@@ -294,9 +269,7 @@ final class ProductsViewControllerTests: XCTestCase {
         let product1 = makeProduct()
 
         let (sut, loader) = makeSUT()
-        
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFake()
+
         sut.simulateAppareance()
         
         loader.completeProductsLoading(with: [product0, product1])

@@ -10,10 +10,12 @@ import EssentialProducts
 
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
     
-    private var productsLoader: ProductsLoader?
+    public var refreshController: ProductRefreshViewController?
     private var imageLoader: ProductImageDataLoader?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
-    private var collectionModel = [ProductItem]()
+    private var collectionModel = [ProductItem]() {
+        didSet { collectionView.reloadData() }
+    }
     private var tasks = [IndexPath: ProductImageDataLoaderTask]()
     
     init() {
@@ -26,22 +28,23 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     
     public convenience init(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) {
         self.init()
-        self.productsLoader = productsLoader
+        self.refreshController = ProductRefreshViewController(productsLoader: productsLoader)
         self.imageLoader = imageLoader
     }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        let refreshControl = UIRefreshControl()
+        refreshController?.onRefresh = { [weak self] products in
+            self?.collectionModel = products
+        }
         
-        collectionView?.refreshControl = refreshControl
+        collectionView?.refreshControl = refreshController?.view
         collectionView?.prefetchDataSource = self
         
         onViewIsAppearing = { [weak self] vc in
             guard let self = self else { return }
-            vc.load()
-            vc.collectionView?.refreshControl?.addTarget(self, action: #selector(vc.load), for: .valueChanged)
+            refreshController?.refresh()
             vc.onViewIsAppearing = nil
         }
     }
@@ -50,19 +53,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
         super.viewIsAppearing(animated)
         onViewIsAppearing?(self)
     }
-    
-    @objc func load() {
-        collectionView?.refreshControl?.beginRefreshing()
-        productsLoader?.load { [weak self] result in
-            
-            if let products = try? result.get() {
-                self?.collectionModel = products
-                self?.collectionView?.reloadData()
-            }
-            self?.collectionView?.refreshControl?.endRefreshing()
-        }
-    }
-    
+        
     
     public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return collectionModel.count

@@ -24,10 +24,16 @@ extension ProductsViewController {
     func replaceRefreshControlWithFake() {
         
         let fakeRefreshControl = FakeRefreshControl()
-        
-        fakeRefreshControl.simulatePullToRefresh()
-        
-        collectionView?.refreshControl = fakeRefreshControl
+
+        collectionView?.refreshControl?.allTargets.forEach { target in
+            collectionView?.refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                fakeRefreshControl.addTarget(target, action: Selector(action), for: .valueChanged)
+            }
+            
+            collectionView?.refreshControl = fakeRefreshControl
+            refreshController?.view = fakeRefreshControl
+        }
+
     }
     
     func simulateUserInitiatedProductsReload() {

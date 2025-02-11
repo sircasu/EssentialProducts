@@ -11,7 +11,6 @@ import EssentialProducts
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
     
     public var refreshController: ProductRefreshViewController?
-    private var imageLoader: ProductImageDataLoader?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     var collectionModel = [ProductItemCellViewController]() {
         didSet { collectionView.reloadData() }

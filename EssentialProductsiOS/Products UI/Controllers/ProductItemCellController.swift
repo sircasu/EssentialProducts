@@ -6,53 +6,49 @@
 //
 
 import UIKit
-import EssentialProducts
 
 final class ProductItemCellController {
-    private var task: ProductImageDataLoaderTask?
-    private let model: ProductItem
-    private let imageLoader: ProductImageDataLoader?
+    private let viewModel: ProductImageViewModel
     
-    init(model: ProductItem, imageLoader: ProductImageDataLoader?) {
-        self.model = model
-        self.imageLoader = imageLoader
+    init(viewModel: ProductImageViewModel) {
+        self.viewModel = viewModel
     }
     
     func view() -> UICollectionViewCell {
         
-        let cell = ProductItemCell()
-        cell.productNameLabel.text = model.title
-        cell.productDescriptionLabel.text = model.description
-        cell.productPriceLabel.text = String(model.price)
-        cell.productContainerImageView.isShimmering = true
-        cell.productImageView.image = nil
-        cell.productImageRetryButton.isHidden = true
-
-        let loadImage = { [weak self, weak cell] in
-            guard let self = self else { return }
-            
-            self.task = self.imageLoader?.loadImageData(from: model.image) { [weak cell] result in
-                
-                let data = try? result.get()
-                let image = data.map(UIImage.init) ?? nil
-                cell?.productImageView.image = image
-                cell?.productImageRetryButton.isHidden = (image != nil)
-
-                cell?.productContainerImageView.isShimmering = false
-            }
+        let cell = bind(ProductItemCell())
+        viewModel.loadImageData()
+        return cell
+    }
+    
+    func bind(_ cell: ProductItemCell) -> ProductItemCell {
+        
+        cell.productNameLabel.text = viewModel.productName
+        cell.productDescriptionLabel.text = viewModel.productDescription
+        cell.productPriceLabel.text = viewModel.productPrice
+        cell.onRetry = viewModel.loadImageData
+        
+        viewModel.onImageLoad = { [weak cell] image in
+            cell?.productImageView.image = image
         }
         
-        cell.onRetry = loadImage
-        loadImage()
+        viewModel.onImageLoadStateChange = { [weak cell] isLoading in
+            cell?.productContainerImageView.isShimmering = isLoading
+        }
+        
+        viewModel.onShouldRetryImageLoadStateChange = { [weak cell] shouldRetry in
+    
+            cell?.productImageRetryButton.isHidden = !shouldRetry
+        }
         
         return cell
     }
     
     func preload() {
-        task = imageLoader?.loadImageData(from: model.image) { _ in }
+        viewModel.loadImageData()
     }
     
     func cancel() {
-        task?.cancel()
+        viewModel.cancel()
     }
 }

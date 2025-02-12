@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import EssentialProducts
 
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
     

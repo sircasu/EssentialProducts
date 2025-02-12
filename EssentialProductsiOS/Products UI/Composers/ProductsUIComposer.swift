@@ -26,7 +26,7 @@ public final class ProductsUIComposer {
     private static func adaptProductsToCellControllers(forardingTo controller: ProductsViewController, loader: ProductImageDataLoader) -> ([ProductItem]) -> Void {
         return { [weak controller] products in
             controller?.collectionModel = products.map { product in
-                ProductItemCellViewController(model: product, imageLoader: loader)
+                ProductItemCellController(model: product, imageLoader: loader)
             }
         }
     }

@@ -12,7 +12,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     
     public var refreshController: ProductRefreshViewController?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
-    var collectionModel = [ProductItemCellViewController]() {
+    var collectionModel = [ProductItemCellController]() {
         didSet { collectionView.reloadData() }
     }
     
@@ -76,7 +76,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
         indexPaths.forEach(cancelCellController)
     }
     
-    private func cellController(forRowAt indexPath: IndexPath) -> ProductItemCellViewController {
+    private func cellController(forRowAt indexPath: IndexPath) -> ProductItemCellController {
         return collectionModel[indexPath.row]
     }
     

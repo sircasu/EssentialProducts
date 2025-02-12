@@ -1,5 +1,5 @@
 //
-//  ProductItemCellViewController.swift
+//  ProductItemCellController.swift
 //  EssentialProductsiOS
 //
 //  Created by Matteo Casu on 07/02/25.
@@ -8,7 +8,7 @@
 import UIKit
 import EssentialProducts
 
-final class ProductItemCellViewController {
+final class ProductItemCellController {
     private var task: ProductImageDataLoaderTask?
     private let model: ProductItem
     private let imageLoader: ProductImageDataLoader?

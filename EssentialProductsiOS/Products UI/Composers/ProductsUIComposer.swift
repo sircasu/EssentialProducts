@@ -7,6 +7,7 @@
 
 import Foundation
 import EssentialProducts
+import UIKit
 
 public final class ProductsUIComposer {
     private init() {}
@@ -26,7 +27,7 @@ public final class ProductsUIComposer {
     private static func adaptProductsToCellControllers(forardingTo controller: ProductsViewController, loader: ProductImageDataLoader) -> ([ProductItem]) -> Void {
         return { [weak controller] products in
             controller?.collectionModel = products.map { product in
-                let viewModel = ProductImageViewModel(model: product, imageLoader: loader)
+                let viewModel = ProductImageViewModel(model: product, imageLoader: loader, imageTransformer: UIImage.init)
                 return ProductItemCellController(viewModel: viewModel)
             }
         }

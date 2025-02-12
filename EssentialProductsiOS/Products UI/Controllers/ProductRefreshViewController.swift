@@ -11,27 +11,30 @@ import EssentialProducts
 public final class ProductRefreshViewController: NSObject {
     
     public lazy var view: UIRefreshControl = {
-        let view = UIRefreshControl()
-        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        return view
+        return bind(UIRefreshControl())
     }()
     
-    private let productsLoader: ProductsLoader?
+    private let viewModel: ProductsViewModel
     
-    public init(productsLoader: ProductsLoader?) {
-        self.productsLoader = productsLoader
+    public init(viewModel: ProductsViewModel) {
+        self.viewModel = viewModel
     }
     
-    var onRefresh: (([ProductItem]) -> Void)?
-    
     @objc func refresh() {
-        view.beginRefreshing()
-        productsLoader?.load { [weak self] result in
+        viewModel.loadProduct()
+    }
     
-            if let products = try? result.get() {
-                self?.onRefresh?(products)
+    func bind(_ view: UIRefreshControl) -> UIRefreshControl {
+        
+        viewModel.onLoadingStateChange = { [weak self] isLoading in
+            if isLoading {
+                self?.view.beginRefreshing()
+            } else {
+                self?.view.endRefreshing()
             }
-            self?.view.endRefreshing()
         }
+        
+        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        return view
     }
 }

@@ -13,10 +13,11 @@ public final class ProductsUIComposer {
     
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
     
-        let refreshController = ProductRefreshViewController(productsLoader: productsLoader)
+        let viewModel = ProductsViewModel(productsLoader: productsLoader)
+        let refreshController = ProductRefreshViewController(viewModel: viewModel)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
-        refreshController.onRefresh = adaptProductsToCellControllers(forardingTo: productsViewController, loader: imageLoader)
+        viewModel.onProductsLoad = adaptProductsToCellControllers(forardingTo: productsViewController, loader: imageLoader)
         
         return productsViewController
     }

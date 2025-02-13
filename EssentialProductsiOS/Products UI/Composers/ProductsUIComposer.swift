@@ -14,8 +14,9 @@ public final class ProductsUIComposer {
     
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
     
-        let presenter = ProductsPresenter(productsLoader: productsLoader)
-        let refreshController = ProductRefreshViewController(loadProducts: presenter.loadProducts)
+        let presenter = ProductsPresenter()
+        let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader, presenter: presenter)
+        let refreshController = ProductRefreshViewController(loadProducts: presentationAdapter.loadProducts)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
         presenter.productsLoadingView = WeakReferenceVirtualProxy(refreshController)
@@ -56,5 +57,32 @@ extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadin
 
     func display(_ viewModel: ProductsLoadingViewModel) {
         object?.display(viewModel)
+    }
+}
+
+
+final class ProductsLoaderPresentationAdapter {
+    
+    private let productsLoader: ProductsLoader
+    private let presenter: ProductsPresenter
+    
+    init(productsLoader: ProductsLoader, presenter: ProductsPresenter) {
+        self.productsLoader = productsLoader
+        self.presenter = presenter
+    }
+    
+    func loadProducts() {
+        
+        presenter.didStartLoadingProducts()
+        
+        productsLoader.load { [weak self] result in
+            switch result {
+            case let .success(products):
+                self?.presenter.didFinishLoadingProducts(with: products)
+            case .failure:
+                self?.presenter.didFinishLoadingProductsWithError()
+            }
+        }
+        
     }
 }

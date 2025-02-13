@@ -14,22 +14,47 @@ public final class ProductsUIComposer {
     
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
     
-        let viewModel = ProductsViewModel(productsLoader: productsLoader)
-        let refreshController = ProductRefreshViewController(viewModel: viewModel)
+        let presenter = ProductsPresenter(productsLoader: productsLoader)
+        let refreshController = ProductRefreshViewController(presenter: presenter)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
-        viewModel.onProductsLoad = adaptProductsToCellControllers(forardingTo: productsViewController, loader: imageLoader)
-        
+        presenter.productsLoadingView = WeakReferenceVirtualProxy(refreshController)
+        presenter.productsView = ProductsViewAdapter(controller: productsViewController, imageLoader: imageLoader)
+
         return productsViewController
     }
+}
+
+private final class ProductsViewAdapter: ProductsView {
     
+    private weak var controller: ProductsViewController?
+    var imageLoader: ProductImageDataLoader
     
-    private static func adaptProductsToCellControllers(forardingTo controller: ProductsViewController, loader: ProductImageDataLoader) -> ([ProductItem]) -> Void {
-        return { [weak controller] products in
-            controller?.collectionModel = products.map { product in
-                let viewModel = ProductImageViewModel(model: product, imageLoader: loader, imageTransformer: UIImage.init)
-                return ProductItemCellController(viewModel: viewModel)
-            }
+    init(controller: ProductsViewController, imageLoader: ProductImageDataLoader) {
+        self.controller = controller
+        self.imageLoader = imageLoader
+    }
+    
+    func display(products: [ProductItem]) {
+        controller?.collectionModel = products.map { product in
+            let viewModel = ProductImageViewModel(model: product, imageLoader: imageLoader, imageTransformer: UIImage.init)
+            return ProductItemCellController(viewModel: viewModel)
         }
+    }
+}
+
+
+private final class WeakReferenceVirtualProxy<T: AnyObject> {
+    private weak var object: T?
+    
+    init(_ object: T?) {
+        self.object = object
+    }
+}
+
+extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadingView {
+
+    func display(isLoading: Bool) {
+        object?.display(isLoading: isLoading)
     }
 }

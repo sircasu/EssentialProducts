@@ -16,7 +16,7 @@ public final class ProductsUIComposer {
     
         let presenter = ProductsPresenter()
         let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader, presenter: presenter)
-        let refreshController = ProductRefreshViewController(loadProducts: presentationAdapter.loadProducts)
+        let refreshController = ProductRefreshViewController(delegate: presentationAdapter)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
         presenter.productsLoadingView = WeakReferenceVirtualProxy(refreshController)
@@ -61,7 +61,8 @@ extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadin
 }
 
 
-final class ProductsLoaderPresentationAdapter {
+final class ProductsLoaderPresentationAdapter: ProductRefreshViewControllerDelegate {
+    
     
     private let productsLoader: ProductsLoader
     private let presenter: ProductsPresenter
@@ -71,7 +72,7 @@ final class ProductsLoaderPresentationAdapter {
         self.presenter = presenter
     }
     
-    func loadProducts() {
+    func didRequestProductsRefresh() {
         
         presenter.didStartLoadingProducts()
         

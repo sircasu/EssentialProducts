@@ -11,10 +11,11 @@ public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
     
     public lazy var view: UIRefreshControl = loadView()
     
-    private let presenter: ProductsPresenter
+
+    private let loadProducts: () -> Void
     
-    public init(presenter: ProductsPresenter) {
-        self.presenter = presenter
+    public init(loadProducts: @escaping () -> Void) {
+        self.loadProducts = loadProducts
     }
     
     func display(_ viewModel: ProductsLoadingViewModel) {
@@ -26,7 +27,7 @@ public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
     }
     
     @objc func refresh() {
-        presenter.loadProduct()
+        loadProducts()
     }
     
     private func loadView() -> UIRefreshControl {

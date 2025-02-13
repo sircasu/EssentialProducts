@@ -27,7 +27,7 @@ public final class ProductsPresenter {
     
     private let productsLoader: ProductsLoader?
 
-    public init(productsLoader: ProductsLoader?) {
+    public init(productsLoader: ProductsLoader) {
         self.productsLoader = productsLoader
     }
     

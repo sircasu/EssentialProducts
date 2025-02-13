@@ -15,7 +15,7 @@ public final class ProductsUIComposer {
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
     
         let presenter = ProductsPresenter(productsLoader: productsLoader)
-        let refreshController = ProductRefreshViewController(presenter: presenter)
+        let refreshController = ProductRefreshViewController(loadProducts: presenter.loadProduct)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
         presenter.productsLoadingView = WeakReferenceVirtualProxy(refreshController)

@@ -25,21 +25,26 @@ protocol ProductsView {
 public final class ProductsPresenter {
     typealias Observer<T> = (T) -> Void
     
-    var productsLoadingView: ProductsLoadingView?
-    var productsView: ProductsView?
+    var productsLoadingView: ProductsLoadingView
+    var productsView: ProductsView
+    
+    init(productsLoadingView: ProductsLoadingView, productsView: ProductsView) {
+        self.productsLoadingView = productsLoadingView
+        self.productsView = productsView
+    }
     
     func didStartLoadingProducts() {
-        productsLoadingView?.display(ProductsLoadingViewModel(isLoading: true))
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: true))
     }
     
     func didFinishLoadingProducts(with products: [ProductItem]) {
-        productsView?.display(ProductsViewModel(products: products))
-        productsLoadingView?.display(ProductsLoadingViewModel(isLoading: false))
+        productsView.display(ProductsViewModel(products: products))
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
     }
     
     
     func didFinishLoadingProductsWithError() {
-        productsLoadingView?.display(ProductsLoadingViewModel(isLoading: false))
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
     }
 }
 

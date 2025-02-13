@@ -14,13 +14,15 @@ public final class ProductsUIComposer {
     
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
     
-        let presenter = ProductsPresenter()
-        let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader, presenter: presenter)
+
+        let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader)
         let refreshController = ProductRefreshViewController(delegate: presentationAdapter)
         let productsViewController = ProductsViewController(refreshController: refreshController)
         
-        presenter.productsLoadingView = WeakReferenceVirtualProxy(refreshController)
-        presenter.productsView = ProductsViewAdapter(controller: productsViewController, imageLoader: imageLoader)
+        let presenter = ProductsPresenter(
+            productsLoadingView: WeakReferenceVirtualProxy(refreshController),
+            productsView: ProductsViewAdapter(controller: productsViewController, imageLoader: imageLoader))
+        presentationAdapter.presenter = presenter
 
         return productsViewController
     }
@@ -65,23 +67,22 @@ final class ProductsLoaderPresentationAdapter: ProductRefreshViewControllerDeleg
     
     
     private let productsLoader: ProductsLoader
-    private let presenter: ProductsPresenter
+    var presenter: ProductsPresenter?
     
-    init(productsLoader: ProductsLoader, presenter: ProductsPresenter) {
+    init(productsLoader: ProductsLoader) {
         self.productsLoader = productsLoader
-        self.presenter = presenter
     }
     
     func didRequestProductsRefresh() {
         
-        presenter.didStartLoadingProducts()
+        presenter?.didStartLoadingProducts()
         
         productsLoader.load { [weak self] result in
             switch result {
             case let .success(products):
-                self?.presenter.didFinishLoadingProducts(with: products)
+                self?.presenter?.didFinishLoadingProducts(with: products)
             case .failure:
-                self?.presenter.didFinishLoadingProductsWithError()
+                self?.presenter?.didFinishLoadingProductsWithError()
             }
         }
         

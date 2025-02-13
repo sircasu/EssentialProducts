@@ -34,7 +34,7 @@ public final class ProductsPresenter {
     var productsLoadingView: ProductsLoadingView?
     var productsView: ProductsView?
     
-    func loadProduct() {
+    func loadProducts() {
         productsLoadingView?.display(ProductsLoadingViewModel(isLoading: true))
         
         productsLoader?.load { [weak self] result in

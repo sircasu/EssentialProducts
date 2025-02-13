@@ -17,8 +17,8 @@ public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
         self.presenter = presenter
     }
     
-    func display(isLoading: Bool) {
-        if isLoading {
+    func display(_ viewModel: ProductsLoadingViewModel) {
+        if viewModel.isLoading {
             view.beginRefreshing()
         } else {
             view.endRefreshing()

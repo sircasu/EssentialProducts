@@ -8,12 +8,18 @@
 import Foundation
 import EssentialProducts
 
+struct ProductsLoadingViewModel {
+    let isLoading: Bool
+}
 protocol ProductsLoadingView {
-    func display(isLoading: Bool)
+    func display(_ viewModel: ProductsLoadingViewModel)
 }
 
+struct ProductsViewModel {
+    let products: [ProductItem]
+}
 protocol ProductsView {
-    func display(products: [ProductItem])
+    func display(_ viewModel: ProductsViewModel)
 }
 
 public final class ProductsPresenter {
@@ -29,14 +35,14 @@ public final class ProductsPresenter {
     var productsView: ProductsView?
     
     func loadProduct() {
-        productsLoadingView?.display(isLoading: true)
+        productsLoadingView?.display(ProductsLoadingViewModel(isLoading: true))
         
         productsLoader?.load { [weak self] result in
     
             if let products = try? result.get() {
-                self?.productsView?.display(products: products)
+                self?.productsView?.display(ProductsViewModel(products: products))
             }
-            self?.productsLoadingView?.display(isLoading: false)
+            self?.productsLoadingView?.display(ProductsLoadingViewModel(isLoading: false))
         }
     }
 }

@@ -35,8 +35,8 @@ private final class ProductsViewAdapter: ProductsView {
         self.imageLoader = imageLoader
     }
     
-    func display(products: [ProductItem]) {
-        controller?.collectionModel = products.map { product in
+    func display(_ viewModel: ProductsViewModel) {
+        controller?.collectionModel = viewModel.products.map { product in
             let viewModel = ProductImageViewModel(model: product, imageLoader: imageLoader, imageTransformer: UIImage.init)
             return ProductItemCellController(viewModel: viewModel)
         }
@@ -54,7 +54,7 @@ private final class WeakReferenceVirtualProxy<T: AnyObject> {
 
 extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadingView {
 
-    func display(isLoading: Bool) {
-        object?.display(isLoading: isLoading)
+    func display(_ viewModel: ProductsLoadingViewModel) {
+        object?.display(viewModel)
     }
 }

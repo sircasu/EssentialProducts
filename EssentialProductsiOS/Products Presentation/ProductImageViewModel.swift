@@ -5,7 +5,6 @@
 //  Created by Matteo Casu on 12/02/25.
 //
 
-import UIKit
 import EssentialProducts
 
 public final class ProductImageViewModel<Image> {

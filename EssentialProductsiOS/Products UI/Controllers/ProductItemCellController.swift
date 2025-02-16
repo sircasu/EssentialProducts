@@ -7,48 +7,37 @@
 
 import UIKit
 
-final class ProductItemCellController {
-    private let viewModel: ProductImageViewModel<UIImage>
+final class ProductItemCellController: ProductImageView {
     
-    init(viewModel: ProductImageViewModel<UIImage>) {
-        self.viewModel = viewModel
+    private let presenter: ProductImagePresenter
+    private lazy var cell = ProductItemCell()
+
+    init(presenter: ProductImagePresenter) {
+        self.presenter = presenter
     }
     
     func view() -> UICollectionViewCell {
-        
-        let cell = bind(ProductItemCell())
-        viewModel.loadImageData()
+    
+        presenter.loadImageData()
         return cell
     }
     
-    func bind(_ cell: ProductItemCell) -> ProductItemCell {
+    func display(viewModel: ProductImagePresenterViewModel) {
         
-        cell.productNameLabel.text = viewModel.productName
-        cell.productDescriptionLabel.text = viewModel.productDescription
-        cell.productPriceLabel.text = viewModel.productPrice
-        cell.onRetry = viewModel.loadImageData
-        
-        viewModel.onImageLoad = { [weak cell] image in
-            cell?.productImageView.image = image
-        }
-        
-        viewModel.onImageLoadStateChange = { [weak cell] isLoading in
-            cell?.productContainerImageView.isShimmering = isLoading
-        }
-        
-        viewModel.onShouldRetryImageLoadStateChange = { [weak cell] shouldRetry in
-    
-            cell?.productImageRetryButton.isHidden = !shouldRetry
-        }
-        
-        return cell
+        cell.productNameLabel.text = viewModel.name
+        cell.productDescriptionLabel.text = viewModel.description
+        cell.productPriceLabel.text = viewModel.price
+        cell.productImageView.image = viewModel.image
+        cell.onRetry = presenter.loadImageData
+        cell.productContainerImageView.isShimmering = viewModel.isLoading
+        cell.productImageRetryButton.isHidden = !viewModel.shouldRetry
     }
     
     func preload() {
-        viewModel.loadImageData()
+        presenter.loadImageData()
     }
     
     func cancel() {
-        viewModel.cancel()
+        presenter.cancel()
     }
 }

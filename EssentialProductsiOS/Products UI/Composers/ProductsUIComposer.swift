@@ -40,8 +40,11 @@ private final class ProductsViewAdapter: ProductsView {
     
     func display(_ viewModel: ProductsViewModel) {
         controller?.collectionModel = viewModel.products.map { product in
-            let viewModel = ProductImageViewModel(model: product, imageLoader: imageLoader, imageTransformer: UIImage.init)
-            return ProductItemCellController(viewModel: viewModel)
+
+            let presenter = ProductImagePresenter(model: product, imageLoader: imageLoader)
+            let cell = ProductItemCellController(presenter: presenter)
+            presenter.view = WeakReferenceVirtualProxy(cell)
+            return cell
         }
     }
 }
@@ -59,6 +62,13 @@ extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadin
 
     func display(_ viewModel: ProductsLoadingViewModel) {
         object?.display(viewModel)
+    }
+    
+}
+extension WeakReferenceVirtualProxy: ProductImageView where T: ProductImageView {
+
+    func display(viewModel: ProductImagePresenterViewModel) {
+        object?.display(viewModel: viewModel)
     }
 }
 

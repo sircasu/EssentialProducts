@@ -7,18 +7,24 @@
 
 import UIKit
 
+protocol ProductItemCellControllerDelegate {
+    func didRequestImage()
+    func didCancelImageRequest()
+}
+
 final class ProductItemCellController: ProductImageView {
     
-    private let presenter: ProductImagePresenter
+
+    private let delegate: ProductItemCellControllerDelegate
     private lazy var cell = ProductItemCell()
 
-    init(presenter: ProductImagePresenter) {
-        self.presenter = presenter
+    init(delegate: ProductItemCellControllerDelegate) {
+        self.delegate = delegate
     }
     
     func view() -> UICollectionViewCell {
     
-        presenter.loadImageData()
+        delegate.didRequestImage()
         return cell
     }
     
@@ -28,16 +34,16 @@ final class ProductItemCellController: ProductImageView {
         cell.productDescriptionLabel.text = viewModel.description
         cell.productPriceLabel.text = viewModel.price
         cell.productImageView.image = viewModel.image
-        cell.onRetry = presenter.loadImageData
+        cell.onRetry = delegate.didRequestImage
         cell.productContainerImageView.isShimmering = viewModel.isLoading
         cell.productImageRetryButton.isHidden = !viewModel.shouldRetry
     }
     
     func preload() {
-        presenter.loadImageData()
+        delegate.didRequestImage()
     }
     
     func cancel() {
-        presenter.cancel()
+        delegate.didCancelImageRequest()
     }
 }

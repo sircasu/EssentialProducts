@@ -42,7 +42,8 @@ private final class ProductsViewAdapter: ProductsView {
         controller?.collectionModel = viewModel.products.map { product in
 
             let presenter = ProductImagePresenter(model: product, imageLoader: imageLoader)
-            let cell = ProductItemCellController(presenter: presenter)
+            let adapter = ProductsItemCellControllerAdapter(presenter: presenter)
+            let cell = ProductItemCellController(delegate: adapter)
             presenter.view = WeakReferenceVirtualProxy(cell)
             return cell
         }
@@ -97,4 +98,24 @@ final class ProductsLoaderPresentationAdapter: ProductRefreshViewControllerDeleg
         }
         
     }
+}
+
+
+final class ProductsItemCellControllerAdapter: ProductItemCellControllerDelegate {
+    
+    private let presenter: ProductImagePresenter
+    
+    init(presenter: ProductImagePresenter) {
+        self.presenter = presenter
+    }
+    
+    func didRequestImage() {
+        presenter.loadImageData()
+    }
+    
+    func didCancelImageRequest() {
+        presenter.cancel()
+    }
+    
+    
 }

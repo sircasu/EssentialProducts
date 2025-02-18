@@ -8,16 +8,11 @@
 import Foundation
 import EssentialProducts
 
-struct ProductsLoadingViewModel {
-    let isLoading: Bool
-}
+
 protocol ProductsLoadingView {
     func display(_ viewModel: ProductsLoadingViewModel)
 }
 
-struct ProductsViewModel {
-    let products: [ProductItem]
-}
 protocol ProductsView {
     func display(_ viewModel: ProductsViewModel)
 }

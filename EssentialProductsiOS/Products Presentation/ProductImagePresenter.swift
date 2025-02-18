@@ -8,15 +8,6 @@
 import Foundation
 import EssentialProducts
 
-struct ProductImageViewModel<Image> {
-    var name: String
-    var description: String
-    var price: String
-    var image: Image?
-    var isLoading: Bool
-    var shouldRetry: Bool
-}
-
 protocol ProductImageView {
     associatedtype Image
     func display(viewModel: ProductImageViewModel<Image>)

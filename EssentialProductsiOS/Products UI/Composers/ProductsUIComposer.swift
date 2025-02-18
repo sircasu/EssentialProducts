@@ -17,7 +17,14 @@ public final class ProductsUIComposer {
 
         let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader)
         let refreshController = ProductRefreshViewController(delegate: presentationAdapter)
-        let productsViewController = ProductsViewController(refreshController: refreshController)
+        
+        let storyboard = UIStoryboard(name: "Products", bundle: Bundle(for: ProductsViewController.self))
+        let productsViewController = storyboard.instantiateInitialViewController(creator: { coder in
+
+            return ProductsViewController(
+                coder: coder,
+                refreshController: refreshController)
+        })!
         
         let presenter = ProductsPresenter(
             productsLoadingView: WeakReferenceVirtualProxy(refreshController),

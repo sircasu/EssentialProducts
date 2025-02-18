@@ -19,13 +19,13 @@ public final class ProductsViewController: UICollectionViewController, UICollect
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    init?(coder: NSCoder, refreshController: ProductRefreshViewController) {
+        super.init(coder: coder)
+        self.refreshController = refreshController
     }
     
-    convenience init(refreshController: ProductRefreshViewController) {
-        self.init()
-        self.refreshController = refreshController
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override public func viewDidLoad() {

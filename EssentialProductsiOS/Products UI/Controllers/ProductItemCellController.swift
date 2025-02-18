@@ -14,7 +14,6 @@ protocol ProductItemCellControllerDelegate {
 
 final class ProductItemCellController: ProductImageView {
     
-
     private let delegate: ProductItemCellControllerDelegate
     private lazy var cell = ProductItemCell()
 
@@ -28,7 +27,7 @@ final class ProductItemCellController: ProductImageView {
         return cell
     }
     
-    func display(viewModel: ProductImagePresenterViewModel) {
+    func display(viewModel: ProductImagePresenterViewModel<UIImage>) {
         
         cell.productNameLabel.text = viewModel.name
         cell.productDescriptionLabel.text = viewModel.description

@@ -6,69 +6,71 @@
 //
 
 import Foundation
-import UIKit
 import EssentialProducts
 
-struct ProductImagePresenterViewModel {
+struct ProductImagePresenterViewModel<Image> {
     var name: String
     var description: String
     var price: String
-    var image: UIImage?
+    var image: Image?
     var isLoading: Bool
     var shouldRetry: Bool
 }
 
 protocol ProductImageView {
-    func display(viewModel: ProductImagePresenterViewModel)
+    associatedtype Image
+    func display(viewModel: ProductImagePresenterViewModel<Image>)
 }
 
-public final class ProductImagePresenter {
+final class ProductImagePresenter<View: ProductImageView, Image> where View.Image == Image {
 
-    private var task: ProductImageDataLoaderTask?
-    private var model: ProductItem
-    private let imageLoader: ProductImageDataLoader?
-    
-    var view: ProductImageView?
-    
-    init(model: ProductItem, imageLoader: ProductImageDataLoader ) {
-        self.model = model
-        self.imageLoader = imageLoader
+    private let view: View
+    private let imageTransformer: (Data) -> Image?
+
+    init(view: View, imageTransformer: @escaping (Data) -> Image?) {
+        self.view = view
+        self.imageTransformer = imageTransformer
     }
     
-    func loadImageData() {
-
-        var viewModel = ProductImagePresenterViewModel(
+    func didStartLoadingProductsData(for model: ProductItem) {
+        let viewModel = ProductImagePresenterViewModel<Image>(
             name: model.title,
             description: model.description,
             price: String(model.price),
             image: nil,
             isLoading: true,
             shouldRetry: false)
-        
-        view?.display(viewModel: viewModel)
-        
-        self.task = self.imageLoader?.loadImageData(from: model.image) { [weak self] result in
-            
-            guard let self = self else { return }
-            let data = try? result.get()
-            let image = data.map(UIImage.init) ?? nil
-  
-            if let image = image {
-                viewModel.image = image
-                viewModel.isLoading = false
-                viewModel.shouldRetry = false
-            } else {
-                viewModel.image = nil
-                viewModel.isLoading = false
-                viewModel.shouldRetry = true
-            }
-            
-            view?.display(viewModel: viewModel)
-        }
-        
+
+        view.display(viewModel: viewModel)
     }
     
-    func cancel() {
-        task?.cancel()
+    private struct InvalidImageDataError: Error {}
+    
+    func didFinishLoadingImageData(with imageData: Data, for model: ProductItem) {
+        guard let image = imageTransformer(imageData) else {
+            return didFinishLoadingImageData(with: InvalidImageDataError(), for: model)
+        }
+        
+        let viewModel = ProductImagePresenterViewModel<Image>(
+            name: model.title,
+            description: model.description,
+            price: String(model.price),
+            image: image,
+            isLoading: false,
+            shouldRetry: false)
+
+        view.display(viewModel: viewModel)
+    }
+    
+    func didFinishLoadingImageData(with: Error, for model: ProductItem) {
+        let viewModel = ProductImagePresenterViewModel<Image>(
+            name: model.title,
+            description: model.description,
+            price: String(model.price),
+            image: nil,
+            isLoading: false,
+            shouldRetry: true)
+
+        view.display(viewModel: viewModel)
     }
 }

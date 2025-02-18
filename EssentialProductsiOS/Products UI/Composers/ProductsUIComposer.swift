@@ -41,10 +41,14 @@ private final class ProductsViewAdapter: ProductsView {
     func display(_ viewModel: ProductsViewModel) {
         controller?.collectionModel = viewModel.products.map { product in
 
-            let presenter = ProductImagePresenter(model: product, imageLoader: imageLoader)
-            let adapter = ProductsItemCellControllerAdapter(presenter: presenter)
+            let adapter = ProductsImageDataLoaderAdapter<WeakReferenceVirtualProxy<ProductItemCellController>, UIImage>(model: product, imageLoader: imageLoader)
+            
             let cell = ProductItemCellController(delegate: adapter)
-            presenter.view = WeakReferenceVirtualProxy(cell)
+            
+            let presenter = ProductImagePresenter(view: WeakReferenceVirtualProxy(cell), imageTransformer: UIImage.init)
+            
+            adapter.presenter = presenter
+            
             return cell
         }
     }
@@ -66,9 +70,10 @@ extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadin
     }
     
 }
-extension WeakReferenceVirtualProxy: ProductImageView where T: ProductImageView {
 
-    func display(viewModel: ProductImagePresenterViewModel) {
+extension WeakReferenceVirtualProxy: ProductImageView where T: ProductImageView, T.Image == UIImage {
+    
+    func display(viewModel: ProductImagePresenterViewModel<UIImage>) {
         object?.display(viewModel: viewModel)
     }
 }
@@ -101,20 +106,36 @@ final class ProductsLoaderPresentationAdapter: ProductRefreshViewControllerDeleg
 }
 
 
-final class ProductsItemCellControllerAdapter: ProductItemCellControllerDelegate {
+final class ProductsImageDataLoaderAdapter<View: ProductImageView, Image>: ProductItemCellControllerDelegate where View.Image == Image {
+
     
-    private let presenter: ProductImagePresenter
+    private var task: ProductImageDataLoaderTask?
+    private var model: ProductItem
+    private let imageLoader: ProductImageDataLoader
     
-    init(presenter: ProductImagePresenter) {
-        self.presenter = presenter
+    var presenter: ProductImagePresenter<View, Image>?
+    
+    init(model: ProductItem, imageLoader: ProductImageDataLoader) {
+        self.model = model
+        self.imageLoader = imageLoader
     }
     
     func didRequestImage() {
-        presenter.loadImageData()
+        presenter?.didStartLoadingProductsData(for: model)
+        
+        let model = self.model
+        task = imageLoader.loadImageData(from: model.image) { [weak self] result in
+            switch result {
+            case let .success(imageData):
+                self?.presenter?.didFinishLoadingImageData(with: imageData, for: model)
+            case let .failure(error):
+                self?.presenter?.didFinishLoadingImageData(with: error, for: model)
+            }
+        }
     }
     
     func didCancelImageRequest() {
-        presenter.cancel()
+        task?.cancel()
     }
     
     

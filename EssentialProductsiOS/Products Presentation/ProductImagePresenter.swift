@@ -8,7 +8,7 @@
 import Foundation
 import EssentialProducts
 
-struct ProductImagePresenterViewModel<Image> {
+struct ProductImageViewModel<Image> {
     var name: String
     var description: String
     var price: String
@@ -19,7 +19,7 @@ struct ProductImagePresenterViewModel<Image> {
 
 protocol ProductImageView {
     associatedtype Image
-    func display(viewModel: ProductImagePresenterViewModel<Image>)
+    func display(viewModel: ProductImageViewModel<Image>)
 }
 
 final class ProductImagePresenter<View: ProductImageView, Image> where View.Image == Image {
@@ -33,7 +33,7 @@ final class ProductImagePresenter<View: ProductImageView, Image> where View.Imag
     }
     
     func didStartLoadingProductsData(for model: ProductItem) {
-        let viewModel = ProductImagePresenterViewModel<Image>(
+        let viewModel = ProductImageViewModel<Image>(
             name: model.title,
             description: model.description,
             price: String(model.price),
@@ -51,7 +51,7 @@ final class ProductImagePresenter<View: ProductImageView, Image> where View.Imag
             return didFinishLoadingImageData(with: InvalidImageDataError(), for: model)
         }
         
-        let viewModel = ProductImagePresenterViewModel<Image>(
+        let viewModel = ProductImageViewModel<Image>(
             name: model.title,
             description: model.description,
             price: String(model.price),
@@ -63,7 +63,7 @@ final class ProductImagePresenter<View: ProductImageView, Image> where View.Imag
     }
     
     func didFinishLoadingImageData(with: Error, for model: ProductItem) {
-        let viewModel = ProductImagePresenterViewModel<Image>(
+        let viewModel = ProductImageViewModel<Image>(
             name: model.title,
             description: model.description,
             price: String(model.price),

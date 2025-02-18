@@ -73,7 +73,7 @@ extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadin
 
 extension WeakReferenceVirtualProxy: ProductImageView where T: ProductImageView, T.Image == UIImage {
     
-    func display(viewModel: ProductImagePresenterViewModel<UIImage>) {
+    func display(viewModel: ProductImageViewModel<UIImage>) {
         object?.display(viewModel: viewModel)
     }
 }

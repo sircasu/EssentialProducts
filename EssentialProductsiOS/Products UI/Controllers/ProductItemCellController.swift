@@ -27,7 +27,7 @@ final class ProductItemCellController: ProductImageView {
         return cell
     }
     
-    func display(viewModel: ProductImagePresenterViewModel<UIImage>) {
+    func display(viewModel: ProductImageViewModel<UIImage>) {
         
         cell.productNameLabel.text = viewModel.name
         cell.productDescriptionLabel.text = viewModel.description

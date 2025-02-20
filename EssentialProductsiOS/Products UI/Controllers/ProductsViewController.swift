@@ -53,7 +53,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     
     public override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        return cellController(forRowAt: indexPath).view()
+        return cellController(forRowAt: indexPath).view(in: collectionView, at: indexPath)
     }
     
     public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

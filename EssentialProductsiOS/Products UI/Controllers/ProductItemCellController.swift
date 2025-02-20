@@ -15,27 +15,28 @@ protocol ProductItemCellControllerDelegate {
 final class ProductItemCellController: ProductImageView {
     
     private let delegate: ProductItemCellControllerDelegate
-    private lazy var cell = ProductItemCell()
+    private var cell: ProductItemCell?
 
     init(delegate: ProductItemCellControllerDelegate) {
         self.delegate = delegate
     }
     
-    func view() -> UICollectionViewCell {
-    
+    func view(in collectionView: UICollectionView, at indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductItemCell", for: indexPath) as! ProductItemCell
+        self.cell = cell
         delegate.didRequestImage()
         return cell
     }
     
     func display(viewModel: ProductImageViewModel<UIImage>) {
         
-        cell.productNameLabel.text = viewModel.name
-        cell.productDescriptionLabel.text = viewModel.description
-        cell.productPriceLabel.text = viewModel.price
-        cell.productImageView.image = viewModel.image
-        cell.onRetry = delegate.didRequestImage
-        cell.productContainerImageView.isShimmering = viewModel.isLoading
-        cell.productImageRetryButton.isHidden = !viewModel.shouldRetry
+        cell?.productNameLabel.text = viewModel.name
+        cell?.productDescriptionLabel.text = viewModel.description
+        cell?.productPriceLabel.text = viewModel.price
+        cell?.productImageView.image = viewModel.image
+        cell?.onRetry = delegate.didRequestImage
+        cell?.productContainerImageView.isShimmering = viewModel.isLoading
+        cell?.productImageRetryButton.isHidden = !viewModel.shouldRetry
     }
     
     func preload() {
@@ -43,6 +44,11 @@ final class ProductItemCellController: ProductImageView {
     }
     
     func cancel() {
+        releaseCellForReuse()
         delegate.didCancelImageRequest()
+    }
+    
+    private func releaseCellForReuse() {
+        cell = nil
     }
 }

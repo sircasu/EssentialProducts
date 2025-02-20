@@ -8,21 +8,16 @@
 import UIKit
 
 public final class ProductItemCell: UICollectionViewCell {
-    public let productContainerImageView = UIView()
-    public let productImageView = UIImageView()
-    public let productNameLabel = UILabel()
-    public let productDescriptionLabel = UILabel()
-    public let productPriceLabel = UILabel()
-    
-    private(set) public lazy var productImageRetryButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
-        return button
-    }()
+    @IBOutlet private(set) public var productContainerImageView: UIView!
+    @IBOutlet private(set) public var productImageView: UIImageView!
+    @IBOutlet private(set) public var productNameLabel: UILabel!
+    @IBOutlet private(set) public var productDescriptionLabel: UILabel!
+    @IBOutlet private(set) public var productPriceLabel: UILabel!
+    @IBOutlet private(set) public var productImageRetryButton: UIButton!
     
     var onRetry: (() -> Void)?
     
-    @objc private func retryButtonTapped() {
+    @IBAction private func retryButtonTapped() {
         onRetry?()
     }
 }

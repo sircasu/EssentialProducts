@@ -45,12 +45,15 @@ extension ProductsViewController {
         return productView(at: index) as? ProductItemCell
     }
     
-    func simulateProductImageViewNotVisible(at index: Int = 0) {
+    @discardableResult
+    func simulateProductImageViewNotVisible(at index: Int = 0) -> ProductItemCell? {
         let view = simulateProductImageViewVisible(at: index)
         
         let delegate = collectionView.delegate
         let indexPath = IndexPath(row: index, section: productsSection)
         delegate?.collectionView?(collectionView, didEndDisplaying: view!, forItemAt: indexPath)
+        
+        return view
     }
     
     func simulateProductImageViewNearVisible(at row: Int) {

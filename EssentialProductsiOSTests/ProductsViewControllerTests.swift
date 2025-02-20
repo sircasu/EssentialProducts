@@ -167,12 +167,12 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view0?.renderedImage, .none, "Expected no image for first view while loading first image")
         XCTAssertEqual(view1?.renderedImage, .none, "Expected no image for second view while loading second image")
         
-        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        let imageData0 = anyImageData(startFromColor: .red)
         loader.completeImageLoading(with: imageData0, at: 0)
         XCTAssertEqual(view0?.renderedImage, imageData0, "Expected  image for first view once first image loading completes successfully")
         XCTAssertEqual(view1?.renderedImage, .none, "Expected no image state change for second view once first image loading completes successfully")
         
-        let imageData1 = UIImage.make(withColor: .blue).pngData()!
+        let imageData1 = anyImageData(startFromColor: .blue)
         loader.completeImageLoading(with: imageData1, at: 1)
         XCTAssertEqual(view0?.renderedImage, imageData0, "Expected  no image state change for first view once second image loading completes successfully")
         XCTAssertEqual(view1?.renderedImage, imageData1, "Expected  image for second view once second image loading completes successfully")
@@ -194,7 +194,7 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view while loading first image")
         XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action for second view while loading second image")
         
-        let imageData = UIImage.make(withColor: .red).pngData()!
+        let imageData = anyImageData()
         
         loader.completeImageLoading(with: imageData, at: 0)
         XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view once first image loading completes successfully")
@@ -282,6 +282,20 @@ final class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.cancelledImageURLs, [product0.image, product1.image], "Expected second cancelled image URL request once second image is not near visible anymore")
     }
     
+    func test_productImageView_doseNotRenderLoadedImageWhenNotVisibleAnymore() {
+        let (sut, loader) = makeSUT()
+
+        sut.simulateAppareance()
+        
+        loader.completeProductsLoading(with: [makeProduct()])
+        
+        let view = sut.simulateProductImageViewNotVisible(at: 0)
+        
+        loader.completeImageLoading(with: anyImageData())
+        
+        XCTAssertNil(view?.renderedImage, "Expected no rendered image when an image load finishes after the view is not visible anymore")
+    }
+    
     // MARK: - Helpers
     
     func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -295,6 +309,11 @@ final class ProductsViewControllerTests: XCTestCase {
     private func makeProduct(id: Int = 0, title: String = "title", price: Double = 4.99, description: String = "description", category: String = "category", image: URL = URL(string: "https://any-url.com")!, ratingAvarage: Double = 4.99, ratingCount: Int = 18) -> ProductItem {
         
         return ProductItem(id: id, title: title, price: price, description: description, category: category, image: image, rating: ProductRatingItem(rate: ratingAvarage, count: ratingCount))
+    }
+    
+    
+    private func anyImageData(startFromColor color: UIColor = .blue) -> Data {
+        return UIImage.make(withColor: color).pngData()!
     }
 
 }

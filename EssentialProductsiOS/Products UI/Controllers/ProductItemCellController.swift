@@ -32,10 +32,10 @@ final class ProductItemCellController: ProductImageView {
         cell?.productNameLabel.text = viewModel.name
         cell?.productDescriptionLabel.text = viewModel.description
         cell?.productPriceLabel.text = viewModel.price
-        cell?.productImageView.image = viewModel.image
-        cell?.onRetry = delegate.didRequestImage
+        cell?.productImageView.setImageAnimated(viewModel.image)
         cell?.productContainerImageView.isShimmering = viewModel.isLoading
         cell?.productImageRetryButton.isHidden = !viewModel.shouldRetry
+        cell?.onRetry = delegate.didRequestImage
     }
     
     func preload() {

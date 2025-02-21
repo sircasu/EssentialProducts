@@ -35,7 +35,12 @@ final class ProductItemCellController: ProductImageView {
         cell?.productImageView.setImageAnimated(viewModel.image)
         cell?.productContainerImageView.isShimmering = viewModel.isLoading
         cell?.productImageRetryButton.isHidden = !viewModel.shouldRetry
-        cell?.onRetry = delegate.didRequestImage
+        cell?.onRetry = { [weak self] in
+            self?.delegate.didRequestImage()
+        }
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
     }
     
     func preload() {

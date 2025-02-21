@@ -17,13 +17,14 @@ public final class ProductItemCell: UICollectionViewCell {
     @IBOutlet private(set) public var productImageRetryButton: UIButton!
     
     var onRetry: (() -> Void)?
+    var onReuse: (() -> Void)?
     
     @IBAction private func retryButtonTapped() {
         onRetry?()
     }
     
-    public override class func awakeFromNib() {
-        super.awakeFromNib()
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        onReuse?()
     }
-
 }

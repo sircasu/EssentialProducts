@@ -31,6 +31,9 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        let productItemCell = String(describing: ProductItemCell.self)
+        collectionView.register(UINib(nibName: productItemCell, bundle: Bundle(for: ProductItemCell.self)), forCellWithReuseIdentifier: productItemCell)
+        
         collectionView?.refreshControl = refreshController?.view
         collectionView?.prefetchDataSource = self
         

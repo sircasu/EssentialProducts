@@ -1,13 +1,14 @@
 //
-//  ProducItemCell.swift
+//  ProductItemCell.swift
 //  EssentialProductsiOS
 //
-//  Created by Matteo Casu on 05/02/25.
+//  Created by Matteo Casu on 21/02/25.
 //
 
 import UIKit
 
 public final class ProductItemCell: UICollectionViewCell {
+
     @IBOutlet private(set) public var productContainerImageView: UIView!
     @IBOutlet private(set) public var productImageView: UIImageView!
     @IBOutlet private(set) public var productNameLabel: UILabel!
@@ -20,4 +21,9 @@ public final class ProductItemCell: UICollectionViewCell {
     @IBAction private func retryButtonTapped() {
         onRetry?()
     }
+    
+    public override class func awakeFromNib() {
+        super.awakeFromNib()
+    }
+
 }

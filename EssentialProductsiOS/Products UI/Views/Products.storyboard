@@ -3,7 +3,6 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,102 +20,7 @@
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
-                        <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ProductItemCell" id="vql-dn-dY4" customClass="ProductItemCell" customModule="EssentialProductsiOS" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="227"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="tUF-We-Lu6">
-                                    <rect key="frame" x="0.0" y="0.0" width="393" height="227"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <subviews>
-                                        <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="XLX-8o-i7L">
-                                            <rect key="frame" x="8" y="0.0" width="377" height="227"/>
-                                            <subviews>
-                                                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B3o-5d-mSd" userLabel="Image Container">
-                                                    <rect key="frame" x="0.0" y="36.333333333333329" width="154" height="154.33333333333337"/>
-                                                    <subviews>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="1" translatesAutoresizingMaskIntoConstraints="NO" id="Bpr-px-Cj7">
-                                                            <rect key="frame" x="0.0" y="0.0" width="154" height="154.33333333333334"/>
-                                                        </imageView>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LxA-58-kuD">
-                                                            <rect key="frame" x="0.0" y="0.0" width="154" height="154.33333333333334"/>
-                                                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                            <state key="normal" title="Button"/>
-                                                            <buttonConfiguration key="configuration" style="plain" title="↻">
-                                                                <fontDescription key="titleFontDescription" type="system" pointSize="60"/>
-                                                            </buttonConfiguration>
-                                                            <connections>
-                                                                <action selector="retryButtonTapped" destination="vql-dn-dY4" eventType="touchUpInside" id="MKN-m0-kNd"/>
-                                                            </connections>
-                                                        </button>
-                                                    </subviews>
-                                                    <color key="backgroundColor" white="0.89000000000000001" alpha="0.61873965230000005" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" secondItem="B3o-5d-mSd" secondAttribute="height" multiplier="1:1" id="2Tw-Ey-VtZ"/>
-                                                        <constraint firstAttribute="bottom" secondItem="Bpr-px-Cj7" secondAttribute="bottom" id="5Dg-iD-WHr"/>
-                                                        <constraint firstAttribute="bottom" secondItem="LxA-58-kuD" secondAttribute="bottom" id="ALi-gK-cBl"/>
-                                                        <constraint firstItem="Bpr-px-Cj7" firstAttribute="leading" secondItem="B3o-5d-mSd" secondAttribute="leading" id="Apt-I5-Bav"/>
-                                                        <constraint firstItem="LxA-58-kuD" firstAttribute="leading" secondItem="B3o-5d-mSd" secondAttribute="leading" id="Isn-Rc-7mS"/>
-                                                        <constraint firstAttribute="trailing" secondItem="Bpr-px-Cj7" secondAttribute="trailing" id="Thp-dv-46p"/>
-                                                        <constraint firstAttribute="trailing" secondItem="LxA-58-kuD" secondAttribute="trailing" id="f5f-8G-t6Y"/>
-                                                        <constraint firstItem="Bpr-px-Cj7" firstAttribute="top" secondItem="B3o-5d-mSd" secondAttribute="top" id="juh-PQ-IYx"/>
-                                                        <constraint firstItem="LxA-58-kuD" firstAttribute="top" secondItem="B3o-5d-mSd" secondAttribute="top" id="k2j-NF-FBn"/>
-                                                    </constraints>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                            <integer key="value" value="12"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                </view>
-                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="y5f-fZ-gKZ" userLabel="Product Info Container">
-                                                    <rect key="frame" x="164" y="42.666666666666657" width="213" height="142"/>
-                                                    <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dmV-XS-qVN">
-                                                            <rect key="frame" x="0.0" y="0.0" width="213" height="67.666666666666671"/>
-                                                            <string key="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam cursus lectus ut turpis volutpat, a sollicitudin mi tincidunt. Pellentesque enim diam, porta ac quam nec, sagittis finibus augue. </string>
-                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2TF-nv-BuK">
-                                                            <rect key="frame" x="0.0" y="75.666666666666657" width="213" height="38"/>
-                                                            <string key="text">orem ipsum dolor sit amet, consectetur adipiscing elit. Nullam cursus lectus ut turpis volutpat, a sollicitudin mi tincidunt. Pellentesque enim diam, porta ac quam nec, sagittis finibus augue.</string>
-                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" text="99999,99 €" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iiV-Qo-cmp">
-                                                            <rect key="frame" x="0.0" y="121.66666666666667" width="213" height="20.333333333333329"/>
-                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                    </subviews>
-                                                </stackView>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="B3o-5d-mSd" firstAttribute="width" secondItem="XLX-8o-i7L" secondAttribute="width" multiplier="0.3" constant="41" id="Og2-so-Fdl"/>
-                                            </constraints>
-                                        </stackView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="XLX-8o-i7L" firstAttribute="leading" secondItem="tUF-We-Lu6" secondAttribute="leading" constant="8" id="6ey-yc-9uc"/>
-                                        <constraint firstItem="XLX-8o-i7L" firstAttribute="top" secondItem="tUF-We-Lu6" secondAttribute="top" priority="999" id="RfI-TA-dLW"/>
-                                        <constraint firstAttribute="bottom" secondItem="XLX-8o-i7L" secondAttribute="bottom" priority="999" id="aft-Wa-Aer"/>
-                                        <constraint firstAttribute="trailing" secondItem="XLX-8o-i7L" secondAttribute="trailing" constant="8" id="mGN-Qb-Box"/>
-                                    </constraints>
-                                </collectionViewCellContentView>
-                                <size key="customSize" width="393" height="227"/>
-                                <connections>
-                                    <outlet property="productContainerImageView" destination="B3o-5d-mSd" id="oW4-hl-1T8"/>
-                                    <outlet property="productDescriptionLabel" destination="2TF-nv-BuK" id="sQe-SN-Otv"/>
-                                    <outlet property="productImageRetryButton" destination="LxA-58-kuD" id="bS1-jX-zZA"/>
-                                    <outlet property="productImageView" destination="Bpr-px-Cj7" id="SlM-Ic-bn0"/>
-                                    <outlet property="productNameLabel" destination="dmV-XS-qVN" id="D9P-uW-cI2"/>
-                                    <outlet property="productPriceLabel" destination="iiV-Qo-cmp" id="nRb-My-tBB"/>
-                                </connections>
-                            </collectionViewCell>
-                        </cells>
+                        <cells/>
                         <connections>
                             <outlet property="dataSource" destination="U7c-1C-Rng" id="OF2-tA-ERO"/>
                             <outlet property="delegate" destination="U7c-1C-Rng" id="Dhd-Du-v6N"/>
@@ -129,7 +33,4 @@
             <point key="canvasLocation" x="347.32824427480915" y="-150"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="1" width="1049" height="1500"/>
-    </resources>
 </document>

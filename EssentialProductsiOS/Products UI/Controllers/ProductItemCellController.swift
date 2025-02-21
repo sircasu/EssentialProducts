@@ -22,10 +22,9 @@ final class ProductItemCellController: ProductImageView {
     }
     
     func view(in collectionView: UICollectionView, at indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductItemCell", for: indexPath) as! ProductItemCell
-        self.cell = cell
+        cell = collectionView.dequeueReusableCell(for: indexPath)
         delegate.didRequestImage()
-        return cell
+        return cell!
     }
     
     func display(viewModel: ProductImageViewModel<UIImage>) {

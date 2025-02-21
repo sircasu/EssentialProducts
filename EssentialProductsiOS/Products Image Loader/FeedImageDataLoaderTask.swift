@@ -1,5 +1,5 @@
 //
-//  FeedImageDataLoaderTask.swift
+//  ProductImageDataLoaderTask.swift
 //  EssentialProductsiOS
 //
 //  Created by Matteo Casu on 06/02/25.

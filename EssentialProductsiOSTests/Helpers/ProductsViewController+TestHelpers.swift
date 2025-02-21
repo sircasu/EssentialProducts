@@ -10,7 +10,7 @@ import EssentialProductsiOS
 
 extension ProductsViewController {
     
-    func simulateAppareance() {
+    func simulateAppearance() {
         
         if !isViewLoaded {
             loadViewIfNeeded()

@@ -18,7 +18,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         XCTAssertEqual(loader.loadProductCallCount, 0, "Expected no loading requests before view is appearing")
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         XCTAssertEqual(loader.loadProductCallCount, 1, "Expected q loading requests once view is appeared")
         
@@ -32,7 +32,7 @@ final class ProductsViewControllerTests: XCTestCase {
     func test_loadProductIndicator_isVisibleWhenLoadingProducts() {
         let (sut, loader) = makeSUT()
 
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is loaded")
         
         loader.completeProductsLoading(at: 0)
@@ -58,7 +58,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         assertThat(sut, isRendering: [])
         
@@ -75,7 +75,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0], at: 0)
         assertThat(sut, isRendering: [product0])
@@ -94,7 +94,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1], at: 0)
         
@@ -114,7 +114,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1], at: 0)
         
@@ -133,7 +133,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1])
         
@@ -157,7 +157,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1])
         
@@ -184,7 +184,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1])
         
@@ -209,7 +209,7 @@ final class ProductsViewControllerTests: XCTestCase {
         let product0 = makeProduct()
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0])
         
@@ -227,7 +227,7 @@ final class ProductsViewControllerTests: XCTestCase {
         
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1])
         
@@ -252,7 +252,7 @@ final class ProductsViewControllerTests: XCTestCase {
 
         let (sut, loader) = makeSUT()
         
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1])
         XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL request until image is near visible")
@@ -270,7 +270,7 @@ final class ProductsViewControllerTests: XCTestCase {
 
         let (sut, loader) = makeSUT()
 
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [product0, product1])
         XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL request until image is not near visible")
@@ -285,22 +285,38 @@ final class ProductsViewControllerTests: XCTestCase {
     func test_productImageView_doesNotShowDataFromPreviousRequestWhenCellIsReuse() throws {
 
         let (sut, loader) = makeSUT()
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         loader.completeProductsLoading(with: [makeProduct(), makeProduct()])
 
         let view0 = try XCTUnwrap(sut.simulateProductImageViewVisible(at: 0))
         view0.prepareForReuse()
 
-        let imageData0 = anyImageData()
-        loader.completeImageLoading(with: imageData0, at: 0)
+        loader.completeImageLoading(with: anyImageData(), at: 0)
 
         XCTAssertEqual(view0.renderedImage, .none, "Expected no image state change for reused view once image loading completes successfully")
+    }
+    
+    func test_productImageView_showsDataForNewViewRequestAfterPreviousViewIsReused() throws {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeProductsLoading(with: [makeProduct(), makeProduct()])
+        
+        let previousView = try XCTUnwrap(sut.simulateProductImageViewNotVisible(at: 0))
+
+        let newView = try XCTUnwrap(sut.simulateProductImageViewVisible(at: 0))
+        previousView.prepareForReuse()
+        
+        let imageData = anyImageData()
+        loader.completeImageLoading(with: imageData, at: 1)
+        
+        XCTAssertEqual(newView.renderedImage, imageData)
     }
     
     func test_productImageView_doseNotRenderLoadedImageWhenNotVisibleAnymore() {
         let (sut, loader) = makeSUT()
 
-        sut.simulateAppareance()
+        sut.simulateAppearance()
         
         loader.completeProductsLoading(with: [makeProduct()])
         

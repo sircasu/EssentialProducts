@@ -11,6 +11,17 @@ import EssentialProducts
 import EssentialProductsiOS
 
 final class ProductsViewControllerTests: XCTestCase {
+    
+    func test_productsView_hasTitle() {
+        
+        let (sut, _) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(sut.title, "Products")
+    }
+    
+    //
 
     func test_loadProductActions_requestProductsFromLoader() {
         

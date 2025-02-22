@@ -28,6 +28,8 @@ public final class ProductsPresenter {
         self.productsView = productsView
     }
     
+    static var title: String { "Products" }
+    
     func didStartLoadingProducts() {
         productsLoadingView.display(ProductsLoadingViewModel(isLoading: true))
     }

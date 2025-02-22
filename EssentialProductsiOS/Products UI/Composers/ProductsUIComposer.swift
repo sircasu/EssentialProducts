@@ -18,15 +18,7 @@ public final class ProductsUIComposer {
         let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader)
         let refreshController = ProductRefreshViewController(delegate: presentationAdapter)
         
-        let storyboard = UIStoryboard(name: "Products", bundle: Bundle(for: ProductsViewController.self))
-        let productsViewController = storyboard.instantiateInitialViewController(creator: { coder in
-
-            return ProductsViewController(
-                coder: coder,
-                refreshController: refreshController)
-        })!
-        
-        productsViewController.title = ProductsPresenter.title
+        let productsViewController = ProductsViewController.makeWith(refreshController: refreshController, title: ProductsPresenter.title)
         
         let presenter = ProductsPresenter(
             productsLoadingView: WeakReferenceVirtualProxy(refreshController),
@@ -36,6 +28,24 @@ public final class ProductsUIComposer {
         return productsViewController
     }
 }
+
+private extension ProductsViewController {
+    static func makeWith(refreshController: ProductRefreshViewController, title: String) -> ProductsViewController {
+        
+        let storyboard = UIStoryboard(name: "Products", bundle: Bundle(for: ProductsViewController.self))
+        let productsViewController = storyboard.instantiateInitialViewController(creator: { coder in
+
+            return ProductsViewController(
+                coder: coder,
+                refreshController: refreshController)
+        })!
+        
+        productsViewController.title = title
+        
+        return productsViewController
+    }
+}
+
 
 private final class ProductsViewAdapter: ProductsView {
     

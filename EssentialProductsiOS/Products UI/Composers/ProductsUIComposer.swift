@@ -26,6 +26,8 @@ public final class ProductsUIComposer {
                 refreshController: refreshController)
         })!
         
+        productsViewController.title = ProductsPresenter.title
+        
         let presenter = ProductsPresenter(
             productsLoadingView: WeakReferenceVirtualProxy(refreshController),
             productsView: ProductsViewAdapter(controller: productsViewController, imageLoader: imageLoader))

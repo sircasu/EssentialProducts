@@ -31,8 +31,6 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        title = ProductsPresenter.title
-        
         let productItemCell = String(describing: ProductItemCell.self)
         collectionView.register(UINib(nibName: productItemCell, bundle: Bundle(for: ProductItemCell.self)), forCellWithReuseIdentifier: productItemCell)
         

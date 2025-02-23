@@ -9,7 +9,7 @@ import XCTest
 import EssentialProducts
 import EssentialProductsiOS
 
-extension ProductsViewControllerTests {
+extension ProductsUIIntegrationTests {
     func assertThat(_ sut: ProductsViewController, isRendering products: [ProductItem], file: StaticString = #filePath, line: UInt = #line) {
         
         guard sut.numberOfRenderedProductViews() == products.count else {

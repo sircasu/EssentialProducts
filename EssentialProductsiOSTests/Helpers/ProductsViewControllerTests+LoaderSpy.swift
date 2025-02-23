@@ -9,7 +9,7 @@ import Foundation
 import EssentialProducts
 import EssentialProductsiOS
 
-extension ProductsViewControllerTests {
+extension ProductsUIIntegrationTests {
     
     class LoaderSpy: ProductsLoader, ProductImageDataLoader {
         

@@ -1,5 +1,5 @@
 //
-//  ProductsViewControllerTests.swift
+//  ProductsUIIntegrationTests.swift
 //  EssentialProductsiOSTests
 //
 //  Created by Matteo Casu on 05/02/25.
@@ -10,7 +10,7 @@ import UIKit
 import EssentialProducts
 import EssentialProductsiOS
 
-final class ProductsViewControllerTests: XCTestCase {
+final class ProductsUIIntegrationTests: XCTestCase {
     
     func test_productsView_hasTitle() {
         

@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 import EssentialProductsiOS
 
-extension ProductsViewControllerTests {
+extension ProductsUIIntegrationTests {
     func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
         
         let table = "Products"

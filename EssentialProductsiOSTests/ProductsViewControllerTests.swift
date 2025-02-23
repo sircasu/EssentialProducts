@@ -17,13 +17,8 @@ final class ProductsViewControllerTests: XCTestCase {
         let (sut, _) = makeSUT()
         
         sut.loadViewIfNeeded()
-        
-        let bundle = Bundle(for: ProductsViewController.self)
-        let localizedKey = "PRODUCTS_VIEW_TITLE"
-        let localizedTitle = bundle.localizedString(forKey: localizedKey, value: "", table: "Products")
-        
-        XCTAssertNotEqual(localizedKey, localizedTitle, "Missing localized string for key:  \(localizedKey)")
-        XCTAssertEqual(sut.title, localizedTitle)
+
+        XCTAssertEqual(sut.title, localized("PRODUCTS_VIEW_TITLE"))
     }
     
     //

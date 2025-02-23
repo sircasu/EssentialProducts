@@ -28,7 +28,9 @@ public final class ProductsPresenter {
         self.productsView = productsView
     }
     
-    static var title: String { "Products" }
+    static var title: String {
+        NSLocalizedString("PRODUCTS_VIEW_TITLE", tableName: "Products", bundle: Bundle(for: ProductsPresenter.self), comment: "Title for products view")
+    }
     
     func didStartLoadingProducts() {
         productsLoadingView.display(ProductsLoadingViewModel(isLoading: true))

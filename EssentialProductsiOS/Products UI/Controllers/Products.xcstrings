@@ -1,0 +1,17 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "PRODUCTS_VIEW_TITLE" : {
+      "comment" : "Title for products view",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Products"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

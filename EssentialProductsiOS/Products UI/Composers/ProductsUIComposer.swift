@@ -74,29 +74,36 @@ private final class ProductsViewAdapter: ProductsView {
 }
 
 
-private final class MainQueueDispatchDecorator: ProductsLoader {
+private final class MainQueueDispatchDecorator<T>  {
     
-    private let decoratee: ProductsLoader
+    private let decoratee: T
     
-    init(decoratee: ProductsLoader) {
+    init(decoratee: T) {
         self.decoratee = decoratee
     }
     
-    func load(completion: @escaping (ProductsLoader.Result) -> Void) {
-        
-        decoratee.load { result in
-            guard Thread.isMainThread else {
-                return DispatchQueue.main.async {
-                    completion(result)
-                }
+    func dispatch(completion: @escaping () -> Void) {
+        guard Thread.isMainThread else {
+            return DispatchQueue.main.async {
+                completion()
             }
-            completion(result)
         }
-
+        completion()
     }
-    
-    
 }
+
+extension MainQueueDispatchDecorator: ProductsLoader where T == ProductsLoader {
+    
+    func load(completion: @escaping (ProductsLoader.Result) -> Void) {
+        decoratee.load { [weak self] result in
+            self?.dispatch {
+                completion(result)
+            }
+        }
+    }
+}
+
+
 
 
 private final class WeakReferenceVirtualProxy<T: AnyObject> {

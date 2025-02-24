@@ -15,7 +15,7 @@ public final class ProductsUIComposer {
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
     
 
-        let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: productsLoader)
+        let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: MainQueueDispatchDecorator(decoratee: productsLoader))
         let refreshController = ProductRefreshViewController(delegate: presentationAdapter)
         
         let productsViewController = ProductsViewController.makeWith(refreshController: refreshController, title: ProductsPresenter.title)
@@ -71,6 +71,31 @@ private final class ProductsViewAdapter: ProductsView {
             return cell
         }
     }
+}
+
+
+private final class MainQueueDispatchDecorator: ProductsLoader {
+    
+    private let decoratee: ProductsLoader
+    
+    init(decoratee: ProductsLoader) {
+        self.decoratee = decoratee
+    }
+    
+    func load(completion: @escaping (ProductsLoader.Result) -> Void) {
+        
+        decoratee.load { result in
+            guard Thread.isMainThread else {
+                return DispatchQueue.main.async {
+                    completion(result)
+                }
+            }
+            completion(result)
+        }
+
+    }
+    
+    
 }
 
 

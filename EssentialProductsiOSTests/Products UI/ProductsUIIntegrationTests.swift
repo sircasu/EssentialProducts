@@ -343,9 +343,25 @@ final class ProductsUIIntegrationTests: XCTestCase {
 
         sut.simulateAppearance()
         
-        let exp = expectation(description: "Wait for completion")
+        let exp = expectation(description: "Wait for background queue work")
         DispatchQueue.global().async {
             loader.completeProductsLoading(at: 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+    }    
+    func test_loadProductsImageCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+
+        sut.simulateAppearance()
+        loader.completeProductsLoading(with: [makeProduct()])
+        _ = sut.simulateProductImageViewVisible(at: 0)
+        
+        let exp = expectation(description: "Wait for background queue work")
+        DispatchQueue.global().async {
+            loader.completeImageLoading(with: self.anyImageData(), at: 0)
             exp.fulfill()
         }
         

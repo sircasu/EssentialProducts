@@ -13,8 +13,8 @@ public final class ProductsUIComposer {
     private init() {}
     
     public static func productsComposedWith(productsLoader: ProductsLoader, imageLoader: ProductImageDataLoader) -> ProductsViewController {
-    
-
+        
+        
         let presentationAdapter = ProductsLoaderPresentationAdapter(productsLoader: MainQueueDispatchDecorator(decoratee: productsLoader))
         let refreshController = ProductRefreshViewController(delegate: presentationAdapter)
         
@@ -22,9 +22,9 @@ public final class ProductsUIComposer {
         
         let presenter = ProductsPresenter(
             productsLoadingView: WeakReferenceVirtualProxy(refreshController),
-            productsView: ProductsViewAdapter(controller: productsViewController, imageLoader: imageLoader))
+            productsView: ProductsViewAdapter(controller: productsViewController, imageLoader: MainQueueDispatchDecorator(decoratee: imageLoader)))
         presentationAdapter.presenter = presenter
-
+        
         return productsViewController
     }
 }
@@ -34,7 +34,7 @@ private extension ProductsViewController {
         
         let storyboard = UIStoryboard(name: "Products", bundle: Bundle(for: ProductsViewController.self))
         let productsViewController = storyboard.instantiateInitialViewController(creator: { coder in
-
+            
             return ProductsViewController(
                 coder: coder,
                 refreshController: refreshController)
@@ -59,7 +59,7 @@ private final class ProductsViewAdapter: ProductsView {
     
     func display(_ viewModel: ProductsViewModel) {
         controller?.collectionModel = viewModel.products.map { product in
-
+            
             let adapter = ProductsImageDataLoaderAdapter<WeakReferenceVirtualProxy<ProductItemCellController>, UIImage>(model: product, imageLoader: imageLoader)
             
             let cell = ProductItemCellController(delegate: adapter)
@@ -103,6 +103,27 @@ extension MainQueueDispatchDecorator: ProductsLoader where T == ProductsLoader {
     }
 }
 
+extension MainQueueDispatchDecorator: ProductImageDataLoader where T == ProductImageDataLoader {
+    
+    func loadImageData(from url: URL, completion: @escaping (ProductImageDataLoader.Result) -> Void) -> ProductImageDataLoaderTask {
+        
+        return decoratee.loadImageData(from: url) { [weak self] result in
+            self?.dispatch {
+                completion(result)
+            }
+        }
+    }
+    
+    
+    //    func load(completion: @escaping (ProductImageDataLoader.Result) -> Void) {
+    //        decoratee.load { [weak self] result in
+    //            self?.dispatch {
+    //                completion(result)
+    //            }
+    //        }
+    //    }
+}
+
 
 
 
@@ -115,7 +136,7 @@ private final class WeakReferenceVirtualProxy<T: AnyObject> {
 }
 
 extension WeakReferenceVirtualProxy: ProductsLoadingView where T: ProductsLoadingView {
-
+    
     func display(_ viewModel: ProductsLoadingViewModel) {
         object?.display(viewModel)
     }
@@ -158,7 +179,7 @@ final class ProductsLoaderPresentationAdapter: ProductRefreshViewControllerDeleg
 
 
 final class ProductsImageDataLoaderAdapter<View: ProductImageView, Image>: ProductItemCellControllerDelegate where View.Image == Image {
-
+    
     
     private var task: ProductImageDataLoaderTask?
     private var model: ProductItem

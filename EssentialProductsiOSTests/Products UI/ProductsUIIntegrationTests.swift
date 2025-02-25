@@ -117,6 +117,21 @@ final class ProductsUIIntegrationTests: XCTestCase {
     }
     
     
+
+    func test_errorView_hideOnReload() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeProductLoadingWithError(at: 0)
+        
+        XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
+        
+        sut.simulateUserInitiatedProductsReload()
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
+    
+
     func test_productImageView_loadImageURLWhenVisibile() {
         let product0 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")!)
                 

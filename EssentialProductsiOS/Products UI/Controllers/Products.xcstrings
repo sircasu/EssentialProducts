@@ -1,6 +1,24 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "PRODUCTS_VIEW_CONNECTION_ERROR" : {
+      "comment" : "Error message displayed when we can't load products from server",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't connect to server"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile connettersi al server"
+          }
+        }
+      }
+    },
     "PRODUCTS_VIEW_TITLE" : {
       "comment" : "Title for products view",
       "localizations" : {

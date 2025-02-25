@@ -70,6 +70,10 @@ extension ProductsViewController {
         dataSource?.collectionView?(collectionView, cancelPrefetchingForItemsAt: [indexPath])
     }
     
+    var errorMessage: String? {
+        errorView.message
+    }
+    
     var isShowingLoadingIndicator: Bool {
         return collectionView?.refreshControl?.isRefreshing == true
     }

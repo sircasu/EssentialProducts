@@ -97,6 +97,16 @@ final class ProductsUIIntegrationTests: XCTestCase {
         assertThat(sut, isRendering: [product0])
     }
     
+    
+    func test_errorView_doesNotRenderErrorOnLoad() {
+        let (sut, _) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
+    
     func test_productImageView_loadImageURLWhenVisibile() {
         let product0 = makeProduct(image: URL(string: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")!)
                 

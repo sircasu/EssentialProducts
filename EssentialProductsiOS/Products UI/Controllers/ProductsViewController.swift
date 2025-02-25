@@ -7,7 +7,13 @@
 
 import UIKit
 
+public final class ErrorView: UIView {
+    public var message: String?
+}
+
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
+    
+    public var errorView = ErrorView()
     
     public var refreshController: ProductRefreshViewController?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?

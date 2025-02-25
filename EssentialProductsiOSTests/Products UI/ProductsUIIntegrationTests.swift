@@ -97,31 +97,13 @@ final class ProductsUIIntegrationTests: XCTestCase {
         assertThat(sut, isRendering: [product0])
     }
     
-    
-    func test_errorView_doesNotRenderErrorOnLoad() {
-        let (sut, _) = makeSUT()
+    func test_errorView_renderErrorUntilNextReload() {
+        let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
         
         XCTAssertEqual(sut.errorMessage, nil)
-    }
         
-    
-    func test_errorView_renderErrorOnLoadError() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
-        loader.completeProductLoadingWithError(at: 0)
-        
-        XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
-    }
-    
-    
-
-    func test_errorView_hideOnReload() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateAppearance()
         loader.completeProductLoadingWithError(at: 0)
         
         XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
@@ -129,7 +111,6 @@ final class ProductsUIIntegrationTests: XCTestCase {
         sut.simulateUserInitiatedProductsReload()
         XCTAssertEqual(sut.errorMessage, nil)
     }
-    
     
 
     func test_productImageView_loadImageURLWhenVisibile() {

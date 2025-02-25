@@ -27,7 +27,7 @@ public final class ProductsUIComposer {
         let presenter = ProductsPresenter(
             productsLoadingView: WeakReferenceVirtualProxy(refreshController),
             productsView: productsViewAdapter,
-            productsErrorView: productsViewAdapter
+            productsErrorView: WeakReferenceVirtualProxy(productsViewController)
         )
         presentationAdapter.presenter = presenter
         
@@ -53,7 +53,7 @@ private extension ProductsViewController {
 }
 
 
-private final class ProductsViewAdapter: ProductsView, ProductsErrorView {
+private final class ProductsViewAdapter: ProductsView {
     
     private weak var controller: ProductsViewController?
     var imageLoader: ProductImageDataLoader
@@ -76,15 +76,6 @@ private final class ProductsViewAdapter: ProductsView, ProductsErrorView {
             
             return cell
         }
-    }
-    
-    func display(_ viewModel: ProductsErrorViewModel) {
-        if let message = viewModel.message {
-            controller?.errorView.message = message
-            return
-        }
-        
-        controller?.errorView.message = nil
     }
 }
 
@@ -112,6 +103,11 @@ extension WeakReferenceVirtualProxy: ProductImageView where T: ProductImageView,
     }
 }
 
+extension WeakReferenceVirtualProxy: ProductsErrorView where T: ProductsErrorView {
+    func display(_ viewModel: ProductsErrorViewModel) {
+        object?.display(viewModel)
+    }
+}
 
 final class ProductsLoaderPresentationAdapter: ProductRefreshViewControllerDelegate {
     

@@ -57,8 +57,8 @@ public final class ProductsPresenter {
     
     
     func didFinishLoadingProductsWithError() {
-        productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
         productsErrorView.display(ProductsErrorViewModel(message: ProductsPresenter.loadError))
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
     }
 }
 

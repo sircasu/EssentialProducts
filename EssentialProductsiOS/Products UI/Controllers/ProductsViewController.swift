@@ -11,7 +11,7 @@ public final class ErrorView: UIView {
     public var message: String?
 }
 
-public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching {
+public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching, ProductsErrorView {
     
     public var errorView = ErrorView()
     
@@ -50,6 +50,10 @@ public final class ProductsViewController: UICollectionViewController, UICollect
         }
     }
 
+    func display(_ viewModel: ProductsErrorViewModel) {
+        errorView.message = viewModel.message
+    }
+    
     override public func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         onViewIsAppearing?(self)

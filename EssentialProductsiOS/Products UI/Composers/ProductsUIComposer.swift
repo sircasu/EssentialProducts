@@ -20,9 +20,15 @@ public final class ProductsUIComposer {
         
         let productsViewController = ProductsViewController.makeWith(refreshController: refreshController, title: ProductsPresenter.title)
         
+        let productsViewAdapter = ProductsViewAdapter(
+            controller: productsViewController,
+            imageLoader: MainQueueDispatchDecorator(decoratee: imageLoader))
+        
         let presenter = ProductsPresenter(
             productsLoadingView: WeakReferenceVirtualProxy(refreshController),
-            productsView: ProductsViewAdapter(controller: productsViewController, imageLoader: MainQueueDispatchDecorator(decoratee: imageLoader)))
+            productsView: productsViewAdapter,
+            productsErrorView: productsViewAdapter
+        )
         presentationAdapter.presenter = presenter
         
         return productsViewController
@@ -47,7 +53,7 @@ private extension ProductsViewController {
 }
 
 
-private final class ProductsViewAdapter: ProductsView {
+private final class ProductsViewAdapter: ProductsView, ProductsErrorView {
     
     private weak var controller: ProductsViewController?
     var imageLoader: ProductImageDataLoader
@@ -70,6 +76,15 @@ private final class ProductsViewAdapter: ProductsView {
             
             return cell
         }
+    }
+    
+    func display(_ viewModel: ProductsErrorViewModel) {
+        if let message = viewModel.message {
+            controller?.errorView.message = message
+            return
+        }
+        
+        controller?.errorView.message = nil
     }
 }
 

@@ -105,6 +105,16 @@ final class ProductsUIIntegrationTests: XCTestCase {
         
         XCTAssertEqual(sut.errorMessage, nil)
     }
+        
+    
+    func test_errorView_renderErrorOnLoadError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completeProductLoadingWithError(at: 0)
+        
+        XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
+    }
     
     
     func test_productImageView_loadImageURLWhenVisibile() {

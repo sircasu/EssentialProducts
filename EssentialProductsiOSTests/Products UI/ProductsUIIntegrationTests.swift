@@ -100,6 +100,7 @@ final class ProductsUIIntegrationTests: XCTestCase {
     func test_errorView_renderErrorUntilNextReload() {
         let (sut, loader) = makeSUT()
         
+
         sut.simulateAppearance()
         
         XCTAssertEqual(sut.errorMessage, nil)

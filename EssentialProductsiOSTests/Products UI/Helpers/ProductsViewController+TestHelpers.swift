@@ -70,8 +70,12 @@ extension ProductsViewController {
         dataSource?.collectionView?(collectionView, cancelPrefetchingForItemsAt: [indexPath])
     }
     
+    var errorView: ErrorHeaderView? {
+        collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as? ErrorHeaderView
+
+    }
     var errorMessage: String? {
-        errorView.message
+        errorView?.message.text
     }
     
     var isShowingLoadingIndicator: Bool {

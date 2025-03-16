@@ -16,11 +16,32 @@
                         <color key="backgroundColor" white="0.87670068030000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cwb-TP-rIZ">
                             <size key="itemSize" width="393" height="227"/>
-                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="headerReferenceSize" width="50" height="50"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells/>
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="ErrorHeaderView" id="HTn-95-Rxj" customClass="ErrorHeaderView" customModule="EssentialProductsiOS" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="50"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ks1-1Y-MAR">
+                                    <rect key="frame" x="8" y="8" width="377" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottomMargin" secondItem="ks1-1Y-MAR" secondAttribute="bottom" id="1oz-RZ-rqO"/>
+                                <constraint firstItem="ks1-1Y-MAR" firstAttribute="top" secondItem="HTn-95-Rxj" secondAttribute="topMargin" id="4dI-dF-nqI"/>
+                                <constraint firstItem="ks1-1Y-MAR" firstAttribute="leading" secondItem="HTn-95-Rxj" secondAttribute="leadingMargin" id="JNV-nP-8fc"/>
+                                <constraint firstAttribute="trailingMargin" secondItem="ks1-1Y-MAR" secondAttribute="trailing" id="ben-2X-qWA"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="message" destination="ks1-1Y-MAR" id="qQu-zb-vBU"/>
+                            </connections>
+                        </collectionReusableView>
                         <connections>
                             <outlet property="dataSource" destination="U7c-1C-Rng" id="OF2-tA-ERO"/>
                             <outlet property="delegate" destination="U7c-1C-Rng" id="Dhd-Du-v6N"/>

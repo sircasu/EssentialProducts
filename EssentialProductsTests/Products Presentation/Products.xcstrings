@@ -21,7 +21,6 @@
     },
     "PRODUCTS_VIEW_TITLE" : {
       "comment" : "Title for products view",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

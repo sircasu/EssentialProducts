@@ -19,19 +19,6 @@ public protocol ProductsErrorView {
     func display(_ viewModel: ProductsErrorViewModel)
 }
 
-public struct ProductsErrorViewModel {
-    public var message: String?
-    
-    static var noError: ProductsErrorViewModel {
-        return ProductsErrorViewModel(message: nil)
-    }
-    
-    static func error(message: String) -> ProductsErrorViewModel {
-        return ProductsErrorViewModel(message: message)
-    }
-}
-
-
 public final class ProductsPresenter {
     var productsLoadingView: ProductsLoadingView
     var productsView: ProductsView

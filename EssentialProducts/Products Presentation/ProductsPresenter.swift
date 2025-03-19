@@ -11,12 +11,6 @@ public protocol ProductsLoadingView {
     func display(_ viewModel: ProductsLoadingViewModel)
 }
 
-public struct ProductsLoadingViewModel {
-    public let isLoading: Bool
-}
-
-
-
 public protocol ProductsView {
     func display(_ viewModel: ProductsViewModel)
 }
@@ -24,8 +18,6 @@ public protocol ProductsView {
 public struct ProductsViewModel {
     public let products: [ProductItem]
 }
-
-
 
 public protocol ProductsErrorView {
     func display(_ viewModel: ProductsErrorViewModel)

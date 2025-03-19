@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ProductItem: Equatable {
+public struct ProductItem: Hashable {
     public let id: Int
     public let title: String
     public let price: Double
@@ -27,7 +27,7 @@ public struct ProductItem: Equatable {
     }
 }
 
-public struct ProductRatingItem: Equatable {
+public struct ProductRatingItem: Hashable {
     public let rate: Double
     public let count: Int
     

@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import EssentialProducts
 
 protocol ProductsLoadingView {
     func display(_ viewModel: ProductsLoadingViewModel)
@@ -14,6 +15,17 @@ protocol ProductsLoadingView {
 struct ProductsLoadingViewModel {
     let isLoading: Bool
 }
+
+
+
+protocol ProductsView {
+    func display(_ viewModel: ProductsViewModel)
+}
+
+struct ProductsViewModel {
+    let products: [ProductItem]
+}
+
 
 
 struct ProductsErrorViewModel {
@@ -31,16 +43,23 @@ protocol ProductsErrorView {
 
 final class ProductsPresenter {
     var productsLoadingView: ProductsLoadingView
+    var productsView: ProductsView
     var productsErrorView: ProductsErrorView
     
-    init(productsLoadingView: ProductsLoadingView, productsErrorView: ProductsErrorView) {
+    init(productsLoadingView: ProductsLoadingView, productsView: ProductsView, productsErrorView: ProductsErrorView) {
         self.productsLoadingView = productsLoadingView
+        self.productsView = productsView
         self.productsErrorView = productsErrorView
     }
     
     func didStartLoadingProducts() {
         productsErrorView.display(.noError)
         productsLoadingView.display(ProductsLoadingViewModel(isLoading: true))
+    }
+    
+    func didFinishLoadingProducts(with products: [ProductItem]) {
+        productsView.display(ProductsViewModel(products: products))
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
     }
 }
 
@@ -65,23 +84,38 @@ final class ProductsPresenterTests: XCTestCase {
         ])
     }
     
+        
+    func test_didFinishLoadingProducts_displayProductsAndStopLoading() {
+        
+        let (sut, view) = makeSUT()
+        
+        let products = uniqueItems().model
+        sut.didFinishLoadingProducts(with: products)
+        
+        XCTAssertEqual(view.messages, [
+            .display(isLoading: false),
+            .display(products: products)
+        ])
+    }
+    
     
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsPresenter, view: ViewSpy) {
         
         let view = ViewSpy()
-        let sut = ProductsPresenter(productsLoadingView: view, productsErrorView: view)
+        let sut = ProductsPresenter(productsLoadingView: view, productsView: view, productsErrorView: view)
         trackForMemoryLeak(view, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return (sut, view)
     }
     
-    private class ViewSpy: ProductsLoadingView, ProductsErrorView {
+    private class ViewSpy: ProductsLoadingView, ProductsView, ProductsErrorView {
     
         enum Message: Hashable {
             case display(errorMessage: String?)
             case display(isLoading: Bool)
+            case display(products: [ProductItem])
         }
         
         private(set) var messages = Set<Message>()
@@ -89,6 +123,11 @@ final class ProductsPresenterTests: XCTestCase {
         func display(_ viewModel: ProductsErrorViewModel) {
             messages.insert(.display(errorMessage: viewModel.message))
         }
+        
+        func display(_ viewModel: ProductsViewModel) {
+             messages.insert(.display(products: viewModel.products))
+        }
+        
         
         func display(_ viewModel: ProductsLoadingViewModel) {
             messages.insert(.display(isLoading: viewModel.isLoading))

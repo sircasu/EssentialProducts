@@ -15,7 +15,7 @@ public final class ErrorHeaderView: UICollectionReusableView {
 
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching, ProductsErrorView {
     
-//    public var errorView = ErrorHeaderView()
+    public var errorView: ErrorHeaderView? = nil
     
     public var refreshController: ProductRefreshViewController?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
@@ -45,6 +45,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
 //        let errorHeaderViewId = String(describing: ErrorHeaderView.self)
 //        collectionView.register(ErrorHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "ErrorHeaderView")
         
+                
         collectionView?.refreshControl = refreshController?.view
         collectionView?.prefetchDataSource = self
         
@@ -56,14 +57,19 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     }
 
     func display(_ viewModel: ProductsErrorViewModel) {
+//        collectionView.layoutIfNeeded()
 //        errorView.message = viewModel.message
+        guard let headerView = errorView else { return }
+        headerView.message.text = viewModel.message
     }
     
     override public func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         onViewIsAppearing?(self)
     }
-        
+    
+    
+    
     
     public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return collectionModel.count
@@ -120,6 +126,10 @@ public final class ProductsViewController: UICollectionViewController, UICollect
 //        return UICollectionReusableView()
 //    }
     
+    public override func numberOfSections(in collectionView: UICollectionView) -> Int {
+         return 1
+     }
+    
     public override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
             if kind == UICollectionView.elementKindSectionHeader {
 //                let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "ErrorHeaderView", for: indexPath) as! ErrorHeaderView
@@ -131,8 +141,16 @@ public final class ProductsViewController: UICollectionViewController, UICollect
                     print("Failed to dequeue ErrorHeaderView")
                     return UICollectionReusableView() // Return an empty view, or another default view.
                 }
+                errorView = headerView
                 return headerView
             }
             return UICollectionReusableView()
         }
 }
+
+//extension ProductsViewController: UICollectionViewDelegateFlowLayout {
+//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+//       
+//       return CGSize(width: collectionView.frame.width, height: 80)
+//     }
+//}

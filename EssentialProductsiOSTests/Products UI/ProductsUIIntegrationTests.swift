@@ -100,15 +100,14 @@ final class ProductsUIIntegrationTests: XCTestCase {
     func test_errorView_renderErrorUntilNextReload() {
         let (sut, loader) = makeSUT()
         
-
         sut.simulateAppearance()
         
         XCTAssertEqual(sut.errorMessage, nil)
-        
+
         loader.completeProductLoadingWithError(at: 0)
-        
+//
         XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
-        
+//        
         sut.simulateUserInitiatedProductsReload()
         XCTAssertEqual(sut.errorMessage, nil)
     }

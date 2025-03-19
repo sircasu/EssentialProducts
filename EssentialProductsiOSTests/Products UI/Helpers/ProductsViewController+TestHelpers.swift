@@ -18,7 +18,14 @@ extension ProductsViewController {
         }
         
         beginAppearanceTransition(true, animated: false) // viewWillAppear
+        _ = self.collectionView(
+            collectionView,
+            viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader,
+            at: IndexPath(item: 0, section: 0)
+        )
         endAppearanceTransition() // viewIsAppearing + viewDidAppear
+        
+
     }
     
     func replaceRefreshControlWithFake() {
@@ -69,11 +76,12 @@ extension ProductsViewController {
         let indexPath = IndexPath(row: row, section: productsSection)
         dataSource?.collectionView?(collectionView, cancelPrefetchingForItemsAt: [indexPath])
     }
+//    
+//    var errorView: ErrorHeaderView? {
+//        collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as? ErrorHeaderView
+//
+//    }
     
-    var errorView: ErrorHeaderView? {
-        collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as? ErrorHeaderView
-
-    }
     var errorMessage: String? {
         errorView?.message.text
     }

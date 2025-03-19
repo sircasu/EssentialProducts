@@ -7,16 +7,6 @@
 
 import UIKit
 
-public final class ErrorView: UICollectionReusableView {
-    
-    @IBOutlet private weak var label: UILabel!
-     
-    public var message: String? {
-        get { label.text }
-        set { label.text = newValue }
-    }
-}
-
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching, ProductsErrorView {
     
     public var errorView: ErrorView?

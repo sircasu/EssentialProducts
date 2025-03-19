@@ -34,6 +34,10 @@ struct ProductsErrorViewModel {
     static var noError: ProductsErrorViewModel {
         return ProductsErrorViewModel(message: nil)
     }
+    
+    static func error(message: String) -> ProductsErrorViewModel {
+        return ProductsErrorViewModel(message: message)
+    }
 }
 
 protocol ProductsErrorView {
@@ -52,6 +56,10 @@ final class ProductsPresenter {
         self.productsErrorView = productsErrorView
     }
     
+    static var loadError: String {
+        NSLocalizedString("PRODUCTS_VIEW_CONNECTION_ERROR", tableName: "Products", bundle: Bundle(for: ProductsPresenter.self), comment: "Error message displayed when we can't load products from server")
+    }
+    
     func didStartLoadingProducts() {
         productsErrorView.display(.noError)
         productsLoadingView.display(ProductsLoadingViewModel(isLoading: true))
@@ -59,6 +67,11 @@ final class ProductsPresenter {
     
     func didFinishLoadingProducts(with products: [ProductItem]) {
         productsView.display(ProductsViewModel(products: products))
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
+    }
+    
+    func didFinishLoadingProductsWithError() {
+        productsErrorView.display(.error(message: ProductsPresenter.loadError))
         productsLoadingView.display(ProductsLoadingViewModel(isLoading: false))
     }
 }
@@ -83,7 +96,6 @@ final class ProductsPresenterTests: XCTestCase {
             .display(isLoading: true)
         ])
     }
-    
         
     func test_didFinishLoadingProducts_displayProductsAndStopLoading() {
         
@@ -98,6 +110,18 @@ final class ProductsPresenterTests: XCTestCase {
         ])
     }
     
+    func test_didFinishLoadingProductsWithError_displayErrorAndStopLoading() {
+        
+        let (sut, view) = makeSUT()
+        
+        sut.didFinishLoadingProductsWithError()
+        
+        XCTAssertEqual(view.messages, [
+            .display(isLoading: false),
+            .display(errorMessage: localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
+        ])
+    }
+    
     
     // MARK: - Helpers
     
@@ -108,6 +132,18 @@ final class ProductsPresenterTests: XCTestCase {
         trackForMemoryLeak(view, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return (sut, view)
+    }
+    
+    func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
+        
+        let table = "Products"
+        let bundle = Bundle(for: ProductsPresenter.self)
+        let value = bundle.localizedString(forKey: key, value: nil, table: table)
+        
+        if value == key {
+            XCTFail("Missing localized string for key:  \(key) in table \(table)", file: file, line: line)
+        }
+        return value
     }
     
     private class ViewSpy: ProductsLoadingView, ProductsView, ProductsErrorView {

@@ -7,6 +7,15 @@
 
 import XCTest
 
+protocol ProductsLoadingView {
+    func display(_ viewModel: ProductsLoadingViewModel)
+}
+
+struct ProductsLoadingViewModel {
+    let isLoading: Bool
+}
+
+
 struct ProductsErrorViewModel {
     var message: String?
     
@@ -19,16 +28,19 @@ protocol ProductsErrorView {
     func display(_ viewModel: ProductsErrorViewModel)
 }
 
+
 final class ProductsPresenter {
-    
+    var productsLoadingView: ProductsLoadingView
     var productsErrorView: ProductsErrorView
     
-    init(productsErrorView: ProductsErrorView) {
+    init(productsLoadingView: ProductsLoadingView, productsErrorView: ProductsErrorView) {
+        self.productsLoadingView = productsLoadingView
         self.productsErrorView = productsErrorView
     }
     
     func didStartLoadingProducts() {
         productsErrorView.display(.noError)
+        productsLoadingView.display(ProductsLoadingViewModel(isLoading: true))
     }
 }
 
@@ -41,13 +53,16 @@ final class ProductsPresenterTests: XCTestCase {
         XCTAssertTrue(view.messages.isEmpty, "Expected no view messages on init")
     }
     
-    func test_didStartLoadingProducts_displayNoErrorMessages() {
+    func test_didStartLoadingProducts_displayNoErrorMessagesAndStartLoading() {
         
         let (sut, view) = makeSUT()
         
         sut.didStartLoadingProducts()
         
-        XCTAssertEqual(view.messages, [.display(errorMessage: .none)])
+        XCTAssertEqual(view.messages, [
+            .display(errorMessage: .none),
+            .display(isLoading: true)
+        ])
     }
     
     
@@ -56,23 +71,27 @@ final class ProductsPresenterTests: XCTestCase {
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsPresenter, view: ViewSpy) {
         
         let view = ViewSpy()
-        let sut = ProductsPresenter(productsErrorView: view)
+        let sut = ProductsPresenter(productsLoadingView: view, productsErrorView: view)
         trackForMemoryLeak(view, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
         return (sut, view)
     }
     
-    private class ViewSpy: ProductsErrorView {
-
-        
+    private class ViewSpy: ProductsLoadingView, ProductsErrorView {
+    
         enum Message: Equatable {
             case display(errorMessage: String?)
+            case display(isLoading: Bool)
         }
         
         private(set) var messages = [Message]()
         
         func display(_ viewModel: ProductsErrorViewModel) {
             messages.append(.display(errorMessage: viewModel.message))
+        }
+        
+        func display(_ viewModel: ProductsLoadingViewModel) {
+            messages.append(.display(isLoading: viewModel.isLoading))
         }
     }
 }

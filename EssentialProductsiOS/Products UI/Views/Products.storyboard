@@ -16,11 +16,32 @@
                         <color key="backgroundColor" white="0.87670068030000003" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="cwb-TP-rIZ">
                             <size key="itemSize" width="393" height="227"/>
-                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="headerReferenceSize" width="50" height="50"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells/>
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="ErrorView" id="0gs-Nt-c8m" customClass="ErrorView" customModule="EssentialProductsiOS" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="50"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AZi-w9-6tS">
+                                    <rect key="frame" x="8" y="8" width="377" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="AZi-w9-6tS" firstAttribute="top" secondItem="0gs-Nt-c8m" secondAttribute="topMargin" id="CSM-wM-vtv"/>
+                                <constraint firstItem="AZi-w9-6tS" firstAttribute="leading" secondItem="0gs-Nt-c8m" secondAttribute="leadingMargin" id="Ksq-K0-kfS"/>
+                                <constraint firstAttribute="trailingMargin" secondItem="AZi-w9-6tS" secondAttribute="trailing" id="QYQ-w3-mv9"/>
+                                <constraint firstAttribute="bottomMargin" secondItem="AZi-w9-6tS" secondAttribute="bottom" id="kOO-pn-0bp"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="label" destination="AZi-w9-6tS" id="FZv-3T-qeV"/>
+                            </connections>
+                        </collectionReusableView>
                         <connections>
                             <outlet property="dataSource" destination="U7c-1C-Rng" id="OF2-tA-ERO"/>
                             <outlet property="delegate" destination="U7c-1C-Rng" id="Dhd-Du-v6N"/>

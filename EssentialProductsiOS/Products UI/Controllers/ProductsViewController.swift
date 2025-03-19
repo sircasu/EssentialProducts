@@ -7,13 +7,19 @@
 
 import UIKit
 
-public final class ErrorView: UIView {
-    public var message: String?
+public final class ErrorView: UICollectionReusableView {
+    
+    @IBOutlet private weak var label: UILabel!
+     
+    public var message: String? {
+        get { label.text }
+        set { label.text = newValue }
+    }
 }
 
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching, ProductsErrorView {
     
-    public var errorView = ErrorView()
+    public var errorView: ErrorView?
     
     public var refreshController: ProductRefreshViewController?
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
@@ -51,7 +57,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     }
 
     func display(_ viewModel: ProductsErrorViewModel) {
-        errorView.message = viewModel.message
+        errorView?.message = viewModel.message
     }
     
     override public func viewIsAppearing(_ animated: Bool) {
@@ -72,6 +78,21 @@ public final class ProductsViewController: UICollectionViewController, UICollect
     public override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         cancelCellController(forRowAt: indexPath)
+    }
+    
+    public override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == UICollectionView.elementKindSectionHeader {
+            let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: "ErrorView",
+                for: indexPath
+            ) as! ErrorView
+            
+            errorView = headerView
+            return headerView
+        }
+        
+        return UICollectionReusableView()
     }
     
     // MARK: - UICollectionViewDataSourcePrefetching

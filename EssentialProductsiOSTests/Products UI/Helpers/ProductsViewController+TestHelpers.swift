@@ -18,6 +18,11 @@ extension ProductsViewController {
         }
         
         beginAppearanceTransition(true, animated: false) // viewWillAppear
+        _ = self.collectionView(
+            collectionView,
+            viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader,
+            at: IndexPath(item: 0, section: 0)
+        )
         endAppearanceTransition() // viewIsAppearing + viewDidAppear
     }
     
@@ -71,7 +76,7 @@ extension ProductsViewController {
     }
     
     var errorMessage: String? {
-        errorView.message
+        errorView?.message
     }
     
     var isShowingLoadingIndicator: Bool {

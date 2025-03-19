@@ -6,7 +6,8 @@
 //
 
 import UIKit
- 
+import EssentialProducts
+
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching, ProductsErrorView {
     
     public var errorView: ErrorView?
@@ -46,7 +47,7 @@ public final class ProductsViewController: UICollectionViewController, UICollect
         }
     }
 
-    func display(_ viewModel: ProductsErrorViewModel) {
+    public func display(_ viewModel: ProductsErrorViewModel) {
         errorView?.message = viewModel.message
     }
     

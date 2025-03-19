@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import EssentialProducts
 
 public protocol ProductRefreshViewControllerDelegate {
     func didRequestProductsRefresh()
@@ -21,7 +22,7 @@ public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
         self.delegate = delegate
     }
     
-    func display(_ viewModel: ProductsLoadingViewModel) {
+    public func display(_ viewModel: ProductsLoadingViewModel) {
         if viewModel.isLoading {
             view.beginRefreshing()
         } else {

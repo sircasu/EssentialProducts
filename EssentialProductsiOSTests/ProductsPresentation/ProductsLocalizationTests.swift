@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import EssentialProductsiOS
+import EssentialProducts
 
 final class ProductsLocalizationTests: XCTestCase {
     

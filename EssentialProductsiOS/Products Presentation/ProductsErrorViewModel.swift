@@ -9,4 +9,12 @@ import Foundation
 
 struct ProductsErrorViewModel {
     var message: String?
+    
+    static var noError: ProductsErrorViewModel {
+        return ProductsErrorViewModel(message: nil)
+    }
+    
+    static func error(message: String) -> ProductsErrorViewModel {
+        return ProductsErrorViewModel(message: message)
+    }
 }

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+ 
 public final class ProductsViewController: UICollectionViewController, UICollectionViewDataSourcePrefetching, ProductsErrorView {
     
     public var errorView: ErrorView?

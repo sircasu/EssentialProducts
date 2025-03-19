@@ -15,10 +15,6 @@ public protocol ProductsView {
     func display(_ viewModel: ProductsViewModel)
 }
 
-public struct ProductsViewModel {
-    public let products: [ProductItem]
-}
-
 public protocol ProductsErrorView {
     func display(_ viewModel: ProductsErrorViewModel)
 }

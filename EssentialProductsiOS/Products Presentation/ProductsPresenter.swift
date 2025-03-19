@@ -17,10 +17,6 @@ protocol ProductsView {
     func display(_ viewModel: ProductsViewModel)
 }
 
-struct ProductsErrorViewModel {
-    var message: String?
-}
-
 protocol ProductsErrorView {
     func display(_ viewModel: ProductsErrorViewModel)
 }
